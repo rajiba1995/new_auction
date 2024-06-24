@@ -13,6 +13,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rules;
 use Illuminate\Support\Facades\Session;
+use Illuminate\Support\Facades\DB;
 
 class RegisteredUserController extends Controller
 {
@@ -53,24 +54,48 @@ class RegisteredUserController extends Controller
 
         return redirect(RouteServiceProvider::HOME);
     }
-    public function RegisterCheck(Request $request){
-        $User = User::where('email', $request->email)->orWhere('mobile', $request->phone)->first();
-        if($User){
-            return response()->json(['status'=>500]);
-        }else{
-            $User  = new User;
-            $User->name = $request->full_name;
-            $User->email = $request->email;
-            $User->mobile = $request->phone;
-            $User->email_status = 1;
-            $User->otp = $request->randomNumber;
-            $User->password = Hash::make($request->password);
-            $User->save();
-            session(['user' => $User]);
-            $route = route('front.otp_validation');
-            return response()->json(['status'=>200, 'route'=>$route]);
+    public function RegisterCheck(Request $request) {
+        try {
+            DB::beginTransaction(); // Start a transaction
+    
+            $User = User::where('email', $request->email)
+                        ->orWhere('mobile', $request->phone)
+                        ->first();
+    
+            if ($User) {
+                DB::rollBack();
+                return response()->json(['status' => 500]); // User already exists
+            } else {
+                $User = new User;
+                $User->name = $request->full_name;
+                $User->email = $request->email;
+                $User->mobile = $request->phone;
+                $User->email_status = 1;
+                $User->otp = $request->randomNumber;
+                $User->password = Hash::make($request->password);
+                $User->save();
+    
+                // You may perform additional operations within the transaction here
+    
+                session(['user' => $User]);
+                $data=[
+                    'user'=>$User,
+                    'type'=>'REG_OTP',
+                ];
+                $mail = sendMail($data); // Assuming sendMail function exists
+    
+                DB::commit(); // Commit the transaction
+    
+                $route = route('front.otp_validation');
+                return response()->json(['status' => 200, 'route' => $route]);
+            }
+        } catch (\Exception $e) {
+            DB::rollBack(); // Roll back the transaction on exception
+            // Handle the exception as per your application's requirement
+            return response()->json(['status' => 500, 'message' => $e->getMessage()]);
         }
     }
+    
     public function UserVerifyData(Request $request){
         $user = Session::get('user');
         if($user->email_status==1 && $user->mobile_status==1){

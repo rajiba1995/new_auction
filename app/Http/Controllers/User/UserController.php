@@ -1288,12 +1288,10 @@ class UserController extends Controller{
 
 //     dd("Mail sent successfully!"); // Optional: Check if the mail sending is successful
 // }
-    public function mail()
-{
-    Mail::to('amit.s@techmantra.co')
-    ->send(new welcomeMail());
-  
-    dd("Mail sent successfully!"); // Optional: Check if the mail sending is successful
-}
+    public function mail(){
+        Mail::to('amit.s@techmantra.co')
+        ->send(new welcomeMail());
+        dd("Mail sent successfully!"); // Optional: Check if the mail sending is successful
+    }
 
 }
