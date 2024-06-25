@@ -95,9 +95,9 @@
                 <div class="link_sec" style="text-align: center; margin: 20px 0px;">
                     <a href="#" style="text-decoration: none; color: #000;">Any address information, legal terms, etc. to be added here</a>
                     <div class="all_link" style="margin-top: 20px;">
-                        <a href="mailto:Email:helpdesk@milaapp.in" style="padding: 0px 5px; color: #000;">Email:helpdesk@milaapp.in</a>
-                        <a href="#" style="padding: 0px 5px; color: #000;">Unsubscribe</a>
-                        <a href="#" style="padding: 0px 5px; color: #000;">View Online</a>
+                        <a href="mailto:Email:helpdesk@milaapp.in" style="padding: 0px 5px; color: #000;">Email: {{ env('MAIL_HELP') }}</a>
+                        <a href="#" style="padding: 0px 5px; color: #000;">Phone: {{env('PHONE_HELP')}}</a>
+                        <a href="#" style="padding: 0px 5px; color: #000;">Our vision: {{env('MAIL_CONTENT')}}</a>
                     </div>
                 </div>
             </div>

@@ -329,15 +329,7 @@
                                                 <td class="max-quote-td"> ${item.minimum_quote_amount}</td>
                                                 <td class="min-quote-td">${item.maximum_quote_amount}</td>
                                             </tr>
-                                            <tr>
-                                                <td colspan="9" class="note-td">
-                                                    <div class="note-wrap">
-                                                        <h3>Notepad</h3>
-                                                        <textarea class="form-control note-textarea">It is a long established fact that a reader will be distracted by the readable content of a page when looking at its layout. The point of using Lorem Ipsum is that it has a more-or-less normal distribution of letters, as opposed</textarea>
-                                                        <button type="button" class="btn btn-animated bg-green">Save</button>
-                                                    </div>
-                                                </td>
-                                            </tr>
+                                       
                                         </tbody>
                                     </table>
                                 </td>

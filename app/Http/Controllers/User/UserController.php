@@ -531,9 +531,10 @@ class UserController extends Controller{
         $myBadges = $this->userRepository->getAllBadgesById($data->id);
         $myBadgesFullDetails = $this->userRepository->myBadgesFullDetails($data->id);
         $allBadges = $this->userRepository->getAllBadges($myBadges);
+        $verifiedBadge = $this->userRepository->verifiedBadge();
         $my_cuttent_seller_package = $this->userRepository->getCurrentSellerPackage($data->id);
         $my_cuttent_buyer_package = $this->userRepository->getCurrentBuyerPackage($data->id);
-        return view('front.user.payment_management', compact('data','packages','seller_packages','myBadges','allBadges', 'my_cuttent_seller_package', 'my_cuttent_buyer_package','myBadgesFullDetails'));
+        return view('front.user.payment_management', compact('data','packages','seller_packages','myBadges','allBadges', 'my_cuttent_seller_package', 'my_cuttent_buyer_package','myBadgesFullDetails','verifiedBadge'));
     }
     public function wallet_management(){
         $data = $this->AuthCheck();
@@ -647,6 +648,7 @@ class UserController extends Controller{
         }
     }
     public function buyer_package_store(Request $request){
+        dd($request->all());
         $data = $this->AuthCheck();
         try {
             DB::beginTransaction();
@@ -657,7 +659,7 @@ class UserController extends Controller{
             if($my_basic_checking && $request->package_type=="premium" || $my_basic_checking && $request->package_type=="basic"){
                 $my_current_package = MyBuyerPackage::with('package_data')->where('user_id', $data->id)->first();
                     if(!$my_current_package){
-                        $my_current_package = new MySellerPackage();
+                        $my_current_package = new MyBuyerPackage();
                     }else{
                         $old_package = DB::table('old_buyer_packages')->insert([
                             'package_id' => $my_current_package->package_id,
@@ -735,6 +737,7 @@ class UserController extends Controller{
             $transaction->amount = $request->package_amount-$negotiable_amount;
             $transaction->buyer_package_id = $request->package_id;
             $transaction->transaction_source = "Razorpay";
+            $transaction->remarks = NULL;
             $transaction->save();
             
             if($transaction){

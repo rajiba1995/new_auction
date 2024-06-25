@@ -13,6 +13,7 @@ use App\Models\City;
 use App\Models\InquirySellerQuotes;
 use App\Models\InquiryParticipant;
 use App\Models\Inquiry;
+use App\Models\UserDocument;
 use App\Models\WatchList;
 use App\Models\InquirySellerComments;
 use App\Models\InquiryAllotmentData;
@@ -319,7 +320,7 @@ if (!function_exists('previously_worked')) {
 if (!function_exists('sendMail')) {
     function sendMail($data) {
         $subject = "demo subject";
-        $email = "rajib.a@techmantra.co";
+        $email = "amit.s@techmantra.co";
         $from_address = env('MAIL_FROM_ADDRESS');
         $sender = env('MAIL_FROM_NAME');
         $response = Mail::send('mail.send_mail', $data, function ($message) use ($data, $from_address, $subject, $email, $sender) {
@@ -327,6 +328,22 @@ if (!function_exists('sendMail')) {
                     ->subject($subject)
                     ->from($from_address, $sender);
         });
-        dd($response);
+        // dd($response);
+        return $response;
+    }
+}
+if (!function_exists('verifiedBadge')) {
+    function verifiedBadge($id) {
+        $data = UserDocument::where('user_id',$id)->first();
+        if ($data) {
+            if ($data->gst_status == 1 && 
+                $data->pan_status == 1 && 
+                $data->adhar_status == 1 && 
+                $data->trade_license_status == 1 && 
+                $data->cancelled_cheque_status == 1) {
+                return true;
+            }
+        }
+        return false;
     }
 }

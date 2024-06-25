@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Contracts\PackageContract;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Contracts\UserDetailsContract;
@@ -9,21 +10,31 @@ use App\Contracts\UserContract;
 use App\Models\MyBuyerWallet;
 use App\Models\MySellerWallet;
 use App\Models\WebsiteLogs;
+use App\Models\MyBuyerOpeningPackage;
+use App\Models\MyBuyerPackage;
+use App\Models\MySellerPackage;
+use App\Models\Transaction;
 use Auth;
 use App\Models\User;
-
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\DB;
+use Exception;
+use Carbon\Carbon;
+use Illuminate\Support\Facades\Session;
 
 
 class UserDetailsController extends Controller
 {
     protected $userDetailsRepository;
     protected $userRepository;
+    protected $packageRepository;
 
 
-    public function __construct(UserDetailsContract $userDetailsRepository,UserContract $userRepository)
+    public function __construct(UserDetailsContract $userDetailsRepository,UserContract $userRepository,PackageContract $packageRepository)
     {
         $this->userDetailsRepository = $userDetailsRepository;
         $this->userRepository = $userRepository;
+        $this->packageRepository = $packageRepository;
 
     }
     public function AuthCheck(){
@@ -286,7 +297,9 @@ class UserDetailsController extends Controller
         $seller_old_package = $this->userDetailsRepository->getUserSellerOldPackageById($id);
         $buyer_currernt_package = $this->userDetailsRepository->getUserBuyerCurrentPackageById($id);
         $buyer_old_package = $this->userDetailsRepository->getUserBuyerOldPackageById($id);
-        return view('admin.user.userPackageDetails', compact('seller_currernt_package','seller_old_package','buyer_currernt_package','buyer_old_package'));
+        $allBuyerPackages = $this->packageRepository->getAllBuyerPackages();
+        $allSellerPackages = $this->packageRepository->getAllSellerPackages();
+        return view('admin.user.userPackageDetails', compact('seller_currernt_package','seller_old_package','buyer_currernt_package','buyer_old_package','id','allBuyerPackages','allSellerPackages'));
         
         
         }
@@ -295,6 +308,236 @@ class UserDetailsController extends Controller
         $data = $this->userDetailsRepository->getAllUsersByEmployee();
         return view('admin.user.user_index_by_emp', compact('data'));
         
+    }
+        public function AdminBuyBuyerPackage(Request $request)
+    { 
+    //    dd($request->all());
+        
+       try {
+        DB::beginTransaction();
+        $negotiable_amount = 0;
+        $duration = 30*$request->buyer_package_duration;
+        $expiryDate = Carbon::now()->addDays($duration);
+        $my_basic_checking = MyBuyerOpeningPackage::where('user_id', $request->user_id)->first();
+        if($my_basic_checking && $request->buyer_package_type=="premium" || $my_basic_checking && $request->buyer_package_type=="basic"){
+            $my_current_package = MyBuyerPackage::with('package_data')->where('user_id', $request->user_id)->first();
+                if(!$my_current_package){
+                    $my_current_package = new MyBuyerPackage();
+                }else{
+                    $old_package = DB::table('old_buyer_packages')->insert([
+                        'package_id' => $my_current_package->package_id,
+                        'user_id' => $my_current_package->user_id,
+                        'package_duration' => $my_current_package->package_duration, 
+                        'package_amount' => $my_current_package->package_amount,
+                        'package_credit' => $my_current_package->package_credit,
+                        'purchase_date' => $my_current_package->created_at,
+                        'expiry_date' => $my_current_package->expiry_date,
+                        'created_at' => now(),
+                        'updated_at' => now(),
+                    ]);
+                }
+                $my_current_package->package_id = $request->user_buyer_package;
+                $my_current_package->user_id = $request->user_id;
+                $my_current_package->package_type = $request->buyer_package_type;
+                $my_current_package->package_amount =$request->buyer_package_price;
+                $my_current_package->package_duration =$request->buyer_package_duration;
+                $my_current_package->package_credit =$request->buyer_package_credits;
+                $my_current_package->expiry_date =$expiryDate;
+                $my_current_package->save();
+
+        }else{
+            if($request->buyer_package_type=="basic"){
+                $basic_package = new MyBuyerOpeningPackage;
+                $basic_package->package_id = $request->user_buyer_package;
+                $basic_package->user_id = $request->user_id;
+                $basic_package->package_type = $request->buyer_package_type;
+                $basic_package->package_amount =$request->buyer_package_price;
+                $basic_package->package_duration =$request->buyer_package_duration;
+                $basic_package->package_credit =$request->buyer_package_credits;
+                $basic_package->expiry_date =$expiryDate;
+                $basic_package->save();
+                if($basic_package){
+                    $my_current_package = new MyBuyerPackage;
+                    $my_current_package->package_id = $request->user_buyer_package;
+                    $my_current_package->user_id = $request->user_id;
+                    $my_current_package->package_type = $request->buyer_package_type;
+                    $my_current_package->package_amount =$request->buyer_package_price;
+                    $my_current_package->package_duration =$request->buyer_package_duration;
+                    $my_current_package->package_credit =$request->buyer_package_credits;
+                    $my_current_package->expiry_date =$expiryDate;
+                    $my_current_package->save();
+                }
+            }else{
+                DB::commit();
+                return redirect()->back()->with('warning', 'Please purchase the basic package first, one time only.');
+            }
+        }
+
+        // Retrieve the latest wallet record for the user
+        $latest_wallet = MyBuyerWallet::where('user_id', $request->user_id)->latest()->first();
+        // Calculate the current balance based on the latest wallet record
+        $current_balance = $latest_wallet ? $latest_wallet->current_unit : 0;
+        // Update Wallet
+        $package_credit = $request->buyer_package_credits;
+        $my_wallet = new MyBuyerWallet();
+        $my_wallet->user_id = $request->user_id;
+        $my_wallet->type = 1; //Credit
+        // $my_wallet->inquiry_id = null;
+        $my_wallet->purpose = "For purchase package";
+        $my_wallet->credit_unit = $request->buyer_package_credits;
+        $my_wallet->current_unit = $current_balance + $package_credit;
+        $my_wallet->save();
+
+        $transaction = new Transaction();
+        $transaction->user_id = $request->user_id;
+        $transaction->unique_id = rand(100000, 999999).''.time(); // Adjusted range for 8-digit number
+        $transaction->transaction_type = 0; //offline
+        $transaction->user_type = 2; //Buyer
+        $transaction->transaction_id = rand(100000, 999999).''.time(); // Adjusted range for 8-digit number
+        $transaction->purpose = $request->form_type=='upgrade'?'Upgrade buyer package':'New buyer package';
+        $transaction->actual_amount = $request->buyer_package_price;
+        $transaction->negotiable_amount = $negotiable_amount;
+        $transaction->amount = $request->buyer_package_price-$negotiable_amount;
+        $transaction->buyer_package_id = $request->user_buyer_package;
+        $transaction->transaction_source = "Buy from Admin";
+        $transaction->remarks = $request->buyer_package_notes;
+        $transaction->save();
+        
+        if($transaction){
+            $json_data = [
+                'transaction' => $transaction,
+                'my_wallet' => $my_wallet,
+                'my_current_package' => $my_current_package,
+            ];
+          
+            $websiteLog =new WebsiteLogs();
+            $websiteLog->logs_type ="INSERTED";
+            $websiteLog->table_name ="transactions, my_buyer_wallets, my_buyer_packages";
+            $websiteLog->response =json_encode($json_data);
+            $websiteLog->save();
+        }
+         // For Amount Transaction
+         DB::commit();
+        if (Session::has('url.intended')) {
+            $intendedUrl = Session::get('url.intended');
+            // Forget the intended URL from the session after using it
+            Session::forget('url.intended');
+            return redirect($intendedUrl);
+        }else{
+            return redirect()->route('admin.user.package.view',$request->user_id)->with('success', 'Package has been successfully purchased');  
+        }
+        // Start a database transaction
+       
+    } catch (\Exception $e) {
+        // Rollback the transaction and handle the exception
+        DB::rollBack();
+        dd($e->getMessage());
+        // return redirect()->back()->with('error', 'An error occurred: ' . $e->getMessage());
+        return redirect()->back()->with('error', 'Something went wrong, please try again later!');
+    }
+
+    }
+
+    public function AdminBuySellerPackage(Request $request){
+        // dd($request->all());
+
+        try {
+            $negotiable_amount = 0;
+            $my_current_package = MySellerPackage::with('getPackageDetails')->where('user_id', $request->user_id)->first();
+            if($request->form_type=='upgrade'){
+                if($my_current_package){
+                    $current_package_duration = $my_current_package->package_duration;
+                    $monthly_package_price = $my_current_package->monthly_package_price;
+                    $negotiable_amount = $monthly_package_price*($current_package_duration-$my_current_package->usage_months);
+                }
+            }
+            // Start a database transaction
+            DB::beginTransaction();
+            $duration = 30*$request->seller_package_duration;
+            $monthly_package_price = $request->seller_package_price/$request->seller_package_duration;
+            
+                // Set expiry date 30 days later from today
+            $expiryDate = Carbon::now()->addDays($duration);
+            $next_credit_date = Carbon::now()->addDays(30);
+            if(!$my_current_package){
+                $my_current_package = new MySellerPackage();
+            }else{
+                $old_package = DB::table('old_seller_packages')->insert([
+                    'package_id' => $my_current_package->package_id,
+                    'user_id' => $my_current_package->user_id,
+                    'monthly_package_price' => $my_current_package->monthly_package_price,
+                    'package_duration' => $my_current_package->package_duration, // Corrected key
+                    'monthly_credit' => $my_current_package->monthly_credit,
+                    'next_credit_date' => $my_current_package->next_credit_date,
+                    'purchase_amount' => $my_current_package->purchase_amount,
+                    'purchase_date' => $my_current_package->created_at,
+                    'expiry_date' => $my_current_package->expiry_date,
+                    'created_at' => now(),
+                    'updated_at' => now(),
+                ]);
+                
+            }
+            $my_current_package->package_id = $request->user_seller_package;
+            $my_current_package->user_id = $request->user_id;
+            $my_current_package->monthly_package_price = $monthly_package_price;
+            $my_current_package->package_duration = $request->seller_package_duration;
+            $my_current_package->monthly_credit = $request->seller_package_credits;
+            $my_current_package->next_credit_date = $next_credit_date;
+            $my_current_package->purchase_amount = $request->seller_package_price;    
+            $my_current_package->expiry_date = $expiryDate;
+            $my_current_package->save();
+
+            // Retrieve the latest wallet record for the user
+            $latest_wallet = MySellerWallet::where('user_id', $request->user_id)->latest()->first();
+            // Calculate the current balance based on the latest wallet record
+            $current_balance = $latest_wallet ? $latest_wallet->current_unit : 0;
+            // Update Wallet
+            $monthly_credit = $request->seller_package_credits;
+            $my_wallet = new MySellerWallet();
+            $my_wallet->user_id = $request->user_id;
+            $my_wallet->type = 1; //Credit
+            $my_wallet->purpose = "For purchase package"; 
+            $my_wallet->credit_unit = $request->seller_package_credits;
+            $my_wallet->current_unit = $current_balance + $monthly_credit;
+            $my_wallet->save();
+
+            // For Amount Transaction
+
+            $transaction = new Transaction();
+            $transaction->user_id = $request->user_id;
+            $transaction->unique_id = rand(100000, 999999).''.time(); // Adjusted range for 8-digit number
+            $transaction->transaction_type = 0; //offline
+            $transaction->user_type = 1; //Seller
+            $transaction->transaction_id = rand(100000, 999999).''.time(); // Adjusted range for 8-digit number
+            $transaction->purpose = $request->form_type=='upgrade'?'Upgrade seller package':'New seller package';
+            $transaction->actual_amount = $request->seller_package_price;
+            $transaction->negotiable_amount = $negotiable_amount;
+            $transaction->amount = $request->seller_package_price-$negotiable_amount;
+            $transaction->seller_package_id = $request->user_seller_package;
+            $transaction->transaction_source = "Buy from Admin";
+            $transaction->remarks = $request->seller_package_notes;
+            $transaction->save();
+            if($transaction){
+                $websiteLog =new WebsiteLogs();
+                $websiteLog->logs_type ="INSERTED";
+                $websiteLog->table_name ="transactions";
+                $websiteLog->response =json_encode($transaction);
+                $websiteLog->save();
+            }
+            DB::commit();
+            if (Session::has('url.intended')) {
+                $intendedUrl = Session::get('url.intended');
+                // Forget the intended URL from the session after using it
+                Session::forget('url.intended');
+                return redirect($intendedUrl);
+            }else{
+                return redirect()->route('admin.user.package.view',$request->user_id)->with(['success' => 'Package has been successfully purchased', 'package_type' => 'seller']);  
+            }
+        } catch (\Exception $e) {
+            // Rollback the transaction and handle the exception
+            DB::rollBack();
+            return redirect()->back()->with('error', 'An error occurred: ' . $e->getMessage());
+        }
     }
     
     

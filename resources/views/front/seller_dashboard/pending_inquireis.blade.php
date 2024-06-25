@@ -228,7 +228,7 @@
                                                                         <td class="min-quote-td">{{$item['maximum_quote_amount']}}</td>
                                                                         <td class="max-quote-td">{{$item['minimum_quote_amount']}}</td>
                                                                     </tr>
-                                                                    <tr>
+                                                                    <!-- <tr>
                                                                         <td colspan="9" class="note-td">
                                                                             <div class="note-wrap">
                                                                                 <h3>Notepad</h3>
@@ -236,7 +236,7 @@
                                                                                 <button type="button" class="btn btn-animated bg-green">Save</button>
                                                                             </div>
                                                                         </td>
-                                                                    </tr>
+                                                                    </tr> -->
                                                                 </tbody>
                                                             </table>
                                                         </td>
