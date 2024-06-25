@@ -40,20 +40,20 @@ class AppServiceProvider extends ServiceProvider
         Paginator::useBootstrap();
         view::composer('*', function($view) {
             // Service
-            $ServiceTableExists = Schema::hasTable('products');
-            if ($ServiceTableExists) {
-                $products = Product::groupBy('title')->pluck('title')->toArray();
-            }
-            // Collection
-            $CollectionTableExists = Schema::hasTable('collections');
-            if ($CollectionTableExists) {
-                $collections = Collection::groupBy('title')->pluck('title')->toArray();
-            }
-            // Category
-            $CategoryTableExists = Schema::hasTable('categories');
-            if ($CategoryTableExists) {
-                $categories = Category::groupBy('title')->pluck('title')->toArray();
-            }
+            // $ServiceTableExists = Schema::hasTable('products');
+            // if ($ServiceTableExists) {
+            //     $products = Product::groupBy('title')->pluck('title')->toArray();
+            // }
+            // // Collection
+            // $CollectionTableExists = Schema::hasTable('collections');
+            // if ($CollectionTableExists) {
+            //     $collections = Collection::groupBy('title')->pluck('title')->toArray();
+            // }
+            // // Category
+            // $CategoryTableExists = Schema::hasTable('categories');
+            // if ($CategoryTableExists) {
+            //     $categories = Category::groupBy('title')->pluck('title')->toArray();
+            // }
             // Category
             $UserTableExists = Schema::hasTable('users');
             if ($UserTableExists) {
@@ -76,7 +76,7 @@ class AppServiceProvider extends ServiceProvider
                 
             }
             $allLocation = array_merge($cityNames, $stateNames);
-            $allTitles = array_merge($products, $collections, $categories);
+            // $allTitles = array_merge($products, $collections, $categories);
 
                // Notification count
                $wishlistExists = Schema::hasTable('notifications');
@@ -99,7 +99,7 @@ class AppServiceProvider extends ServiceProvider
                    }
                }
             view()->share('global_filter_location', $allLocation);
-            view()->share('global_filter_data', $allTitles);
+            // view()->share('global_filter_data', $allTitles);
             view()->share('notificationCount', $notificationCount);
             view()->share('notificationData', $notificationData);
 

@@ -126,7 +126,7 @@
                                     <div class="col-12">
                                         <div class="form-group">
                                             <label class="form-label">Description of the Service</label>
-                                            <textarea class="form-control border-red" rows="9" placeholder="Ex, transport service, Parlour, etc " name="description">{{$existing_inquiry ? $existing_inquiry->description : old('description')}}</textarea>
+                                            <textarea class="form-control border-red" rows="9" placeholder="Ex, transport service, Parlour, etc " name="description" id="description">{{$existing_inquiry ? $existing_inquiry->description : old('description')}}</textarea>
                                             @error('description')<span class="text-danger" role="alert"><strong>{{ $message }}</strong></span>
                                             @enderror
                                         </div>
@@ -435,11 +435,11 @@
                                 </div>
                                 @if($existing_inquiry && !$existing_inquiry->inquiry_id)
                                     <div class="form-submit-row">
-                                        <button type="submit" class="btn btn-animated btn-submit" data-value="generate">GENERATE INQUIRY</button>
+                                        <button type="submit" class="btn btn-animated btn-submit" id="generate_btn" data-value="generate">GENERATE INQUIRY</button>
                                     </div>
                                 @elseif(empty($existing_inquiry))
                                     <div class="form-submit-row">
-                                        <button type="submit" class="btn btn-animated btn-submit" data-value="generate">GENERATE INQUIRY</button>
+                                        <button type="submit" class="btn btn-animated btn-submit" id="generate_btn" data-value="generate">GENERATE INQUIRY</button>
                                     </div>
                                 @endif
                                 <input type="hidden" id="submit_type" name="submit_type">
@@ -602,6 +602,9 @@
                             icon: "warning"
                         }).then((result) => {
                             if (result.isConfirmed) {
+                                var button = $('#generate_btn');
+                                button.prop('disabled', true); // Disable the button
+                                button.text('Please wait...');
                                 $('#auction_requirement_form').submit(); // Submit the form
                             }
                         });
@@ -617,6 +620,9 @@
                         icon: "warning"
                     }).then((result) => {
                         if (result.isConfirmed) {
+                            var button = $('#generate_btn');
+                            button.prop('disabled', true); // Disable the button
+                            button.text('Please wait...');
                             $('#auction_requirement_form').submit(); // Submit the form
                         }
                     });
@@ -882,6 +888,10 @@ $(document).ready(function() {
     }
 </script>
 <script src="{{asset('frontend/assets/js/custom.js')}}"></script>
+<script src="https://cdn.ckeditor.com/4.17.2/standard/ckeditor.js"></script>
+<script>
+    CKEDITOR.replace('description');
+</script>
 <script>
 
      function checkModal(){

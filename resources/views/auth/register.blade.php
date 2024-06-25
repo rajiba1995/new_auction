@@ -46,7 +46,7 @@
 
                         </div>
                         <!-- <input type="submit" class="btn btn-animated" value="Register Now"> -->
-                        <button type="submit" class="btn btn-animated">Register Now</button>
+                        <button type="submit" class="btn btn-animated" id="registerFormSubmit">Register Now</button>
                         {{-- onclick="registerOtp()" --}}
                         <div class="resend-block mt-4">
                             <label>If you already have an account,</label>
@@ -95,22 +95,24 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.3/jquery.validate.min.js"></script>
     
     <script>
-       function getRandomNumber(min, max) {
-            return Math.floor(Math.random() * (max - min) + min);
-        }
 
         $(document).ready(function() {
             $('#registerForm').submit(function(e) {
                 e.preventDefault(); // Prevent default form submission
                 // Perform client-side validation using jQuery Validation plugin
                 if ($(this).valid()) {
-                    var randomNumber = getRandomNumber(1000, 9999);
-                    var formData = $(this).serialize() + '&randomNumber=' + randomNumber;
+                    var button = $('#registerFormSubmit');
+                    button.prop('disabled', true); // Disable the button
+                    button.text('Please wait...');
+                    var formData = $(this).serialize();
                     $.ajax({
                         type: 'POST',
                         url: "{{ route('register-check') }}", // Replace with your Laravel route for registration
                         data: formData, // Serialize form data
                         success: function(response) {
+                            var button = $('#registerFormSubmit');
+                            button.prop('disabled', false); // Disable the button
+                            button.text('Register Now');
                             if(response.status==500){
                                 var alertMessage = $('<div class="alert alert-danger" role="alert">Your email and mobile number are already registered. Please <a href="{{route("login")}}"><strong>login now</strong></a></div>');
                                 // Append the alert to a container element (assuming there's a container with the id "alertContainer")
@@ -185,52 +187,6 @@
         // localStorage.clear();
 
         // Resend OTP
-        $(document).ready(function() {
-            // Event handler for the "Resend OTP" button
-            $('#resend_otp_button').on('click', function() {
-                var randomNumber = getRandomNumber(1000, 9999);
-                localStorage.clear();
-                localStorage.setItem('otp', randomNumber);
-                $('#registerOtpModal').modal({ backdrop: 'static', keyboard: false });
-                setTimeout(function() {
-                    $('#resend_otp_button').show();
-                }, 2000); 
-               
-                $('#registerOtpModal').on('shown.bs.modal', function (e) {
-                    var timerSpan = $('#timer_counter'); // Get the span element where the timer will be displayed
-                    var timerSeconds = 10; // Initial number of seconds
-                    var timerMinutes = 0; // Initial number of minutes
-
-                    // Function to update the timer display
-                    function updateTimer() {
-                        // Format the timer display as "mm:ss"
-                        var minutesDisplay = timerMinutes < 10 ? '0' + timerMinutes : timerMinutes;
-                        var secondsDisplay = timerSeconds < 10 ? '0' + timerSeconds : timerSeconds;
-                        timerSpan.text(minutesDisplay + ':' + secondsDisplay);
-
-                        // Decrement the timer
-                        if (timerSeconds > 0) {
-                            timerSeconds--;
-                        } else {
-                            if (timerMinutes > 0) {
-                                timerMinutes--;
-                                timerSeconds = 10;
-                            } else {
-                                // Timer has reached 0:00
-                                clearInterval(timerInterval); // Stop the timer
-                                // Additional actions after timer expiration
-                                $('#resend_otp_button').show(); // Show the "Resend OTP" button
-                            }
-                        }
-                    }
-                    // Initial call to update the timer display
-                    updateTimer();
-
-                    // Update the timer display every second
-                    var timerInterval = setInterval(updateTimer, 1000);
-                });
-            });
-        });
     </script>
 </body>
 </html>

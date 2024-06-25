@@ -81,7 +81,6 @@ class UserController extends Controller{
             'first_name' => 'required',
             'last_name' => 'required',
             'business_name' => 'required',
-            'business_type' => 'nullable',
             'address' => 'required',
             'state' => 'required',
             'city' => 'required',

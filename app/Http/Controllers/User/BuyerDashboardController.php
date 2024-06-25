@@ -21,7 +21,7 @@ use Illuminate\Validation\Rule;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Contracts\Encryption\DecryptException;
-
+use Illuminate\Support\Facades\DB;
 
 
 class BuyerDashboardController extends Controller
@@ -421,7 +421,9 @@ class BuyerDashboardController extends Controller
     }
 
     public function live_inquiry_seller_allot(Request $request){
-            
+        // dd($request->all());
+        DB::beginTransaction();
+        try {
             $InquiryAllotmentData = new InquiryAllotmentData;
             $InquiryAllotmentData->inquiry_id = $request->inquiry_id;
             $InquiryAllotmentData->user_id = $request->bidder_id;
@@ -443,19 +445,50 @@ class BuyerDashboardController extends Controller
                 foreach ($data as $participant) {
                     $participant->update(['status' => 3, 'rejected_reason'=>'Buyer selected another supplier']);
                 }
-                $allot_seller = InquiryParticipant::where('inquiry_id', $inquiry->id)
+                $allot_seller = InquiryParticipant::with('SellerData')->where('inquiry_id', $inquiry->id)
                                           ->where('user_id', $inquiry->allot_seller)
                                           ->first();
                 if($allot_seller){
                     $allot_seller->status = 4; //Allot
                     $allot_seller->rejected_reason = null;
                     $allot_seller->save();
+                    if($allot_seller){
+                        $Buyer_data = User::where('id', $inquiry->created_by)->first();
+                        if($request->type=="first"){
+                            $data=[
+                                'user'=>$allot_seller->SellerData,
+                                'inquiry_data'=>$inquiry,
+                                'Buyer_data'=>$Buyer_data,
+                                'type'=>'INQUIRY_ALLOTMENT',
+                            ];
+                            $subject = 'Inquiry ALLOTMENT Notification for '.$Buyer_data->business_name;
+                        }else{
+                            $reason = $request->reallot_reason?$request->reallot_reason:"";
+                            $data=[
+                                'user'=>$allot_seller->SellerData,
+                                'inquiry_data'=>$inquiry,
+                                'Buyer_data'=>$Buyer_data,
+                                'reason'=>$reason,
+                                'type'=>'INQUIRY_REALLOTMENT',
+                            ];
+                            $subject = 'Inquiry REALLOTMENT Notification for '.$Buyer_data->business_name;
+                        }
+                        sendMail($data, $subject); 
+                    }
                 }
             }
+             // Commit the transaction
+        DB::commit();
             return redirect()->route('buyer_confirmed_inquiries')->with('success', 'Seller has been successfully allocated.');
-        // }else{
-        //     return redirect()->back()->with('warning', 'Something went wrong. Please try again later.');
-        // }
+        } catch (\Exception $e) {
+            // Rollback the transaction on error
+            DB::rollBack();
+            dd($e->getMessage());
+            // Log the error for debugging
+            // Log::error('Error allotting seller: ' . $e->getMessage());
+    
+            return redirect()->back()->with('warning', 'Something went wrong. Please try again later.');
+        }
     }
 
     public function cancelled_reason(Request $request){

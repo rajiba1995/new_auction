@@ -528,6 +528,7 @@
                     <div class="allot-amount">
                         <input type="hidden" name="inquiry_id" id="live_inquiry_id" value="">
                         <input type="hidden" name="bidder_id" id="bidder_id" value="">
+                        <input type="hidden" name="type" class="form-control" value="first">
                         <input type="hidden" name="allot_amount" id="allot_amount" value="">
                         <input type="text" class="form-control" id="allotAmount" disabled value="">
                     </div>

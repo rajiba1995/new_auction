@@ -14,6 +14,7 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rules;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\DB;
+use Carbon\Carbon;
 
 class RegisteredUserController extends Controller
 {
@@ -59,10 +60,29 @@ class RegisteredUserController extends Controller
             DB::beginTransaction(); // Start a transaction
     
             $User = User::where('email', $request->email)
-                        ->orWhere('mobile', $request->phone)
-                        ->first();
-    
+                        ->orWhere('mobile', $request->phone)->first();
             if ($User) {
+                $exist_User = User::where(function ($query) use ($request) {
+                    $query->where('email', $request->email)
+                          ->orWhere('mobile', $request->phone);
+                })
+                ->where('mobile_status', 0)
+                ->first();
+                if($exist_User){
+                    $exist_User->otp = rand(1111,9999);
+                    $exist_User->save();
+                    session(['user' => $exist_User]);
+                    $data=[
+                        'user'=>$exist_User,
+                        'type'=>'REG_OTP',
+                    ];
+                    $mail = sendMail($data, 'OTP Verification'); // Assuming sendMail function exists
+                    DB::commit(); // Commit the transaction
+                    $route = route('front.otp_validation');
+                    $endTime = Carbon::now()->addSeconds(60);
+                    session(['counter_timer' => $endTime->format('Y-m-d H:i:s')]);
+                    return response()->json(['status' => 200, 'route' => $route]);
+                }
                 DB::rollBack();
                 return response()->json(['status' => 500]); // User already exists
             } else {
@@ -71,10 +91,9 @@ class RegisteredUserController extends Controller
                 $User->email = $request->email;
                 $User->mobile = $request->phone;
                 $User->email_status = 1;
-                $User->otp = $request->randomNumber;
+                $User->otp = rand(1111,9999);
                 $User->password = Hash::make($request->password);
                 $User->save();
-    
                 // You may perform additional operations within the transaction here
     
                 session(['user' => $User]);
@@ -82,11 +101,13 @@ class RegisteredUserController extends Controller
                     'user'=>$User,
                     'type'=>'REG_OTP',
                 ];
-                $mail = sendMail($data); // Assuming sendMail function exists
-    
+                $mail = sendMail($data, 'OTP Verification'); // Assuming sendMail function exists
+                
                 DB::commit(); // Commit the transaction
     
                 $route = route('front.otp_validation');
+                $endTime = Carbon::now()->addSeconds(60);
+                session(['counter_timer' => $endTime->format('Y-m-d H:i:s')]);
                 return response()->json(['status' => 200, 'route' => $route]);
             }
         } catch (\Exception $e) {
@@ -102,7 +123,7 @@ class RegisteredUserController extends Controller
             return redirect()->route('login');
         }else{
             $user_data = User::where('mobile', $user->mobile)->where('email', $user->email)->first();
-            $otp = 1234;
+            $otp = $user_data->otp;
             if($user_data->mobile_status=="0"){
                 $user_data->otp = $otp; 
                 $user_data->save();
@@ -117,6 +138,26 @@ class RegisteredUserController extends Controller
             }
         }
         return view('auth.otp_validation');
+    }
+    public function resend_otp_validation(Request $request){
+        $exist_User =User::where('id',$request->user_id)->first();
+        if($exist_User){
+            $exist_User->otp = rand(1111,9999);
+            $exist_User->save();
+            session(['user' => $exist_User]);
+            $data=[
+                'user'=>$exist_User,
+                'type'=>'REG_OTP',
+            ];
+            $mail = sendMail($data, 'OTP Verification'); // Assuming sendMail function exists
+            $endTime = Carbon::now()->addSeconds(60);
+            $counter = $endTime->format('Y-m-d H:i:s');
+            session(['counter_timer' => $endTime->format('Y-m-d H:i:s')]);
+            return response()->json(['status' => 200, 'counter'=>$counter]);
+        }else{
+            return response()->json(['status'=>500, 'message'=>"User not found!"]);
+        }
+        
     }
     public function UserVerifyDataCheck(Request $request){
         $main_otp = Session::get('otp');

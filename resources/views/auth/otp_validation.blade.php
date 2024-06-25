@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Auction</title>
+    <title>{{env('APP_NAME')}}</title>
 
     <link rel="stylesheet" href="{{asset('frontend/assets/css/fontawesome.min.css')}}">
     <link rel="stylesheet" href="{{asset('frontend/assets/css/bootstrap.min.css')}}">
@@ -15,6 +15,7 @@
     @if(session()->has('user'))
         @php
             $user = session('user');
+            $counter_timer = session('counter_timer');
             $otp = session('otp')?session('otp'):"";
         @endphp
     @endif
@@ -26,7 +27,7 @@
                         @if(($user->email_status == 0 || $user->mobile_status == 0) && empty($otp))
                         <div class="page-inner-content" id="first_form">
                             <form>
-                                <h1 class="color-red">Auction</h1>
+                                <h1 class="color-red">Milaapp</h1>
                                 <p class="sub-text">It is a long established fact that a reader will be distracted</p>
                                 <ul class="verfication-status">
                                     <li id="email_status">
@@ -76,11 +77,13 @@
                                     <input type="text" name="otp[]" class="form-control otp-input border-red" maxlength="1" required>
                                 </div>
                                 <p class="error" id="error"></p>
+                                <input type="hidden" name="user_id" id="user_id" value="{{$user->id}}">
+                                <input type="hidden" id="counter_timer" value="{{$counter_timer}}">
                                 <input type="submit" value="Verify OTP" class="btn btn-animated" id="registerForm">
                             </form>
                             <div class="resend-block">
-                                <label>Didn&apos;t Receive the OTP? Retry in <span id="timer_counter">00:10</span></label>
-                                <a href="javascript:void(0)" id="resend_otp_button" style="display: none;">Resend OTP</a>
+                                <label>Didn&apos;t Receive the OTP? Retry in <span id="timer_counter">00:00</span></label>
+                                <a href="javascript:void(0)" id="resend_otp_button" style="display:none;">Resend OTP</a>
                             </div>
                         @endif
                 </div>
@@ -95,10 +98,6 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.3/jquery.validate.min.js"></script>
     
     <script>
-       function getRandomNumber(min, max) {
-            return Math.floor(Math.random() * (max - min) + min);
-        }
-
         $(document).ready(function(){
             $('.otp-form').submit(function(event){
                 event.preventDefault(); 
@@ -133,48 +132,75 @@
         $(document).ready(function() {
             // Event handler for the "Resend OTP" button
             $('#resend_otp_button').on('click', function() {
-                var randomNumber = getRandomNumber(1000, 9999);
-                localStorage.clear();
-                localStorage.setItem('otp', randomNumber);
-                $('#registerOtpModal').modal({ backdrop: 'static', keyboard: false });
-                setTimeout(function() {
-                    $('#resend_otp_button').show();
-                }, 2000); 
-               
-                $('#registerOtpModal').on('shown.bs.modal', function (e) {
-                    var timerSpan = $('#timer_counter'); // Get the span element where the timer will be displayed
-                    var timerSeconds = 10; // Initial number of seconds
-                    var timerMinutes = 0; // Initial number of minutes
+                var button = $(this);
+                button.prop('disabled', true); // Disable the button
+                button.text('Please wait...');
+                var user_id = $('#user_id').val();
 
-                    // Function to update the timer display
-                    function updateTimer() {
-                        // Format the timer display as "mm:ss"
-                        var minutesDisplay = timerMinutes < 10 ? '0' + timerMinutes : timerMinutes;
-                        var secondsDisplay = timerSeconds < 10 ? '0' + timerSeconds : timerSeconds;
-                        timerSpan.text(minutesDisplay + ':' + secondsDisplay);
-
-                        // Decrement the timer
-                        if (timerSeconds > 0) {
-                            timerSeconds--;
-                        } else {
-                            if (timerMinutes > 0) {
-                                timerMinutes--;
-                                timerSeconds = 10;
-                            } else {
-                                // Timer has reached 0:00
-                                clearInterval(timerInterval); // Stop the timer
-                                // Additional actions after timer expiration
-                                $('#resend_otp_button').show(); // Show the "Resend OTP" button
-                            }
+                $.ajax({
+                    type: 'GET',
+                    url: "{{ route('front.resend_otp_validation') }}", // Replace with your server URL
+                    data: { user_id: user_id },
+                    success: function(response) {
+                        button.prop('disabled', false); // Enable the button
+                        button.text('Resend OTP');
+                        console.log(response);
+                        if(response.status == 200) {
+                            var endTime = new Date(response.counter);
+                            var now = new Date();
+                            timeDifference = Math.floor((endTime - now) / 1000); // Update timeDifference
+                            timerMinutes = Math.floor(timeDifference / 60);
+                            timerSeconds = timeDifference % 60;
+                            clearInterval(timerInterval);
+                            timerInterval = setInterval(updateTimer, 1000);
+                            updateTimer();
+                        } else if(response.status == 500) {
+                            $('#error').text(response.message);
                         }
+                    },
+                    error: function(xhr, status, error) {
+                        console.error(xhr.responseText);
+                        button.prop('disabled', false); // Enable the button
+                        button.text('Resend OTP');
+                        $('#error').text('An error occurred. Please try again.');
                     }
-                    // Initial call to update the timer display
-                    updateTimer();
-
-                    // Update the timer display every second
-                    var timerInterval = setInterval(updateTimer, 1000);
                 });
             });
+
+            var counterTimer = $('#counter_timer').val();
+
+            // Function to parse the counter timer from PHP
+            var endTime = new Date(counterTimer);
+            var now = new Date();
+            var timeDifference = Math.floor((endTime - now) / 1000); // Difference in seconds
+
+            var timerMinutes = Math.floor(timeDifference / 60);
+            var timerSeconds = timeDifference % 60;
+
+            // Get the span element where the timer will be displayed
+            var timerSpan = $('#timer_counter');
+
+            // Function to update the timer display
+            function updateTimer() {
+                var minutesDisplay = timerMinutes < 10 ? '0' + timerMinutes : timerMinutes;
+                var secondsDisplay = timerSeconds < 10 ? '0' + timerSeconds : timerSeconds;
+                timerSpan.text(minutesDisplay + ':' + secondsDisplay);
+
+                if (timerSeconds > 0) {
+                    timerSeconds--;
+                } else {
+                    if (timerMinutes > 0) {
+                        timerMinutes--;
+                        timerSeconds = 59;
+                    } else {
+                        clearInterval(timerInterval);
+                        $('#resend_otp_button').show();
+                    }
+                }
+            }
+            // Set the interval to call updateTimer every 1000 milliseconds (1 second)
+            var timerInterval = setInterval(updateTimer, 1000);
+            updateTimer(); // Initial call to display the timer immediately
         });
     </script>
 </body>

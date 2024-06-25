@@ -296,6 +296,23 @@ class AuctionGenerationController extends Controller
                         $MyBuyerWallet->save();
                         notification_push(NULL,$request->created_by,$request->created_by,$credit." credit used for a new inquiry generation",NULL,$link);
                     }
+                    $exist_participants = InquiryParticipant::with('SellerData')->where('inquiry_id', $inquiry->id)->get();
+                    // dd($exist_participants);
+                    if(count($exist_participants)>0){
+                        $Buyer_data = User::where('id', $request->created_by)->first();
+                        foreach($exist_participants as $key =>$item){
+                            if($item->SellerData){
+                                $data=[
+                                    'user'=>$item->SellerData,
+                                    'inquiry_data'=>$inquiry,
+                                    'Buyer_data'=>$Buyer_data,
+                                    'type'=>'INQUIRY_GENERATION',
+                                ];
+                                sendMail($data, 'Inquiry POST Notification'); 
+                            }
+                        }
+                    }
+                 
                
                 DB::commit();
                 return redirect()->route('user_buyer_dashboard')->with('success', 'Inquiry has been generated successfully.');
