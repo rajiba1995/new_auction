@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Auction</title>
+    <title>{{env('APP_NAME')}}</title>
 
     <link rel="stylesheet" href="{{asset('frontend/assets/css/fontawesome.min.css')}}">
     <link rel="stylesheet" href="{{asset('frontend/assets/css/bootstrap.min.css')}}">
@@ -24,7 +24,7 @@
                         @csrf <!-- CSRF protection -->
     
                         <div class="form-group">
-                            <label class="form-label">Please Enter your Email ID or Mobile Number*</label>
+                            <label class="form-label">Please Enter your Email ID*</label>
                             <input type="email" name="email" class="form-control border-red @error('email') is-invalid @enderror" placeholder="Ex, info@auction.com" value="{{ old('email') }}">
                             @error('email')
                                 <span class="invalid-feedback" role="alert">

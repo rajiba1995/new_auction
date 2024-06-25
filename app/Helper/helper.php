@@ -318,9 +318,10 @@ if (!function_exists('previously_worked')) {
     }
 }
 if (!function_exists('sendMail')) {
-    function sendMail($data) {
-        $subject = "demo subject";
-        $email = "amit.s@techmantra.co";
+
+    function sendMail($data,$subject) {
+        $email = $data['user']->email;
+        // $email = 'agarwalsarvesh96@gmail.com';
         $from_address = env('MAIL_FROM_ADDRESS');
         $sender = env('MAIL_FROM_NAME');
         $response = Mail::send('mail.send_mail', $data, function ($message) use ($data, $from_address, $subject, $email, $sender) {
@@ -328,8 +329,8 @@ if (!function_exists('sendMail')) {
                     ->subject($subject)
                     ->from($from_address, $sender);
         });
-        // dd($response);
-        return $response;
+        return true;
+
     }
 }
 if (!function_exists('verifiedBadge')) {

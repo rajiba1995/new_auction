@@ -29,6 +29,7 @@ Route::get('/clear-cache', function() {
     Route::get('/',[HomeController::class,'index'])->name('front.index');
     Route::post('/register-check',[RegisteredUserController::class,'RegisterCheck'])->name('register-check');
     Route::get('/verify',[RegisteredUserController::class,'UserVerifyData'])->name('front.otp_validation');
+    Route::get('/resend-otp-validation',[RegisteredUserController::class,'resend_otp_validation'])->name('front.resend_otp_validation');
     Route::get('/verify/check',[RegisteredUserController::class,'UserVerifyDataCheck'])->name('front.otp_validation.check');
     Route::get('/terms-conditions',[HomeController::class,'TermsConditions'])->name('terms_conditions');
     Route::get('/privacy-policy',[HomeController::class,'PrivacyPolicy'])->name('privacy_policy');

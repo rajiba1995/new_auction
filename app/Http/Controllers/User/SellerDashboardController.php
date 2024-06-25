@@ -436,6 +436,7 @@ class SellerDashboardController extends Controller
             // Additional logic
             $seller_active_credit = $this->MasterRepository->getSellerActiveCredit($this->getAuthenticatedUserId());
             // selected_from==0 means open seller
+            // dd($seller_active_credit);
             if($seller_active_credit > 0 && $request->selected_from==0){
                 $MySellerWallet =new MySellerWallet;
                 $MySellerWallet->user_id = $this->getAuthenticatedUserId();
@@ -448,11 +449,11 @@ class SellerDashboardController extends Controller
                 $MySellerWallet->save();
                 // SMS Notifications
             } else {
-                if($seller_active_credit > 0 && $request->selected_from=="1"){
+                if($request->selected_from=="1"){
                      DB::commit();
                    return redirect()->route('seller_live_inquiries')->with('success', 'Quote submitted successfully.'); 
                 }else{
-                      DB::rollBack(); // Roll back the transaction
+                    DB::rollBack(); // Roll back the transaction
                     return redirect()->back()->with('error', 'You don\'t have active package or wallet balance.');
                     // Code to handle zero or negative active credit
                 }

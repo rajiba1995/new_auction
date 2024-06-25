@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Auction</title>
+    <title>{{env('APP_NAME')}}</title>
     <link rel="stylesheet" href="{{asset('frontend/assets/css/fontawesome.min.css')}}">
     <link rel="stylesheet" href="{{asset('frontend/assets/css/bootstrap.min.css')}}">
     <link rel="stylesheet" href="{{asset('frontend/assets/css/swiper-bundle.min.css')}}">
@@ -34,13 +34,14 @@
                 <div class="search-section">
                     <div class="location-bar">
                         <img src="{{asset('frontend/assets/images/location.png')}}" alt="">
-                        <input type="text" placeholder="Select Location" id="stateInput" name="global_state_name" value="@yield('location')">
+                        <input type="text" placeholder="Select Location" id="stateInput" name="global_state_name" autocomplete="off" value="@yield('location')">
                     </div>
                     <div id="stateSuggestions"></div>
+                    
                     <div class="search-bar">
                         <form>
-                            <!-- <input type="search" name="keyword" id="global_filter_data" placeholder="Search for Service, Category, etc" value="@yield('keyword')"> -->
-                            <input type="search" name="keyword" id="autocomplete-input" placeholder="Search for Service, Category, etc" >
+                            <!-- <input type="search" name="keyword" id="autocomplete-input" placeholder="Search for Service, Category, etc" value="@yield('keyword')"> -->
+                            <input type="search" name="keyword" id="autocomplete-input" placeholder="Search for Service, Category, etc" autocomplete="off">
                             
                             <button type="button" class="btn-search btn-animated" id="global_form_submit">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
@@ -49,7 +50,17 @@
                                 </svg>
                             </button>
                         <!-- <div id="autocomplete-list" class="autocomplete-items"></div> -->
-                        <div id="autocomplete-suggestions" class="autocomplete-suggestions"></div>
+                            <div id="autocomplete-suggestions" class="autocomplete-suggestions">
+                                <div class="autocomplete-suggestion">
+                                    <div class="suggestion-icon">
+                                    <svg xmlns="http://www.w3.org/2000/svg" version="1.1" xmlns:xlink="http://www.w3.org/1999/xlink" width="512" height="512" x="0" y="0" viewBox="0 0 24 24" style="enable-background:new 0 0 512 512" xml:space="preserve" class=""><g><clipPath id="a"><path d="M0 0h24v24H0z" fill="#000000" opacity="1" data-original="#000000" class=""></path></clipPath><g fill="#000" fill-rule="evenodd" clip-path="url(#a)" clip-rule="evenodd"><path d="M23.707 5.293a1 1 0 0 1 0 1.414l-9.5 9.5a1 1 0 0 1-1.414 0L8.5 11.914l-6.793 6.793a1 1 0 0 1-1.414-1.414l7.5-7.5a1 1 0 0 1 1.414 0l4.293 4.293 8.793-8.793a1 1 0 0 1 1.414 0z" fill="#000000" opacity="1" data-original="#000000" class=""></path><path d="M16 6a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1v6a1 1 0 1 1-2 0V7h-5a1 1 0 0 1-1-1z" fill="#000000" opacity="1" data-original="#000000" class=""></path></g></g></svg>
+                                    </div>
+                                    <div class="suggestion-right">
+                                        <div class="autocomplete-business-name">${product.name}</div>
+                                        <div class="autocomplete-category-name">${item.category}</div>
+                                    </div>
+                                </div>
+                            </div>
                         </form>
                     </div>
                 
@@ -233,16 +244,17 @@
                     <div id="stateSuggestions"></div>
                     <div class="search-bar">
                         <form>
-                            <input type="search" name="keyword" id="global_filter_data" placeholder="Search for Service, Category, etc" value="@yield('keyword')">
+                            <input type="search" name="keyword" id="autocomplete-input" placeholder="Search for Service, Category, etc" value="@yield('keyword')">
                             <button type="button" class="btn-search btn-animated" id="global_form_submit">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
                                     <path d="M11 19C15.4183 19 19 15.4183 19 11C19 6.58172 15.4183 3 11 3C6.58172 3 3 6.58172 3 11C3 15.4183 6.58172 19 11 19Z" stroke="white" stroke-linecap="round" stroke-linejoin="round"/>
                                     <path d="M20.9999 21.0004L16.6499 16.6504" stroke="white" stroke-linecap="round" stroke-linejoin="round"/>
                                 </svg>
                             </button>
+                            <div id="autocomplete-suggestions" class="autocomplete-suggestions"></div>
                         </form>
                     </div>
-                    <div id="filterSuggestions"></div>
+                    {{-- <div id="filterSuggestions"></div> --}}
                 </div>
                 
                 <!-- <a href="{{route('register')}}" class="btn btn-cta btn-animated btn-start">
@@ -503,7 +515,7 @@
             @endif
         });
 
-                $('#global_filter_data').on('keyup', function() {
+                $('#autocomplete-input').on('keyup', function() {
                 var keyword = $(this).val().toLowerCase();
                 var location = $('#stateInput').val();
                 const autocompleteList = $('#autocomplete-list');
@@ -530,6 +542,7 @@
                  },
                  success: function(response) {
                     console.log(response);
+                    return false;
                     //  if(response.status==200){
                     //      window.location.href = response.route;
                     //  }
@@ -545,7 +558,7 @@
 
         $('#global_form_submit').on('click', function() {
              var location = $('#stateInput').val();
-             var keyword = $('#global_filter_data').val();
+             var keyword = $('#autocomplete-input').val();
              
              // Reset border to default
              $('.location-bar').css('border', '1px solid #ced4da');
@@ -619,40 +632,6 @@
              });
  
  
-             $(document).ready(function() {
-                 // Assuming $global_filter_data is a JSON-encoded array of Indian states
-                 var GlobalData = {!! json_encode($global_filter_data) !!};
-                 function showFilterSuggestions(input) {
-                     var filter = input.value.toLowerCase();
-                     var suggestions = GlobalData.filter(function(name) {
-                         return name.toLowerCase().indexOf(filter) > -1;
-                     });
-                     var html = '<ul>';
-                     suggestions.forEach(function(name) {
-                         html += '<li>' + name + '</li>';
-                     });
-                     html += '</ul>';
-                     $('#filterSuggestions').html(html);
-                 }
- 
-                 // Handle keyup event on the input field
-                 $('#global_filter_data').on('keyup', function() {
-                     showFilterSuggestions(this);
-                 });
- 
-                 // Handle click event on state suggestion
-                 $('#filterSuggestions').on('click', 'li', function() {
-                     $('#global_filter_data').val($(this).text());
-                     $('#filterSuggestions').html('');
-                 });
- 
-                 // Hide suggestions when clicking outside
-                 $(document).on('click', function(e) {
-                     if (!$(e.target).closest('#filterSuggestions').length && !$(e.target).is('#global_filter_data')) {
-                         $('#filterSuggestions').html('');
-                     }
-                 });
-             });
  
      </script>
     @yield('script')
