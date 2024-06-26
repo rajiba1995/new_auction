@@ -340,6 +340,10 @@ class UserRepository implements UserContract
         }
        
     }
+    public function verifiedBadge(){
+        return Badge::where('title', 'Verified')->first();
+       
+    }
     public function getAllStates(){
        return State::all();
        

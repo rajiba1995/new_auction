@@ -226,7 +226,7 @@
                                                                             <td class="min-quote-td">{{$item->minimum_quote_amount?number_format($item->minimum_quote_amount,2, '.', ','):"----"}}</td>
                                                                             <td class="max-quote-td">{{$item->maximum_quote_amount?number_format($item->maximum_quote_amount,2, '.', ','):"----"}}</td>
                                                                         </tr>
-                                                                        <tr>
+                                                                        <!-- <tr>
                                                                             <td colspan="7" class="note-td">
                                                                                 <div class="note-wrap">
                                                                                     <h3>Notepad</h3>
@@ -234,7 +234,7 @@
                                                                                     {{-- <button type="button" class="btn btn-animated bg-green">Save</button> --}}
                                                                                 </div>
                                                                             </td>
-                                                                        </tr>
+                                                                        </tr> -->
                                                                     </tbody>
                                                                 </table>
                                                             </td>

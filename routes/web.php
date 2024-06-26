@@ -36,9 +36,10 @@ Route::get('/clear-cache', function() {
     // corn Controller
     Route::prefix('cron')->group(function () {
         Route::get('/seller-monthly-package-check',[CornController::class,'SellerMothlyPackageCheckCron'])->name('seller_monthly_package_chcek_cron');
-        Route::get('/seller-expiry-package-check',[CornController::class,'SellerExpiryPackageCheckCron'])->name('seller_expiry_package_chcek_cron');
+        Route::get('/seller-expiry-package-check',[CornController::class,'SellerExpiryPackageCheckCron'])->name('seller_expiry_package_chcek_cron'); /// also check badge exppiry check
         Route::get('/buyer-package-current-unit-check',[CornController::class,'BuyerPackageCurrentUnitCheckCron'])->name('buyer_package_current_unit_chcek_cron');
         Route::get('/buyer-expiry-package-check',[CornController::class,'BuyerExpiryPackageCheckCron'])->name('buyer_expiry_package_chcek_cron');
+        Route::get('/before-start-auction',[CornController::class,'BeforeStartAuction'])->name('before_start_auction_chcek_cron');
     });   
 
     Route::group(['middleware' => ['auth', 'check.user.profile']], function () {

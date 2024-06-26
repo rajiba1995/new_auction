@@ -87,8 +87,14 @@
                 <div class="link_sec" style="text-align: center; margin: 20px 0px;">
                    
                     <div class="all_link" style="margin-top: 20px;">
+<<<<<<< HEAD
+                        <a href="mailto:Email:helpdesk@milaapp.in" style="padding: 0px 5px; color: #000;">Email: {{ env('MAIL_HELP') }}</a>
+                        <a href="#" style="padding: 0px 5px; color: #000;">Phone: {{env('PHONE_HELP')}}</a>
+                        <a href="#" style="padding: 0px 5px; color: #000;">Our vision: {{env('MAIL_CONTENT')}}</a>
+=======
                         <a href="mailto:{{env('MAIL_CONTACT_ADDRESS')}}" style="padding: 0px 5px; color: #000;">Email: {{env('MAIL_CONTACT_ADDRESS')}}</a>
                         <a href="tel:{{env('MAIL_CONTACT_NUMBER')}}" style="padding: 0px 5px; color: #000;">Phone number: {{env('MAIL_CONTACT_NUMBER')}}</a>
+>>>>>>> 7427baa906db92c9432a8a485ee8e514c9884c37
                     </div>
                     <a href="#" style="text-decoration: none; color: #000;"> Marketplace + Auction = More Savings + More Business</a>
                 </div>

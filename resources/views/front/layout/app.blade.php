@@ -51,9 +51,7 @@
                                 </svg>
                             </button>
                         <!-- <div id="autocomplete-list" class="autocomplete-items"></div> -->
-                            <div id="autocomplete-suggestions" class="autocomplete-suggestions">
-                                
-                            </div>
+                        <div id="autocomplete-suggestions" class="autocomplete-suggestions"></div>
                         </form>
                     </div>
                 
@@ -521,40 +519,33 @@
             $('.location-bar').css('border', '1px solid #ced4da');
             $('.search-bar').css('border', '1px solid #ced4da');
 
-            
-            // Check if location is empty
-            if(location.trim().length === 0){
-                $('.location-bar').css('border', '1px solid red');
-                return; // Stop further execution  
-            }
-            $.ajax({
-                url: "{{route('user.suggestion')}}", // Replace this with your actual route
-                type: 'GET',
-                data: {
-                    location: location,
-                    keyword: keyword
-                },
-                success: function(response) {
-                var html= "";
-                response.forEach(function(element, index) {
-                    html += `<div class="autocomplete-suggestion filter_data" data-value="${element.title}">
-                        <div class="suggestion-icon">
-                            <img src="{{asset('frontend/assets/images/${element.image}')}}" alt="" width="65%" height="65%">
-                        </div>
-                        <div class="suggestion-right">
-                            <div class="autocomplete-business-name">${element.title}</div>
-                            <div class="autocomplete-category-name">${element.sub_title}</div>
-                        </div>
-                    </div>`;
-                });
-                    $('#autocomplete-suggestions').html(html);
-                },
-                error: function(xhr, status, error) {
-                    console.error(error);
-                    // Handle errors if any
+                
+                // Check if location is empty
+                if(location.trim().length === 0){
+                    $('.location-bar').css('border', '1px solid red');
+                    return; // Stop further execution  
                 }
-            });
-        });
+                $.ajax({
+                 url: "{{route('user.suggestion')}}", // Replace this with your actual route
+                 type: 'GET',
+                 data: {
+                     location: location,
+                     keyword: keyword
+                 },
+                 success: function(response) {
+                    console.log(response);
+                    //  if(response.status==200){
+                    //      window.location.href = response.route;
+                    //  }
+                     
+                 },
+                 error: function(xhr, status, error) {
+                     console.error(error);
+                     // Handle errors if any
+                 }
+             });
+
+                });
 
         $('#global_form_submit').on('click', function(event) {
             event.preventDefault();

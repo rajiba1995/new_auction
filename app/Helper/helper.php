@@ -13,6 +13,7 @@ use App\Models\City;
 use App\Models\InquirySellerQuotes;
 use App\Models\InquiryParticipant;
 use App\Models\Inquiry;
+use App\Models\UserDocument;
 use App\Models\WatchList;
 use App\Models\InquirySellerComments;
 use App\Models\InquiryAllotmentData;
@@ -317,6 +318,7 @@ if (!function_exists('previously_worked')) {
     }
 }
 if (!function_exists('sendMail')) {
+
     function sendMail($data,$subject) {
         $email = $data['user']->email;
         // $email = 'agarwalsarvesh96@gmail.com';
@@ -328,5 +330,21 @@ if (!function_exists('sendMail')) {
                     ->from($from_address, $sender);
         });
         return true;
+
+    }
+}
+if (!function_exists('verifiedBadge')) {
+    function verifiedBadge($id) {
+        $data = UserDocument::where('user_id',$id)->first();
+        if ($data) {
+            if ($data->gst_status == 1 && 
+                $data->pan_status == 1 && 
+                $data->adhar_status == 1 && 
+                $data->trade_license_status == 1 && 
+                $data->cancelled_cheque_status == 1) {
+                return true;
+            }
+        }
+        return false;
     }
 }

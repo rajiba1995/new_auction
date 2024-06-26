@@ -98,7 +98,7 @@ Route::group(['middleware' => 'admin', 'prefix' => 'admin'], function () {
         });
         //buyer-package
         Route::group(['prefix'  =>   'buyer-package'], function() {
-            Route::get('', [PackageController::class, 'BuyerPackageIndex'])->name('admin.buyer.package.index');
+        Route::get('', [PackageController::class, 'BuyerPackageIndex'])->name('admin.buyer.package.index');
             Route::get('/create', [PackageController::class, 'BuyerPackageCreate'])->name('admin.buyer.package.create');
             Route::post('/store', [PackageController::class, 'BuyerPackageStore'])->name('admin.buyer.package.store');
             Route::get('/edit/{id}', [PackageController::class, 'BuyerPackageEdit'])->name('admin.buyer.package.edit');
@@ -166,6 +166,8 @@ Route::group(['middleware' => 'admin', 'prefix' => 'admin'], function () {
         Route::get('/add-by-employee', [UserDetailsController::class, 'UserAddByEmployee'])->name('admin.user.add.by.employee');
         Route::get('/view/{id}', [UserDetailsController::class, 'UserDetailsView'])->name('admin.user.view');
         Route::get('/package/{id}', [UserDetailsController::class, 'UserPackageDetailsView'])->name('admin.user.package.view');
+        Route::post('/admin-buy-buyer-package', [UserDetailsController::class, 'AdminBuyBuyerPackage'])->name('admin.buy.buyer.package');
+        Route::post('/admin-buy-seller-package', [UserDetailsController::class, 'AdminBuySellerPackage'])->name('admin.buy.seller.package');
         Route::get('/document/view/{id}', [UserDetailsController::class, 'UserDocumentView'])->name('admin.user.document.view');
         Route::get('/transaction/view/{id}', [UserDetailsController::class, 'UserTransactionView'])->name('admin.user.transaction.view');
         Route::get('/wallet/view/{id}', [UserDetailsController::class, 'UserWalletView'])->name('admin.user.wallet.view');

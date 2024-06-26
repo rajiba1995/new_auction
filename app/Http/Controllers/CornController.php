@@ -10,6 +10,7 @@ use App\Models\MySellerWallet;
 use App\Models\MyBuyerWallet;
 use App\Models\WebsiteLogs;
 use App\Models\MyBadge;
+use App\Models\Inquiry;
 use Carbon\Carbon;
 use Illuminate\Database\QueryException;
 use Illuminate\Support\Facades\DB;
@@ -340,4 +341,38 @@ class CornController extends Controller
         }
     }
 
+    public function BeforeStartAuction()
+    {
+        // Get the current datetime
+        $now = Carbon::now();
+        
+        // Extract the current date in 'Y-m-d' format
+        $currentDate = $now->format('Y-m-d');
+        
+        // Extract the current time in 'H:i:00' format (excluding seconds)
+        $currentTime = $now->format('H:i');
+
+        // Calculate the datetime 5 minutes after the current datetime
+        $fiveMinutesAfter = Carbon::parse($currentTime)->addMinutes(5)->format('H:i');
+        
+        // Query Inquiry where expiry_date is within the next 5 minutes
+        $data = Inquiry::with('ParticipantsData')->where('start_date',$currentDate)->whereBetween('start_time', [$currentTime, $fiveMinutesAfter])->get()->toArray();
+
+          
+        if (count($data) > 0) {
+            foreach ($data as $inquiry) {
+                // Check if there are any participants data
+                if (isset($inquiry['participants_data']) && count($inquiry['participants_data']) > 0) {
+                    foreach ($inquiry['participants_data'] as $item) {
+                        // Fetch user email based on user_id
+                        $user = User::find($item['user_id']);
+                        if ($user) {
+                            $user_email = $user->email;
+                            dd($user_email); // Example of processing; replace with actual logic
+                        }
+                    }
+                }
+            }
+        }
+    }
 }

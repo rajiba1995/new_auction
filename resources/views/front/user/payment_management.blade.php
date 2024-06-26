@@ -256,7 +256,6 @@
                                             </div>
                                         </div>
                                     </div>
-                                    
                                 
                                     <div class="content-box bg-gray-2">
                                         <div class="inner">
@@ -273,6 +272,43 @@
                                                                 <th>Expiry Date</th>
                                                             </tr>
                                                         </thead>
+                                                        <!-- verified badge -->
+                                                        @if(verifiedBadge(Auth::guard('web')->user()->id))
+                                                        <tbody>
+                                                        <tr>
+                                                                <td>
+                                                                    <div class="badge">
+                                                                        <div class="img">
+                                                                            <img src="{{ asset($verifiedBadge->logo) }}" width="30px" alt="">
+                                                                        </div>
+                                                                        <div class="name">
+                                                                        
+                                                                        <label>
+                                                                            {{ ucwords($verifiedBadge->title) }}
+                                                                        </label>
+                                                                        </div>
+                                                                    </div>
+                                                                </td>
+                                                                <td>
+                                                                    <p>
+                                                                        {{$verifiedBadge->short_desc}}
+                                                                    </p>
+                                                                </td>
+                                                                <td>
+                                                                    <p>
+                                                                        {{$verifiedBadge->long_desc}}
+                                                                    </p>
+                                                                </td>
+                                                                <td>
+                                                                
+                                                                    <p> 
+                                                                        NULL
+                                                                        
+                                                                    </p>
+                                                                </td>
+                                                            </tr>
+                                                        </tbody>
+                                                        @endif
                                                         <tbody>
                                                             @foreach ($myBadgesFullDetails as $item)
                                                             @if($item->getBadgeDetails)
@@ -337,7 +373,7 @@
                                                                 <th>Badge Name</th>
                                                                 <th>Descriptions</th>
                                                                 <th>Instructions to get it</th>
-                                                                <th class="price-th">Validity</th>
+                                                                <th class="price-th">Validity(in months)</th>
                                                                 <th class="price-th">Price</th>
                                                             </tr>
                                                         </thead>
