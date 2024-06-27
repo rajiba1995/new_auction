@@ -55,7 +55,6 @@
                                 
                                 @if(count($WatchList)>0)
                                     @foreach($WatchList as $key =>$item)
-
                                         <label for="bidder{{$key}}" class="bidder-check">
                                             @if($group)
                                             <input type="checkbox" name="seller_data[]" id="bidder{{$key}}" value="{{$item->SellerData->id}}">
@@ -114,6 +113,17 @@
                                                 <div class="content-holder">
                                                     <div class="approvals">
                                                         <ul>
+
+                                                            @if(verifiedBadge($item->seller_id))
+                                                            <li>
+                                                                <img src="{{asset($verifiedBadge->logo)}}" alt="">
+                                                                <div class="infotip"><span>{{$verifiedBadge->short_desc}}</span></div>
+                                                            </li>
+                                                            @endif
+                                                            <li>
+                                                                <img src="{{asset('frontend/assets/images/trusted.png')}}" alt="">
+                                                                <div class="infotip"><span>It is a long established fact</span></div>
+                                                            </li>
                                                             @php
                                                                 $data = App\Models\User::findOrFail($item->seller_id);
                                                             @endphp

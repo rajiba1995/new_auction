@@ -131,9 +131,12 @@ class UserRepository implements UserContract
         $user->state = $collection['state'];
         $user->pincode = $collection['pincode'];
         $user->mobile = $collection['phone_number'];
-        $user->employee = $collection['employee'];
+        $user->employee = $collection['employee'];  
         $user->Establishment_year = $collection['Establishment_year'];
         $user->legal_status = $collection['legal_status'];
+        $user->email1 = $collection['email1'];
+        $user->email2 = $collection['email2'];
+        $user->email3 = $collection['email3'];
         if ($request->hasFile('profile_image')) {
             $file = $request->file('profile_image');
             $fileName = time() . rand(10000, 99999) . '.' . $file->getClientOriginalExtension(); // Generate unique filename

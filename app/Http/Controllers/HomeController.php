@@ -71,10 +71,26 @@ class HomeController extends Controller
     }
 
     public function UserGlobalMakeSlug(Request $request){
-        $location = Str::slug($request->location, '-');
-        $keyword = Str::slug($request->keyword, '-');
+        $location = $this->customSlug($request->location);
+        $keyword = $this->customSlug($request->keyword);
         $route = route('user.global.filter', [$location,$keyword]);
-        return response()->json(['status'=>200, 'route'=>$route]);
+        return redirect()->route('user.global.filter', [$location,$keyword]);
+        // return response()->json(['status'=>200, 'route'=>$route]);
+    }
+    public function customSlug($string, $separator = '-', $preserve = ['&', '@']) {
+        // Convert string to lowercase
+        $string = Str::lower($string);
+    
+        // Replace spaces with the separator
+        $string = str_replace(' ', $separator, $string);
+    
+        // Remove all characters except letters, digits, and preserved characters
+        $string = preg_replace('/[^a-z0-9' . implode('\\', $preserve) . $separator . ']+/', '', $string);
+    
+        // Trim extra separators from the beginning and end of the string
+        $string = trim($string, $separator);
+    
+        return $string;
     }
 
     public function UserGlobalMakeSlugParticipant(Request $request){
@@ -92,7 +108,6 @@ class HomeController extends Controller
         // $keyword = str_replace('-', ' ', $old_keyword);
         $location = $request->location;
         $keyword = $request->keyword;
-
         $exist_state = "";
         $exist_city = "";
         $exist_product = "";
@@ -100,49 +115,81 @@ class HomeController extends Controller
         $exist_city = City::where('name', 'like', '%' . $location . '%')->value('id');
         // Get user IDs of users who have products matching the keyword
         $product_user_ids = Product::where('title', 'like', '%' . $keyword . '%')->pluck('user_id');
+        $authUserId = Auth::guard('web')->check() ? Auth::guard('web')->user()->id : null;
+        $data = User::with('CityData')->where('status', 1)
+            ->where(function($query) use ($exist_state, $exist_city) {
+                $query->where('state', $exist_state)
+                    ->orWhere('city', $exist_city);
+            })
+            ->where(function($query) use ($keyword, $product_user_ids) {
+                $query->where('name', 'like', '%'.$keyword.'%')
+                    ->orWhere('business_name', 'like', '%'.$keyword.'%')
+                    ->orWhere('mobile', 'like', '%'.$keyword.'%')
+                    ->orWhere('address', 'like', '%'.$keyword.'%')
+                    ->orWhere('pincode', 'like', '%'.$keyword.'%')
+                    ->orWhere('short_bio', 'like', '%'.$keyword.'%')
+                    ->orWhere('business_type', 'like', '%'.$keyword.'%')
+                    ->orWhere('employee', 'like', '%'.$keyword.'%')
+                    ->orWhere('Establishment_year', 'like', '%'.$keyword.'%')
+                    ->orWhere('legal_status', 'like', '%'.$keyword.'%')
+                    ->orWhere('email', 'like', '%'.$keyword.'%')
+                    ->orWhereIn('id', $product_user_ids);
+            })
+            ->where('id', '!=', $authUserId)
+            ->select('id', 'business_name', 'city') // Select only necessary fields from User
+            ->get();
 
-        // $userIds = User::where('state', $exist_state)
-        //     ->orWhere('city', $exist_city)->whereNotNull('business_name')
-        //     ->pluck('id')
-        //     ->toArray();
-    //     $data = User::where('status',1)->orWhere('state',$exist_state)->orWhere('city', $exist_city)->where(function($query) use ($keyword){
-    //         $query->where('name', 'like', '%'.$keyword.'%')
-    //        ->orWhere('business_name', 'like', '%'.$keyword.'%')
-    //        ->orWhere('mobile', 'like', '%'.$keyword.'%')
-    //        ->orWhere('address', 'like', '%'.$keyword.'%')
-    //        ->orWhere('pincode', 'like', '%'.$keyword.'%')
-    //        ->orWhere('short_bio', 'like', '%'.$keyword.'%')
-    //        ->orWhere('business_type', 'like', '%'.$keyword.'%')
-    //        ->orWhere('employee', 'like', '%'.$keyword.'%')
-    //        ->orWhere('Establishment_year', 'like', '%'.$keyword.'%')
-    //        ->orWhere('legal_status', 'like', '%'.$keyword.'%')
-    //        ->orWhere('email', 'like', '%'.$keyword.'%');
-    //    })->get();
-    //    if(count($data) > 0) {
-    //     return response()->json($data);
-    //    }
-    $data = User::where('status', 1)
-        ->where(function($query) use ($exist_state, $exist_city) {
-            $query->where('state', $exist_state)
-                  ->orWhere('city', $exist_city);
+        // Fetch and map user data
+        $result = $data->map(function($user) {
+            $city = $user->CityData ? $user->CityData->name : "";
+            return [
+                'title' => $user->business_name,
+                'sub_title' => $city,
+                'image' => 'owner.png',
+            ];
+        });
+        
+        // Fetching and mapping product data
+        $all_products = Product::with('CatData')->where('deleted_at', 1)->where(function($query) use ($keyword) {
+            $query->where('title', 'like', '%'.$keyword.'%');
         })
-        ->where(function($query) use ($keyword,$product_user_ids) {
-            $query->where('name', 'like', '%'.$keyword.'%')
-                  ->orWhere('business_name', 'like', '%'.$keyword.'%')
-                  ->orWhere('mobile', 'like', '%'.$keyword.'%')
-                  ->orWhere('address', 'like', '%'.$keyword.'%')
-                  ->orWhere('pincode', 'like', '%'.$keyword.'%')
-                  ->orWhere('short_bio', 'like', '%'.$keyword.'%')
-                  ->orWhere('business_type', 'like', '%'.$keyword.'%')
-                  ->orWhere('employee', 'like', '%'.$keyword.'%')
-                  ->orWhere('Establishment_year', 'like', '%'.$keyword.'%')
-                  ->orWhere('legal_status', 'like', '%'.$keyword.'%')
-                  ->orWhere('email', 'like', '%'.$keyword.'%')
-                  ->orWhereIn('id', $product_user_ids);
-        })
+        ->where('user_id', '!=', $authUserId)
+        ->select('id', 'title', 'category_id') // Select only necessary fields from Product
         ->get();
 
-    return response()->json($data);
+        $product_result = $all_products->map(function($product) {
+            $category = $product->CatData ? $product->CatData->title : "";
+            return [
+                'title' => $product->title,
+                'sub_title' => $category,
+                'image' => 'swirly-scribbled-arrow.png',
+            ];
+        });
+      
+        // Fetching and mapping category data
+        $all_category = Collection::where('deleted_at', 1)->where('status', 1)->where(function($query) use ($keyword) {
+            $query->where('title', 'like', '%'.$keyword.'%');
+        })
+        ->where('created_by', '!=', $authUserId)
+        ->select('id', 'title') // Select only necessary fields from Collection
+        ->get();
+
+        $cat_result = $all_category->map(function($cat) {
+            return [
+                'title' => $cat->title,
+                'sub_title' => "Category",
+                'image' => 'search.png',
+            ];
+        });
+        // dd($cat_result);
+       // Convert collections to arrays
+        $user_array = $result->toArray();
+        $product_array = $product_result->toArray();
+        $category_array = $cat_result->toArray();
+
+        // Merge all arrays together
+        $final_result = array_merge($user_array, $product_array, $category_array);
+    return response()->json($final_result);
     }
 
     public function UserGlobalFilter($old_location, $old_keyword){
@@ -157,10 +204,9 @@ class HomeController extends Controller
             ->pluck('id')
             ->toArray();
 
-        $category = Collection::where('title', $keyword)
+        $category = Collection::where('title','like', '%' . $keyword . '%')
             ->pluck('id')
             ->toArray();
-
         $User_products = Product::whereIn('user_id', $userIds)
             ->where('title', 'like', '%' . $keyword . '%')
             ->pluck('user_id')
@@ -170,16 +216,81 @@ class HomeController extends Controller
             ->pluck('user_id')
             ->toArray());
             $authUserId = Auth::guard('web')->check() ? Auth::guard('web')->user()->id : null;
-            $data = User::with('MyBadgeData')->whereIn('id', $User_products)
+
+            // Fetching users based on User_products array
+            $data1 = User::with('MyBadgeData', 'UserProductData', 'MyPackageData')
+            ->whereIn('id', $User_products)
             ->where('id', '!=', $authUserId)
             ->get();
+            // Fetching users based on keyword search
+            $data2 = User::with('MyBadgeData', 'UserProductData', 'MyPackageData')
+            ->where(function($query) use ($keyword) {
+                $query->where('name', 'like', '%'.$keyword.'%')
+                    ->orWhere('business_name', 'like', '%'.$keyword.'%')
+                    ->orWhere('mobile', 'like', '%'.$keyword.'%')
+                    ->orWhere('address', 'like', '%'.$keyword.'%')
+                    ->orWhere('pincode', 'like', '%'.$keyword.'%')
+                    ->orWhere('short_bio', 'like', '%'.$keyword.'%')
+                    ->orWhere('business_type', 'like', '%'.$keyword.'%')
+                    ->orWhere('employee', 'like', '%'.$keyword.'%')
+                    ->orWhere('Establishment_year', 'like', '%'.$keyword.'%')
+                    ->orWhere('legal_status', 'like', '%'.$keyword.'%')
+                    ->orWhere('email', 'like', '%'.$keyword.'%');
+            })
+            ->where('id', '!=', $authUserId)
+            ->get();
+            // Merging both collections
+            $mergedData = $data1->merge($data2);
+
+            // Removing duplicate users by 'id'
+            $uniqueData = $mergedData->unique('id');
+
+            // Optionally converting the collection to an array
+            $data = $uniqueData->values()->toArray();
+            $package_data = [];
+            foreach ($data as $k => $value) {
+                // $package_sub_data=[];
+                $data[$k]['serial_no'] = 99;
+                switch (count($value['my_badge_data'])) {
+                    case 3:
+                        $data[$k]['serial_no'] = 1;
+                        break;
+                    case 2:
+                        $data[$k]['serial_no'] = 2;
+                        break;
+                    case 1:
+                        $data[$k]['serial_no'] = 3;
+                        break;
+                    default:
+                        if(count($value['my_package_data'])>0){
+                            $package_data[$k]['id']=$value['id'];
+                            $package_data[$k]['purchase_amount']=$value['my_package_data'][0]['purchase_amount'];
+                        }
+                       
+                        $data[$k]['serial_no'] = 99; // Default case if none of the above match
+                        break;
+                }
+            }
+            if(count($package_data)>0){
+                uasort($package_data, function($a, $b) {
+                    return $b['purchase_amount'] <=> $a['purchase_amount'];
+                });
+                $sl = 0;
+                foreach($package_data as $k=>$pak_item){
+                    $data[$k]['serial_no'] = 4+$sl;
+                    $sl++;
+                }
+            }
+            uasort($data, function($a, $b) {
+                return $a['serial_no'] <=> $b['serial_no'];
+            });
             $groupWatchList = GroupWatchList::where('created_by',$authUserId)->get();
             $product_categories = [];
             if(count($data)>0){
                 foreach($data as $item){
-                    if($item->UserProductData){
-                        foreach($item->UserProductData as $Ditem){
-                            $product_categories[] = $Ditem->category_id;
+                    if(count($item['user_product_data'])>0){
+                        foreach($item['user_product_data'] as $Ditem){
+                            $product_categories[] = $Ditem['category_id'];
                         }
                       
                     }
@@ -191,8 +302,57 @@ class HomeController extends Controller
                 ->toArray();
             }
             $existing_inquiries= $this->BuyerDashboardRepository->get_all_existing_inquiries_by_user($authUserId);
-            return view('front.filter', compact('data', 'location', 'keyword', 'old_location', 'old_keyword', 'categories','groupWatchList', 'existing_inquiries'));
+            $verifiedBadge = $this->userRepository->verifiedBadge();
+            return view('front.filter', compact('data', 'location', 'keyword', 'old_location', 'old_keyword', 'categories','groupWatchList', 'existing_inquiries','verifiedBadge'));
     }
+    // public function UserGlobalFilter($old_location, $old_keyword){
+    //     $location = str_replace('-', ' ', $old_location);
+    //     $keyword = str_replace('-', ' ', $old_keyword);
+    //     $exist_state = "";
+    //     $exist_city = "";
+    //     $exist_state = State::where('name', 'like', '%' . $location . '%')->value('id');
+    //     $exist_city = City::where('name', 'like', '%' . $location . '%')->value('id');
+    //     $userIds = User::where('state', $exist_state)
+    //         ->orWhere('city', $exist_city)->whereNotNull('business_name')->whereNotNull('slug_business_name')
+    //         ->pluck('id')
+    //         ->toArray();
+
+    //     $category = Collection::where('title', $keyword)
+    //         ->pluck('id')
+    //         ->toArray();
+
+    //     $User_products = Product::whereIn('user_id', $userIds)
+    //         ->where('title', 'like', '%' . $keyword . '%')
+    //         ->pluck('user_id')
+    //         ->toArray();
+    //     $User_products = array_merge($User_products, Product::whereIn('user_id', $userIds)
+    //         ->whereIn('category_id', $category)
+    //         ->pluck('user_id')
+    //         ->toArray());
+    //         $authUserId = Auth::guard('web')->check() ? Auth::guard('web')->user()->id : null;
+    //         $data = User::with('MyBadgeData')->whereIn('id', $User_products)
+    //         ->where('id', '!=', $authUserId)
+    //         ->get();
+    //         $groupWatchList = GroupWatchList::where('created_by',$authUserId)->get();
+    //         $product_categories = [];
+    //         if(count($data)>0){
+    //             foreach($data as $item){
+    //                 if($item->UserProductData){
+    //                     foreach($item->UserProductData as $Ditem){
+    //                         $product_categories[] = $Ditem->category_id;
+    //                     }
+                      
+    //                 }
+    //             }
+    //         }
+    //         $categories = [];
+    //         if(count($product_categories)>0){
+    //             $categories = Collection::whereIn('id', $product_categories)->pluck('title')
+    //             ->toArray();
+    //         }
+    //         $existing_inquiries= $this->BuyerDashboardRepository->get_all_existing_inquiries_by_user($authUserId);
+    //         return view('front.filter', compact('data', 'location', 'keyword', 'old_location', 'old_keyword', 'categories','groupWatchList', 'existing_inquiries'));
+    // }
     public function UserGlobalFilterAddParticipant($old_location, $old_keyword){
         $location = str_replace('-', ' ', $old_location);
         $keyword = str_replace('-', ' ', $old_keyword);
@@ -204,7 +364,7 @@ class HomeController extends Controller
             ->orWhere('city', $exist_city)
             ->pluck('id')
             ->toArray();
-
+       
         $category = Collection::where('title', $keyword)
             ->pluck('id')
             ->toArray();

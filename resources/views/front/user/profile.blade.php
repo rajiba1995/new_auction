@@ -92,6 +92,16 @@
                                                             <label>Legal Status of Firm:</label>
                                                             <p>{{$data->legal_status}}</p>
                                                         </div>
+                                                        @if($data->email1 || $data->email2 || $data->email3)
+                                                        <div class="col-md-6 col-12 info-box">
+                                                            <label>Additional Information:</label>
+                                                            <div class="d-flex justify-content-between align-items-start">
+                                                            <p><strong>Email 1:</strong> {{$data->email1}}</p>
+                                                            <p><strong>Email 2:</strong> {{$data->email2}}</p>
+                                                            <p><strong>Email 3:</strong> {{$data->email3}}</p>
+                                                            </div>
+                                                        </div>
+                                                        @endif
                                                     </div>
                                                 </div>
                                             </div>

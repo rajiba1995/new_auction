@@ -90,6 +90,9 @@ class UserController extends Controller{
             'email' => 'required|email',
             'phone_number' => 'required|numeric',
             'legal_status' => 'nullable',
+            'email1' => 'nullable|email', // Added email validation if these are supposed to be emails
+            'email2' => 'nullable|email',
+            'email3' => 'nullable|email',
             // Add more rules for other fields as needed
         ];
         
@@ -647,7 +650,6 @@ class UserController extends Controller{
         }
     }
     public function buyer_package_store(Request $request){
-        dd($request->all());
         $data = $this->AuthCheck();
         try {
             DB::beginTransaction();
@@ -879,7 +881,8 @@ class UserController extends Controller{
         $existing_inquiries= $this->BuyerDashboardRepository->get_all_existing_inquiries_by_user($data->id);
         $WatchList = WatchList::with('SellerData')->where('buyer_id', $data->id)->where('group_id', null)->get();
         $groupWatchList = GroupWatchList::orderBy('group_name', 'ASC')->where('created_by',$data->id)->get();
-        return view('front.user.watchlist', compact('WatchList','groupWatchList', 'existing_inquiries'));
+        $verifiedBadge = $this->userRepository->verifiedBadge();
+        return view('front.user.watchlist', compact('WatchList','groupWatchList', 'existing_inquiries','verifiedBadge'));
     }
 
     public function seller_buk_upload_on_group_watchlist(Request $request){
@@ -1186,8 +1189,10 @@ class UserController extends Controller{
             $existing_inquiries= $this->BuyerDashboardRepository->get_all_existing_inquiries_by_user($User->id);
             $WatchList =WatchList::with('SellerData')->where('group_id', $GroupWatchList->id)->get();
             $outSideParticipats =OutsideParticipant::with('BuyerDetails')->where('group_id', $GroupWatchList->id)->get();
+            $verifiedBadge = $this->userRepository->verifiedBadge();
+
             // dd($outSideParticipats);
-             return view('front.user.watchlist_by_group', compact('WatchList', 'GroupWatchList', 'existing_inquiries','outSideParticipats'));
+             return view('front.user.watchlist_by_group', compact('WatchList', 'GroupWatchList', 'existing_inquiries','outSideParticipats','verifiedBadge'));
         }else{
             return redirect()->route('user.watchlist')->with('warning', 'Group not found in your panel. Please enter a valid group name.');
         }

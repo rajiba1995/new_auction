@@ -181,6 +181,28 @@
                                                             </div>
                                                         </div>
                                                     </div>
+                                                    <div class="row input-row">
+                                                        <label class="form-label">Additional Information</label>
+
+                                                        <div class="col-lg-4 col-12">
+                                                            <div class="form-group">
+                                                                <input type="email" class="form-control border-red" name="email1" value="{{ old('email1',$data->email1) }}" placeholder="Email 1">
+                                                                @error('email1')<span class="text-danger" role="alert"><strong>{{ $message }}</strong></span>@enderror
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-lg-4 col-12">
+                                                            <div class="form-group">
+                                                                <input type="email" class="form-control border-red" name="email2" value="{{ old('email2',$data->email2) }}" placeholder="Email 2">
+                                                                @error('email2')<span class="text-danger" role="alert"><strong>{{ $message }}</strong></span>@enderror
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-lg-4 col-12">
+                                                            <div class="form-group">
+                                                                <input type="email" class="form-control border-red" name="email3" value="{{ old('email3',$data->email3) }}" placeholder="Email 3">
+                                                                @error('email3')<span class="text-danger" role="alert"><strong>{{ $message }}</strong></span>@enderror
+                                                            </div>
+                                                        </div>
+                                                    </div>
                                                     <input type="hidden" name="id" value="{{$data->id}}">
                                                     <div class="form-submit-row">
                                                         <button type="submit" class="btn btn-animated btn-submit">Submit</button>

@@ -39,11 +39,12 @@
                     <div id="stateSuggestions"></div>
                     
                     <div class="search-bar">
-                        <form>
+                        <form action="{{route('user.global.make_slug')}}" method="GET" id="Search_form">
+                            <input type="hidden" name="location" id="hidden_location" value="@yield('location')">
                             <!-- <input type="search" name="keyword" id="autocomplete-input" placeholder="Search for Service, Category, etc" value="@yield('keyword')"> -->
-                            <input type="search" name="keyword" id="autocomplete-input" placeholder="Search for Service, Category, etc" autocomplete="off">
+                            <input type="search" name="keyword" id="autocomplete-input" placeholder="Search" autocomplete="off">
                             
-                            <button type="button" class="btn-search btn-animated" id="global_form_submit">
+                            <button type="submit" class="btn-search btn-animated" id="global_form_submit">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
                                     <path d="M11 19C15.4183 19 19 15.4183 19 11C19 6.58172 15.4183 3 11 3C6.58172 3 3 6.58172 3 11C3 15.4183 6.58172 19 11 19Z" stroke="white" stroke-linecap="round" stroke-linejoin="round"/>
                                     <path d="M20.9999 21.0004L16.6499 16.6504" stroke="white" stroke-linecap="round" stroke-linejoin="round"/>
@@ -51,15 +52,7 @@
                             </button>
                         <!-- <div id="autocomplete-list" class="autocomplete-items"></div> -->
                             <div id="autocomplete-suggestions" class="autocomplete-suggestions">
-                                <div class="autocomplete-suggestion">
-                                    <div class="suggestion-icon">
-                                    <svg xmlns="http://www.w3.org/2000/svg" version="1.1" xmlns:xlink="http://www.w3.org/1999/xlink" width="512" height="512" x="0" y="0" viewBox="0 0 24 24" style="enable-background:new 0 0 512 512" xml:space="preserve" class=""><g><clipPath id="a"><path d="M0 0h24v24H0z" fill="#000000" opacity="1" data-original="#000000" class=""></path></clipPath><g fill="#000" fill-rule="evenodd" clip-path="url(#a)" clip-rule="evenodd"><path d="M23.707 5.293a1 1 0 0 1 0 1.414l-9.5 9.5a1 1 0 0 1-1.414 0L8.5 11.914l-6.793 6.793a1 1 0 0 1-1.414-1.414l7.5-7.5a1 1 0 0 1 1.414 0l4.293 4.293 8.793-8.793a1 1 0 0 1 1.414 0z" fill="#000000" opacity="1" data-original="#000000" class=""></path><path d="M16 6a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1v6a1 1 0 1 1-2 0V7h-5a1 1 0 0 1-1-1z" fill="#000000" opacity="1" data-original="#000000" class=""></path></g></g></svg>
-                                    </div>
-                                    <div class="suggestion-right">
-                                        <div class="autocomplete-business-name">${product.name}</div>
-                                        <div class="autocomplete-category-name">${item.category}</div>
-                                    </div>
-                                </div>
+                                
                             </div>
                         </form>
                     </div>
@@ -243,9 +236,10 @@
                     </div>
                     <div id="stateSuggestions"></div>
                     <div class="search-bar">
-                        <form>
-                            <input type="search" name="keyword" id="autocomplete-input" placeholder="Search for Service, Category, etc" value="@yield('keyword')">
-                            <button type="button" class="btn-search btn-animated" id="global_form_submit">
+                        <form action="{{route('user.global.make_slug')}}" method="GET" id="Search_form">
+                            <input type="hidden" name="location" id="hidden_location" value="@yield('location')">
+                            <input type="search" name="keyword" id="autocomplete-input" placeholder="Search" value="@yield('keyword')">
+                            <button type="submit" class="btn-search btn-animated" id="global_form_submit">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
                                     <path d="M11 19C15.4183 19 19 15.4183 19 11C19 6.58172 15.4183 3 11 3C6.58172 3 3 6.58172 3 11C3 15.4183 6.58172 19 11 19Z" stroke="white" stroke-linecap="round" stroke-linejoin="round"/>
                                     <path d="M20.9999 21.0004L16.6499 16.6504" stroke="white" stroke-linecap="round" stroke-linejoin="round"/>
@@ -515,49 +509,59 @@
             @endif
         });
 
-                $('#autocomplete-input').on('keyup', function() {
-                var keyword = $(this).val().toLowerCase();
-                var location = $('#stateInput').val();
-                const autocompleteList = $('#autocomplete-list');
-                autocompleteList.empty();
-                if (!keyword) {
-                    return false;
-                }
-                      // Reset border to default
-                $('.location-bar').css('border', '1px solid #ced4da');
-                $('.search-bar').css('border', '1px solid #ced4da');
+        $('#autocomplete-input').on('keyup', function() {
+            var keyword = $(this).val().toLowerCase();
+            var location = $('#stateInput').val();
+            const autocompleteList = $('#autocomplete-list');
+            autocompleteList.empty();
+            if (!keyword) {
+                return false;
+            }
+                    // Reset border to default
+            $('.location-bar').css('border', '1px solid #ced4da');
+            $('.search-bar').css('border', '1px solid #ced4da');
 
-                
-                // Check if location is empty
-                if(location.trim().length === 0){
-                    $('.location-bar').css('border', '1px solid red');
-                    return; // Stop further execution  
-                }
-                $.ajax({
-                 url: "{{route('user.suggestion')}}", // Replace this with your actual route
-                 type: 'GET',
-                 data: {
-                     location: location,
-                     keyword: keyword
-                 },
-                 success: function(response) {
-                    console.log(response);
-                    $('#stateSuggestions').html(html);
-                     if(response.status==200){
-                         window.location.href = response.route;
-                     }
-                     
-                 },
-                 error: function(xhr, status, error) {
-                     console.error(error);
-                     // Handle errors if any
-                 }
-             });
-
+            
+            // Check if location is empty
+            if(location.trim().length === 0){
+                $('.location-bar').css('border', '1px solid red');
+                return; // Stop further execution  
+            }
+            $.ajax({
+                url: "{{route('user.suggestion')}}", // Replace this with your actual route
+                type: 'GET',
+                data: {
+                    location: location,
+                    keyword: keyword
+                },
+                success: function(response) {
+                var html= "";
+                response.forEach(function(element, index) {
+                    html += `<div class="autocomplete-suggestion filter_data" data-value="${element.title}">
+                        <div class="suggestion-icon">
+                            <img src="{{asset('frontend/assets/images/${element.image}')}}" alt="" width="65%" height="65%">
+                        </div>
+                        <div class="suggestion-right">
+                            <div class="autocomplete-business-name">${element.title}</div>
+                            <div class="autocomplete-category-name">${element.sub_title}</div>
+                        </div>
+                    </div>`;
                 });
+                    $('#autocomplete-suggestions').html(html);
+                },
+                error: function(xhr, status, error) {
+                    console.error(error);
+                    // Handle errors if any
+                }
+            });
+        });
 
-        $('#global_form_submit').on('click', function() {
-             var location = $('#stateInput').val();
+        $('#global_form_submit').on('click', function(event) {
+            event.preventDefault();
+
+            //  var location = $('#stateInput').val();
+             var location = $('#hidden_location').val();
+             
              var keyword = $('#autocomplete-input').val();
              
              // Reset border to default
@@ -575,24 +579,25 @@
                  $('.search-bar').css('border', '1px solid red');
                  return; // Stop further execution
              }
-             $.ajax({
-                 url: "{{route('user.global.make_slug')}}", // Replace this with your actual route
-                 type: 'GET',
-                 data: {
-                     location: location,
-                     keyword: keyword
-                 },
-                 success: function(response) {
-                     if(response.status==200){
-                         window.location.href = response.route;
-                     }
+             $('#Search_form').submit();
+            //  $.ajax({
+            //      url: "{{route('user.global.make_slug')}}", // Replace this with your actual route
+            //      type: 'GET',
+            //      data: {
+            //          location: location,
+            //          keyword: keyword
+            //      },
+            //      success: function(response) {
+            //          if(response.status==200){
+            //              window.location.href = response.route;
+            //          }
                      
-                 },
-                 error: function(xhr, status, error) {
-                     console.error(error);
-                     // Handle errors if any
-                 }
-             });
+            //      },
+            //      error: function(xhr, status, error) {
+            //          console.error(error);
+            //          // Handle errors if any
+            //      }
+            //  });
          });
  
  
@@ -620,6 +625,7 @@
                  // Handle click event on state suggestion
                  $('#stateSuggestions').on('click', 'li', function() {
                      $('#stateInput').val($(this).text());
+                     $('#hidden_location').val($(this).text());
                      $('#stateSuggestions').html('');
                  });
  
@@ -630,8 +636,16 @@
                      }
                  });
              });
- 
- 
+             $(document).ready(function() {
+                $('.autocomplete-suggestions').html('');
+                // Handle click event on state suggestion
+                $('.autocomplete-suggestions').on('click', '.autocomplete-suggestion', function() {
+                    var data_value = $(this).attr('data-value');
+                    $('#autocomplete-input').val(data_value);
+                    $('#Search_form').submit();
+                    $('.autocomplete-suggestions').html(''); // Clear the suggestions list
+                });
+            });
  
      </script>
     @yield('script')

@@ -943,76 +943,7 @@ $(document).ready(function() {
         }
      }
 
-    //  $(document).ready(function(){
-    //                     // List of Indian states
-    //     var indianStates = {!! json_encode($global_filter_location) !!};
-    //     function showStateSuggestions(input) {
-    //         var filter = input.value.toLowerCase();
-    //         var suggestions = indianStates.filter(function(state) {
-    //         return state.toLowerCase().indexOf(filter) > -1;
-    //         });
-    //         var html = '<ul>';
-    //         suggestions.forEach(function(state) {
-    //         html += '<li>' + state + '</li>';
-    //         });
-    //         html += '</ul>';
-    //         $('#stateSuggestions_modal').html(html);
-    //     }
-
-    //     // Handle keyup event on the input field
-    //     $('#stateInput_modal').on('keyup', function() {
-    //         showStateSuggestions(this);
-    //     });
-
-    //     // Handle click event on state suggestion
-    //     $('#stateSuggestions').on('click', 'li', function() {
-    //         $('#stateInput_modal').val($(this).text());
-    //         $('#stateSuggestions_modal').html('');
-    //     });
-
-    //     // Hide suggestions when clicking outside
-    //     $(document).on('click', function(e) {
-    //         if (!$(e.target).closest('#stateSuggestions_modal').length && !$(e.target).is('#stateInput_modal')) {
-    //         $('#stateSuggestions_modal').html('');
-    //         }
-    //     });
-    // });
-
-    // $(document).ready(function() {
-    //     // Assuming $global_filter_data is a JSON-encoded array of Indian states
-    //     var GlobalData = {!! json_encode($global_filter_data) !!};
-    //     function showFilterSuggestions(input) {
-    //         var filter = input.value.toLowerCase();
-    //         var suggestions = GlobalData.filter(function(name) {
-    //             return name.toLowerCase().indexOf(filter) > -1;
-    //         });
-    //         var html = '<ul>';
-    //         suggestions.forEach(function(name) {
-    //             html += '<li>' + name + '</li>';
-    //         });
-    //         html += '</ul>';
-    //         $('#filterSuggestions_modal').html(html);
-    //     }
-
-    //     // Handle keyup event on the input field
-    //     $('#global_filter_data_modal').on('keyup', function() {
-    //         showFilterSuggestions(this);
-    //     });
-
-    //     // Handle click event on state suggestion
-    //     $('#filterSuggestions_modal').on('click', 'li', function() {
-    //         $('#global_filter_data_modal').val($(this).text());
-    //         $('#filterSuggestions_modal').html('');
-    //     });
-
-    //     // Hide suggestions when clicking outside
-    //     $(document).on('click', function(e) {
-    //         if (!$(e.target).closest('#filterSuggestions_modal').length && !$(e.target).is('#global_filter_data_modal')) {
-    //             $('#filterSuggestions_modal').html('');
-    //         }
-    //     });
-    // });
-    
+   
    
 </script>
 @endsection

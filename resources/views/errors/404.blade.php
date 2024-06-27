@@ -45,7 +45,7 @@
     }
 </style>
 <head>
-    <title>KGA | 404 - Page Not Found</title>
+    <title>MiLAAPP | 404 - Page Not Found</title>
 </head>
 <div class="not-found-wrapper">
     <div class="content">

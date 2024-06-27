@@ -367,8 +367,10 @@ class CornController extends Controller
                         // Fetch user email based on user_id
                         $user = User::find($item['user_id']);
                         if ($user) {
-                            $user_email = $user->email;
-                            dd($user_email); // Example of processing; replace with actual logic
+                            $data=[
+                                'user'=>$user,
+                            ];
+                            sendMail($data, 'INQUIRY_START'); 
                         }
                     }
                 }
