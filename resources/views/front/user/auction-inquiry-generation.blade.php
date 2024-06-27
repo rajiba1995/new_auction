@@ -979,8 +979,6 @@ $(document).ready(function() {
     // });
 
     // $(document).ready(function() {
-    //     // Assuming $global_filter_data is a JSON-encoded array of Indian states
-    //     var GlobalData = {!! json_encode($global_filter_data) !!};
     //     function showFilterSuggestions(input) {
     //         var filter = input.value.toLowerCase();
     //         var suggestions = GlobalData.filter(function(name) {

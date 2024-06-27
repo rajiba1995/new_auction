@@ -301,15 +301,18 @@ class AuctionGenerationController extends Controller
                     if(count($exist_participants)>0){
                         $Buyer_data = User::where('id', $request->created_by)->first();
                         foreach($exist_participants as $key =>$item){
-                            if($item->SellerData){
-                                $data=[
-                                    'user'=>$item->SellerData,
-                                    'inquiry_data'=>$inquiry,
-                                    'Buyer_data'=>$Buyer_data,
-                                    'type'=>'INQUIRY_GENERATION',
-                                ];
-                                sendMail($data, 'Inquiry POST Notification'); 
+                            if($key==0){
+                                if($item->SellerData){
+                                    $data=[
+                                        'user'=>$item->SellerData,
+                                        'inquiry_data'=>$inquiry,
+                                        'Buyer_data'=>$Buyer_data,
+                                        'type'=>'INQUIRY_GENERATION',
+                                    ];
+                                    sendMail($data, 'Inquiry POST Notification');
+                                }
                             }
+                            
                         }
                     }
                  
