@@ -319,8 +319,8 @@ if (!function_exists('previously_worked')) {
 }
 if (!function_exists('sendMail')) {
 
-    function sendMail($data,$subject) {
-        $email = $data['user']->email;
+    function sendMail($data,$email,$subject) {
+        // $email = $data['user']->email;
         // $email = 'agarwalsarvesh96@gmail.com';
         $from_address = env('MAIL_FROM_ADDRESS');
         $sender = env('MAIL_FROM_NAME');

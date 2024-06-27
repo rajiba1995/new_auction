@@ -495,10 +495,12 @@ class BuyerDashboardController extends Controller
                                 'Buyer_data'=>$Buyer_data,
                                 'reason'=>$reason,
                                 'type'=>'INQUIRY_REALLOTMENT',
+                                'user_type'=>'Seller',
                             ];
                             $subject = 'Inquiry REALLOTMENT Notification for '.$Buyer_data->business_name;
                         }
-                        sendMail($data, $subject); 
+                        $seller_email = $allot_seller->SellerData->email;
+                        sendMail($data,$seller_email,$subject); 
                     }
                 }
             }

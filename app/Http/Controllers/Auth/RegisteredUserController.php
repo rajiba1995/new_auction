@@ -75,8 +75,9 @@ class RegisteredUserController extends Controller
                     $data=[
                         'user'=>$exist_User,
                         'type'=>'REG_OTP',
+                        'user_type'=>'Seller',
                     ];
-                    $mail = sendMail($data, 'OTP Verification'); // Assuming sendMail function exists
+                    $mail = sendMail($data,$exist_User->email,'OTP Verification'); // Assuming sendMail function exists
                     DB::commit(); // Commit the transaction
                     $route = route('front.otp_validation');
                     $endTime = Carbon::now()->addSeconds(60);
@@ -100,8 +101,9 @@ class RegisteredUserController extends Controller
                 $data=[
                     'user'=>$User,
                     'type'=>'REG_OTP',
+                    'user_type'=>'Seller',
                 ];
-                $mail = sendMail($data, 'OTP Verification'); // Assuming sendMail function exists
+                $mail = sendMail($data, $User->email,'OTP Verification'); // Assuming sendMail function exists
                 
                 DB::commit(); // Commit the transaction
     
@@ -148,8 +150,9 @@ class RegisteredUserController extends Controller
             $data=[
                 'user'=>$exist_User,
                 'type'=>'REG_OTP',
+                'user_type'=>'Seller',
             ];
-            $mail = sendMail($data, 'OTP Verification'); // Assuming sendMail function exists
+            $mail = sendMail($data,$exist_User->email,'OTP Verification'); // Assuming sendMail function exists
             $endTime = Carbon::now()->addSeconds(60);
             $counter = $endTime->format('Y-m-d H:i:s');
             session(['counter_timer' => $endTime->format('Y-m-d H:i:s')]);
