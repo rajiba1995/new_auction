@@ -301,21 +301,33 @@ class AuctionGenerationController extends Controller
                     if(count($exist_participants)>0){
                         $Buyer_data = User::where('id', $request->created_by)->first();
                         foreach($exist_participants as $key =>$item){
-                            if($key==0){
-                                if($item->SellerData){
-                                    $data=[
-                                        'user'=>$item->SellerData,
-                                        'inquiry_data'=>$inquiry,
-                                        'Buyer_data'=>$Buyer_data,
-                                        'type'=>'INQUIRY_GENERATION',
-                                    ];
-                                    sendMail($data, 'Inquiry POST Notification');
-                                }
+                            if($item->SellerData){
+                                $data=[
+                                    'user'=>$item->SellerData,
+                                    'inquiry_data'=>$inquiry,
+                                    'Buyer_data'=>$Buyer_data,
+                                    'type'=>'INQUIRY_GENERATION',
+                                    'user_type'=>'Seller',
+                                ];
+                                // dd($data);
+                                DB::table('mail_logs')->insert([
+                                    'email' => $item->SellerData->email,
+                                    'type' => 'Seller',
+                                    'subject' => 'Inquiry POST Notification',
+                                    'response' => json_encode($data),
+                                ]);
                             }
-                            
                         }
+                        $data=[
+                            'user'=>$Buyer_data,
+                            'inquiry_data'=>$inquiry,
+                            'Buyer_data'=>$Buyer_data,
+                            'participants'=>$exist_participants,
+                            'type'=>'INQUIRY_GENERATION',
+                            'user_type'=>'Buyer',
+                        ];
+                        sendMail($data, $Buyer_data->email, 'Inquiry POST Notification');
                     }
-                 
                
                 DB::commit();
                 return redirect()->route('user_buyer_dashboard')->with('success', 'Inquiry has been generated successfully.');
@@ -324,8 +336,8 @@ class AuctionGenerationController extends Controller
                 return redirect()->route('user_buyer_dashboard')->with('success', 'Inquiry data has been saved successfully.');
             }
         } catch (\Exception $e) {
-            // DB::rollBack();
-            dd($e->getMessage());
+            DB::rollBack();
+            // dd($e->getMessage());
              return abort(404);
          }
     }

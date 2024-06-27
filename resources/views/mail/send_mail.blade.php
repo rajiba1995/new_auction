@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Auction Pdf</title>
+    <title>MILAAPP</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
 
@@ -140,13 +140,42 @@
                 
                 <p style="margin: 10px 0; color: #666;">Description of service:</p>
                 <p style="margin: 10px 0; color: #666;">{!! $inquiry_data->description !!}</p>
-                
+                {{-- For Participants --}}
+                @if($user_type=="Buyer" && count($participants)>0)
+                    <table style="width: 100%; border-collapse: collapse; margin-bottom: 20px; font-size: 13px;">
+                        <thead>
+                            <tr>
+                                <th style="border: 1px solid #ccc; padding: 8px; background-color: #f2f2f2;">SL No</th>
+                                <th style="border: 1px solid #ccc; padding: 8px; background-color: #f2f2f2;">Person Name</th>
+                                <th style="border: 1px solid #ccc; padding: 8px; background-color: #f2f2f2;">Company Name</th>
+                                <th style="border: 1px solid #ccc; padding: 8px; background-color: #f2f2f2;">Phone Number</th>
+                                <th style="border: 1px solid #ccc; padding: 8px; background-color: #f2f2f2;">Rank</th>
+                                <th style="border: 1px solid #ccc; padding: 8px; background-color: #f2f2f2;">Last Quoted Amount</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Populate with actual inquiry details -->
+                            @foreach ($participants as $k=> $item)
+                           
+                                <tr>
+                                    <td style="border: 1px solid #ccc; padding: 8px;">{{ $k+1 }}</td>
+                                    <td style="border: 1px solid #ccc; padding: 8px;">{{ $item->SellerData?$item->SellerData->name:"" }}</td>
+                                    <td style="border: 1px solid #ccc; padding: 8px;">{{ $item->SellerData?$item->SellerData->business_name:"" }}</td>
+                                    <td style="border: 1px solid #ccc; padding: 8px;">{{ $item->SellerData?$item->SellerData->mobile:"" }}</td>
+                                    <td style="border: 1px solid #ccc; padding: 8px;"></td>
+                                    <td style="border: 1px solid #ccc; padding: 8px;"></td>
+                                </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                @endif
                 <p style="margin: 10px 0; color: #666;">This is a system-generated mail so please do not reply to this mail.</p>
-                
-                <p style="margin: 10px 0; text-align:center">
-                    <a href="{{route('seller_all_inquiries')}}" style="display: inline-block;position: relative;color: #fff;border-radius: 50px; background-color: #014397;transition: all .3s ease-out !important;height: 37px;font-size: 12px;padding: 0 15px;line-height: 34px; text-decoration:none;"
-                    target="_blank">BID NOW</a> <br> bidding link to be provided here
-                </p>
+                @if($user_type=="Seller")
+                    <p style="margin: 10px 0; text-align:center">
+                        <a href="{{route('seller_all_inquiries')}}" style="display: inline-block;position: relative;color: #fff;border-radius: 50px; background-color: #014397;transition: all .3s ease-out !important;height: 37px;font-size: 12px;padding: 0 15px;line-height: 34px; text-decoration:none;"
+                        target="_blank">BID NOW</a> <br> bidding link to be provided here
+                    </p>
+                @endif
                 <p style="text-align: center; font-size: 16px; color: #000;"><strong>Powered by MILAAPP</strong></p>
                 <div class="link_sec" style="text-align: center; margin: 20px 0px; background:#014397; padding:5px; color:#fff;">
                     <div class="all_link" style="margin-top: 20px;">
