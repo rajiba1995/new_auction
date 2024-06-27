@@ -178,6 +178,8 @@ class RegisteredUserController extends Controller
                         $inqOutParti->selected_from = 1;//1 for Close Inquiry
                         $inqOutParti->save();
                         if($inqOutParti){
+                            $userUpdate->trusted_id = $outside_participant_data->buyer_id;
+                            $userUpdate->save();
                             $outside_participant_data->delete();
                         }
                     }

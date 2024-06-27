@@ -348,3 +348,16 @@ if (!function_exists('verifiedBadge')) {
         return false;
     }
 }
+if (!function_exists('trustedBadge')) {
+    function trustedBadge($buyer_id,$seller_id) {
+          // Get inquiry IDs created by the buyer
+        $inquiryIds = Inquiry::where('created_by', $buyer_id)->pluck('id')->toArray();
+        if($inquiryIds){
+        // Get the seller_id from inquiry_seller_quotes where inquiry_id is in the list of inquiry IDs
+        $sellerIds = InquirySellerQuotes::whereIn('inquiry_id', $inquiryIds)->pluck('seller_id')->toArray();
+        // Check if the $seller_id exists in the $sellerIds array
+        return in_array($seller_id, $sellerIds);
+        }
+        return false;
+    }
+}

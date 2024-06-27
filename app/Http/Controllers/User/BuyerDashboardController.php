@@ -118,15 +118,22 @@ class BuyerDashboardController extends Controller
 
                 if($value->ParticipantsData){
                     foreach($value->ParticipantsData as $k =>$item){
+                       
                         $all_inquiries['participants'][]= $item->SellerData->business_name;
                         // if($item->status==1){
                             $all_inquiries['invted_participants'][]= $item->SellerData->business_name;
                         // }
                     }
                 }
-                $all_inquiries['invted_participants_count'] = count($all_inquiries['participants']);
+                $all_inquiries['invted_participants_count'] = 0;
+                if (isset($all_inquiries['participants'])) {
+                    $all_inquiries['invted_participants_count'] = count($all_inquiries['participants']);
+                }
                 $getAllSellerQuotes = getAllSellerQuotes($value->id);
-                $all_inquiries['participants_count'] = count($all_inquiries['invted_participants']);
+                $all_inquiries['participants_count'] = 0;
+                if (isset($all_inquiries['participants'])) {
+                    $all_inquiries['participants_count'] = count($all_inquiries['invted_participants']);
+                }
                     if(count($getAllSellerQuotes)>0){
                         foreach($getAllSellerQuotes as $k =>$itemk){
                             $seller = [];
@@ -204,9 +211,15 @@ class BuyerDashboardController extends Controller
                         // }
                     }
                 }
-                $all_inquiries['invted_participants_count'] = count($all_inquiries['participants']);
+                $all_inquiries['invted_participants_count'] = 0;
+                if (isset($all_inquiries['participants'])) {
+                    $all_inquiries['invted_participants_count'] = count($all_inquiries['participants']);
+                }
                 $getAllSellerQuotes = getAllSellerQuotes($value->id);
-                $all_inquiries['participants_count'] = count($all_inquiries['invted_participants']);
+                $all_inquiries['participants_count'] = 0;
+                if (isset($all_inquiries['participants'])) {
+                    $all_inquiries['participants_count'] = count($all_inquiries['invted_participants']);
+                }
                     if(count($getAllSellerQuotes)>0){
                         foreach($getAllSellerQuotes as $k =>$itemk){
                             $seller = [];
@@ -280,9 +293,15 @@ class BuyerDashboardController extends Controller
                         // }
                     }
                 }
-                $all_inquiries['invted_participants_count'] = count($all_inquiries['participants']);
+                $all_inquiries['invted_participants_count'] = 0;
+                if (isset($all_inquiries['participants'])) {
+                    $all_inquiries['invted_participants_count'] = count($all_inquiries['participants']);
+                }
                 $getAllSellerQuotes = getAllSellerQuotes($value->id);
-                $all_inquiries['participants_count'] = count($all_inquiries['invted_participants']);
+                $all_inquiries['participants_count'] = 0;
+                if (isset($all_inquiries['participants'])) {
+                    $all_inquiries['participants_count'] = count($all_inquiries['invted_participants']);
+                }
                     if(count($getAllSellerQuotes)>0){
                         foreach($getAllSellerQuotes as $k =>$itemk){
                             $seller = [];
@@ -378,9 +397,15 @@ class BuyerDashboardController extends Controller
                         }
                     }
                 }
-                $all_inquiries['invted_participants_count'] = count($all_inquiries['participants']);
+                $all_inquiries['invted_participants_count'] = 0;
+                if (isset($all_inquiries['participants'])) {
+                    $all_inquiries['invted_participants_count'] = count($all_inquiries['participants']);
+                }
                 $getAllSellerQuotes = getAllSellerQuotes($value->id);
-                $all_inquiries['participants_count'] = count($all_inquiries['invted_participants']);
+                $all_inquiries['participants_count'] = 0;
+                if (isset($all_inquiries['participants'])) {
+                    $all_inquiries['participants_count'] = count($all_inquiries['invted_participants']);
+                }
                     if(count($getAllSellerQuotes)>0){
                         foreach($getAllSellerQuotes as $k =>$itemk){
                             $seller = [];

@@ -135,7 +135,7 @@
                         <div class="col-lg-12 col-12">
                             <div class="dash-filter-holder">
                                 <div class="row align-items-center">
-                                    <div class="col-md-5">
+                                    <div class="col-md-12">
                                         <div class="search-bar">
                                             <form>
                                                 <input type="search" name="" placeholder="Search by group name..." id="group_wies_search">
@@ -147,22 +147,6 @@
                                                 </button>
                                             </form>
                                         </div>
-                                    </div>
-                                    <div class="col-md-2">
-                                        <label for="email" class="form-label">Start Date</label>
-                                        <input type="date" class="form-control" id="" placeholder="Select start date" name="startdate">
-                                    </div>
-                                    <div class="col-md-2">
-                                        <label for="email" class="form-label">End Date</label>
-                                        <input type="date" class="form-control" id="" placeholder="Select end date" name="enddate">
-                                    </div>
-                                    <div class="col-md-3">
-                                        <select class="form-select">
-                                            <option>1</option>
-                                            <option>2</option>
-                                            <option>3</option>
-                                            <option>4</option>
-                                        </select>
                                     </div>
                                 </div>
                             </div>
