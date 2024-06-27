@@ -303,7 +303,8 @@ class HomeController extends Controller
             }
             $existing_inquiries= $this->BuyerDashboardRepository->get_all_existing_inquiries_by_user($authUserId);
             $verifiedBadge = $this->userRepository->verifiedBadge();
-            return view('front.filter', compact('data', 'location', 'keyword', 'old_location', 'old_keyword', 'categories','groupWatchList', 'existing_inquiries','verifiedBadge'));
+            $trustedBadge = $this->userRepository->trustedBadge();
+            return view('front.filter', compact('data', 'location', 'keyword', 'old_location', 'old_keyword', 'categories','groupWatchList', 'existing_inquiries','verifiedBadge','trustedBadge'));
     }
     // public function UserGlobalFilter($old_location, $old_keyword){
     //     $location = str_replace('-', ' ', $old_location);

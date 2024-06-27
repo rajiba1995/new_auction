@@ -107,8 +107,8 @@
                                             @endif
                                             @if(isset($item['trusted_id']) && !is_null($item['trusted_id']) && trustedBadge($item['trusted_id'],$item['id']))
                                             <li>
-                                                <img src="{{asset('frontend/assets/images/trusted.png')}}" alt="">
-                                                <div class="infotip"><span>It is a long established fact</span></div>
+                                                <img src="{{asset($trustedBadge->logo)}}" alt="">
+                                                <div class="infotip"><span>{{$trustedBadge->short_desc}}</span></div>
                                             </li>
                                             @endif
                                             @if(count($item['my_badge_data'])>0)

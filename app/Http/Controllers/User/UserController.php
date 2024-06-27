@@ -534,9 +534,10 @@ class UserController extends Controller{
         $myBadgesFullDetails = $this->userRepository->myBadgesFullDetails($data->id);
         $allBadges = $this->userRepository->getAllBadges($myBadges);
         $verifiedBadge = $this->userRepository->verifiedBadge();
+        $trustedBadge = $this->userRepository->trustedBadge();
         $my_cuttent_seller_package = $this->userRepository->getCurrentSellerPackage($data->id);
         $my_cuttent_buyer_package = $this->userRepository->getCurrentBuyerPackage($data->id);
-        return view('front.user.payment_management', compact('data','packages','seller_packages','myBadges','allBadges', 'my_cuttent_seller_package', 'my_cuttent_buyer_package','myBadgesFullDetails','verifiedBadge'));
+        return view('front.user.payment_management', compact('data','packages','seller_packages','myBadges','allBadges', 'my_cuttent_seller_package', 'my_cuttent_buyer_package','myBadgesFullDetails','verifiedBadge','trustedBadge'));
     }
     public function wallet_management(){
         $data = $this->AuthCheck();
@@ -882,7 +883,8 @@ class UserController extends Controller{
         $WatchList = WatchList::with('SellerData')->where('buyer_id', $data->id)->where('group_id', null)->get();
         $groupWatchList = GroupWatchList::orderBy('group_name', 'ASC')->where('created_by',$data->id)->get();
         $verifiedBadge = $this->userRepository->verifiedBadge();
-        return view('front.user.watchlist', compact('WatchList','groupWatchList', 'existing_inquiries','verifiedBadge'));
+        $trustedBadge = $this->userRepository->trustedBadge();
+        return view('front.user.watchlist', compact('WatchList','groupWatchList', 'existing_inquiries','verifiedBadge','trustedBadge'));
     }
 
     public function seller_buk_upload_on_group_watchlist(Request $request){
@@ -1190,9 +1192,12 @@ class UserController extends Controller{
             $WatchList =WatchList::with('SellerData')->where('group_id', $GroupWatchList->id)->get();
             $outSideParticipats =OutsideParticipant::with('BuyerDetails')->where('group_id', $GroupWatchList->id)->get();
             $verifiedBadge = $this->userRepository->verifiedBadge();
+            $trustedBadge = $this->userRepository->trustedBadge();
+
+
 
             // dd($outSideParticipats);
-             return view('front.user.watchlist_by_group', compact('WatchList', 'GroupWatchList', 'existing_inquiries','outSideParticipats','verifiedBadge'));
+             return view('front.user.watchlist_by_group', compact('WatchList', 'GroupWatchList', 'existing_inquiries','outSideParticipats','verifiedBadge','trustedBadge'));
         }else{
             return redirect()->route('user.watchlist')->with('warning', 'Group not found in your panel. Please enter a valid group name.');
         }

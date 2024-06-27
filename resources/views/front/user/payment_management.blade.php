@@ -309,6 +309,46 @@
                                                             </tr>
                                                         </tbody>
                                                         @endif
+                                                        <!-- truted badge -->
+                                                         @php 
+                                                         $user = App\Models\User::findOrFail(Auth::guard('web')->user()->id);
+                                                         @endphp
+                                                        @if(isset($user->trusted_id) && !is_null($user->trusted_id) && trustedBadge($user->trusted_id,$user->id))
+                                                        <tbody>
+                                                        <tr>
+                                                                <td>
+                                                                    <div class="badge">
+                                                                        <div class="img">
+                                                                            <img src="{{ asset($trustedBadge->logo) }}" width="30px" alt="">
+                                                                        </div>
+                                                                        <div class="name">
+                                                                        
+                                                                        <label>
+                                                                            {{ ucwords($trustedBadge->title) }}
+                                                                        </label>
+                                                                        </div>
+                                                                    </div>
+                                                                </td>
+                                                                <td>
+                                                                    <p>
+                                                                        {{$trustedBadge->short_desc}}
+                                                                    </p>
+                                                                </td>
+                                                                <td>
+                                                                    <p>
+                                                                        {{$trustedBadge->long_desc}}
+                                                                    </p>
+                                                                </td>
+                                                                <td>
+                                                                
+                                                                    <p> 
+                                                                        NULL
+                                                                        
+                                                                    </p>
+                                                                </td>
+                                                            </tr>
+                                                        </tbody>
+                                                        @endif
                                                         <tbody>
                                                             @foreach ($myBadgesFullDetails as $item)
                                                             @if($item->getBadgeDetails)
