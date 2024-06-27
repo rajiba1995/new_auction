@@ -542,10 +542,10 @@
                  },
                  success: function(response) {
                     console.log(response);
-                    return false;
-                    //  if(response.status==200){
-                    //      window.location.href = response.route;
-                    //  }
+                    $('#stateSuggestions').html(html);
+                     if(response.status==200){
+                         window.location.href = response.route;
+                     }
                      
                  },
                  error: function(xhr, status, error) {
