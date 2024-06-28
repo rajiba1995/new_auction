@@ -66,7 +66,9 @@ class UserDetailsController extends Controller
             $AllImages = $this->userDetailsRepository->getAllUsersImages($id);
             $badges = $this->userDetailsRepository->getAllBadgesByUserId($id);
             $products = $this->userDetailsRepository->getAllProductsByUserId($id);
-            return view('admin.user.view', compact('data', 'AllImages','badges','products'));
+            $verifiedBadge = $this->userRepository->verifiedBadge();
+            $trustedBadge = $this->userRepository->trustedBadge();
+            return view('admin.user.view', compact('data', 'AllImages','badges','products','verifiedBadge','trustedBadge'));
         }
             public function UserDocumentView(int $id)
             { 

@@ -389,10 +389,15 @@ class CornController extends Controller
             try {
                 // Loop through each entry
                 foreach ($data as $item) {
-                    // Convert the response to JSON format
-                    $message = json_decode($item->response);
+                    // dd($item->response);
+                         // Convert the response to an array
+                    $messageData = json_decode($item->response, true);
+                
+                    $messageData['user'] = new User($messageData['user']);
+                    $messageData['inquiry_data'] = new Inquiry($messageData['inquiry_data']);
+                    $messageData['Buyer_data'] = new User($messageData['Buyer_data']);
                     // Send the email
-                    sendMail($message, $item->email, $item->subject);
+                    sendMail($messageData, $item->email, $item->subject);
     
                     // Delete the entry from the mail_logs table after sending the email
                     DB::table('mail_logs')->where('id', $item->id)->delete();

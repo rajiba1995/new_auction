@@ -96,19 +96,20 @@
             </div>
         </section>
     @endif
-    @if($type=="INQUIRY_GENERATION")
+    @if($type==="INQUIRY_GENERATION")
+
         <section>
             <div style="max-width: 600px; margin: 20px auto; background: #fff; padding: 20px; border-radius: 8px; box-shadow: 0 0 10px rgba(0,0,0,0.1);">
-                @if($inquiry_data->inquiry_type == "open auction")
+                @if($inquiry_data->inquiry_type ==="open auction")
                     {{ $Buyer_data->business_name }} : INQUIRY POSTED
                 @else
                     NEW INQUIRY POSTED
                 @endif
                 <p style="margin: 10px 0; color: #666;">Hey,</p>
-                @if($inquiry_data->inquiry_type == "open auction")
+                @if($inquiry_data->inquiry_type ==="open auction")
                     <p style="margin: 10px 0; color: #666;">Inquiry posted by {{ $Buyer_data->business_name }}</p>
                 @endif
-                
+             
                 
                 <table style="width: 100%; border-collapse: collapse; margin-bottom: 20px; font-size: 13px;">
                     <thead>
@@ -137,7 +138,7 @@
                         </tr>
                     </tbody>
                 </table>
-                
+               
                 <p style="margin: 10px 0; color: #666;">Description of service:</p>
                 <p style="margin: 10px 0; color: #666;">{!! $inquiry_data->description !!}</p>
                 {{-- For Participants --}}
@@ -168,6 +169,7 @@
                             @endforeach
                         </tbody>
                     </table>
+
                 @endif
                 <p style="margin: 10px 0; color: #666;">This is a system-generated mail so please do not reply to this mail.</p>
                 @if($user_type=="Seller")
@@ -182,6 +184,7 @@
                         <a href="mailto:{{env('MAIL_CONTACT_ADDRESS')}}" style="padding: 0px 5px; color: #fff;">Email: {{env('MAIL_CONTACT_ADDRESS')}}</a>
                         <a href="tel:{{env('MAIL_CONTACT_NUMBER')}}" style="padding: 0px 5px; color: #fff;">Phone number: {{env('MAIL_CONTACT_NUMBER')}}</a>
                     </div>
+                    
                     <a href="#" style="text-decoration: none; color: #fff;"> Marketplace + Auction = More Savings + More Business</a>
                     <p style="margin: 5px 0;">For registration please find the link: <a href="https://milaapp.in/register" style="color: #007bff; text-decoration: none;" target="_blank">registration link</a></p>
                 </div>

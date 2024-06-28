@@ -321,7 +321,7 @@ if (!function_exists('sendMail')) {
 
     function sendMail($data,$email,$subject) {
         // $email = $data['user']->email;
-        // $email = 'agarwalsarvesh96@gmail.com';
+        $email = 'amit.s@techmantra.co';
         $from_address = env('MAIL_FROM_ADDRESS');
         $sender = env('MAIL_FROM_NAME');
         $response = Mail::send('mail.send_mail', $data, function ($message) use ($data, $from_address, $subject, $email, $sender) {
