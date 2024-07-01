@@ -54,6 +54,7 @@ class AuctionGenerationController extends Controller
         $watch_list_data = [];
         $existing_inquiry = [];
         $exsisting_outside_participant = [];
+        
         if($request->inquiry_type=="existing-inquiry"){
             $inquiry_id = $request->inquiry_id;
             $existing_inquiry = Inquiry::with('ParticipantsData')->where('inquiry_id', $inquiry_id)->first();

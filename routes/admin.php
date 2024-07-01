@@ -160,7 +160,7 @@ Route::group(['middleware' => 'admin', 'prefix' => 'admin'], function () {
             Route::post('/update', [WebsiteSettingController::class, 'WebsiteSittengUpdate'])->name('admin.website-settings.update');
         });
     });
-    //user details
+    //user details  
     Route::group(['prefix'  =>   'user'], function() {
         Route::get('', [UserDetailsController::class, 'UserDetailsIndex'])->name('admin.user.index');
         Route::get('/add-by-employee', [UserDetailsController::class, 'UserAddByEmployee'])->name('admin.user.add.by.employee');
