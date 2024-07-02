@@ -27,12 +27,15 @@ Route::get('/clear-cache', function() {
 });
 
     Route::get('/',[HomeController::class,'index'])->name('front.index');
+    Route::get('/terms-and-conditions',[HomeController::class,'TermsAndCondition'])->name('front.terms-and-conditions');
+    Route::get('/about-us',[HomeController::class,'AboutUs'])->name('front.about-us');
+    Route::get('/contact-us',[HomeController::class,'ContactUs'])->name('front.contact-us');
     Route::post('/register-check',[RegisteredUserController::class,'RegisterCheck'])->name('register-check');
     Route::get('/verify',[RegisteredUserController::class,'UserVerifyData'])->name('front.otp_validation');
     Route::get('/resend-otp-validation',[RegisteredUserController::class,'resend_otp_validation'])->name('front.resend_otp_validation');
     Route::get('/verify/check',[RegisteredUserController::class,'UserVerifyDataCheck'])->name('front.otp_validation.check');
     Route::get('/terms-conditions',[HomeController::class,'TermsConditions'])->name('terms_conditions');
-    Route::get('/privacy-policy',[HomeController::class,'PrivacyPolicy'])->name('privacy_policy');
+    Route::get('/privacy-policy',[HomeController::class,'PrivacyPolicy'])->name('front.privacy_policy');
     // corn Controller
     Route::prefix('cron')->group(function () {
         Route::get('/seller-monthly-package-check',[CornController::class,'SellerMothlyPackageCheckCron'])->name('seller_monthly_package_chcek_cron');
@@ -40,6 +43,7 @@ Route::get('/clear-cache', function() {
         Route::get('/buyer-package-current-unit-check',[CornController::class,'BuyerPackageCurrentUnitCheckCron'])->name('buyer_package_current_unit_chcek_cron');
         Route::get('/buyer-expiry-package-check',[CornController::class,'BuyerExpiryPackageCheckCron'])->name('buyer_expiry_package_chcek_cron');
         Route::get('/before-start-auction',[CornController::class,'BeforeStartAuction'])->name('before_start_auction_chcek_cron');
+        Route::get('/send-to-seller-mail',[CornController::class,'SendToSellerMail'])->name('send_to_seller_mail');
     });   
 
     Route::group(['middleware' => ['auth', 'check.user.profile']], function () {
@@ -62,8 +66,10 @@ Route::get('/clear-cache', function() {
             
             Route::get('/payment-management', [UserController::class, 'payment_management'])->name('user.payment_management');
             Route::get('/wallet-management', [UserController::class, 'wallet_management'])->name('user.wallet_management');//wallet
-        Route::post('/package/payment-management', [UserController::class, 'package_payment_management'])->name('user.package_payment_management');
+            Route::post('/package/payment-management', [UserController::class, 'package_payment_management'])->name('user.package_payment_management');
             Route::post('buyer/package/store', [UserController::class, 'buyer_package_store'])->name('user.buyer_package_store');
+            Route::get('/buyer-package-check', [UserController::class, 'buyer_package_check'])->name('user.buyer-package-check');
+            Route::get('/seller-package-check', [UserController::class, 'seller_package_check'])->name('user.seller-package-check');
             Route::get('/settings', [UserController::class, 'settings'])->name('user.settings');
             Route::get('/change-password', [UserController::class, 'changePassword'])->name('user.change_password');
             Route::post('/change-password', [UserController::class, 'changePasswordUpdate'])->name('user.change_password_update');

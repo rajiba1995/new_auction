@@ -321,26 +321,28 @@
                                 <ul class="contact-info-list">
                                     <li>
                                         <img src="{{asset('frontend/assets/images/map-pin.png')}}" alt="">
-                                        Unit 3B, 4 Bakul Bagan Row, Lansdowne Market. Kolkata- 700025, India
+                                        9B school row bhawanipore, kolkata 700025
                                     </li>
                                     <li>
                                         <img src="{{asset('frontend/assets/images/phone-call.png')}}" alt="">
-                                        <a href="#" >+91-xxxxxxxxxxx</a>
+                                        <a href="#" >+91-9330921674</a>
                                     </li>
                                     <li>
                                         <img src="{{asset('frontend/assets/images/mail.png')}}" alt="">
-                                        <a href="#" >Info@auction.com</a>
+                                        <a href="#" >customercare@milaapp.in</a>
                                     </li>
                                 </ul>
                             </div>
                             <div class="col-md-5 col-12 second-col">
                                 <h4>Company</h4>
                                 <ul class="footer-menu">
-                                    <li><a href="#">About Us</a></li>
-                                    <li><a href="#">SP TMS</a></li>
+                                    <li><a href="{{route('front.about-us')}}">About Us</a></li>
+                                    <li><a href="{{route('front.contact-us')}}">Contact Us</a></li>
+                                    {{-- <li><a href="#">SP TMS</a></li> --}}
                                     <li><a href="#">Career</a></li>
-                                    <li><a href="#">Terms of Use</a></li>
-                                    <li><a href="#">Disclaim</a></li>
+                                    <li><a href="{{route('front.terms-and-conditions')}}">Terms of Use</a></li>
+                                    <li><a href="{{route('front.privacy_policy')}}">Privacy & Policy</a></li>
+                                    {{-- <li><a href="#">Disclaim</a></li> --}}
                                 </ul>
                             </div>
                         </div>
@@ -422,10 +424,10 @@
                 <div class="row">
                     <div class="col-12">
                         <div class="content">
-                            <div class="copyright">Copyright &copy; 2024 | All rights reserved.</div>
+                            <div class="copyright">Copyright &copy; {{date('Y')}} | All rights reserved.</div>
                             <ul class="policy-menu">
-                                <li><a href="{{route('terms_conditions')}}">Terms & Conditions</a></li>
-                                <li><a href="{{route('privacy_policy')}}">Privacy & Policy</a></li>
+                                <li><a href="{{route('front.terms-and-conditions')}}">Terms & Conditions</a></li>
+                                <li><a href="{{route('front.privacy_policy')}}">Privacy & Policy</a></li>
                             </ul>
                         </div>
                     </div>

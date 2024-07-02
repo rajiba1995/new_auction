@@ -120,10 +120,13 @@
                                                                 <div class="infotip"><span>{{$verifiedBadge->short_desc}}</span></div>
                                                             </li>
                                                             @endif
+                                                         
+                                                            @if(isset($item->SellerData->trusted_id) && !is_null($item->SellerData->trusted_id) && trustedBadge($item->SellerData->trusted_id,$item->SellerData->id))
                                                             <li>
-                                                                <img src="{{asset('frontend/assets/images/trusted.png')}}" alt="">
-                                                                <div class="infotip"><span>It is a long established fact</span></div>
+                                                                <img src="{{asset($trustedBadge->logo)}}" alt="">
+                                                                <div class="infotip"><span>{{$trustedBadge->short_desc}}</span></div>
                                                             </li>
+                                                            @endif
                                                             @php
                                                                 $data = App\Models\User::findOrFail($item->seller_id);
                                                             @endphp

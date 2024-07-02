@@ -8,6 +8,20 @@ use Illuminate\Database\Eloquent\Model;
 class Inquiry extends Model{
     use HasFactory;
     protected $table = 'inquiries';
+    protected $fillable = [
+        'inquiry_id',
+        'title',
+        'category',
+        'sub_category',
+        'start_date',
+        'start_time',
+        'end_date',
+        'end_time',
+        'execution_date',
+        'minimum_quote_amount',
+        'maximum_quote_amount',
+        'inquiry_type',
+    ];
 
     public function ParticipantsData(){
         return $this->hasMany('App\Models\InquiryParticipant','inquiry_id','id');

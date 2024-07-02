@@ -69,6 +69,15 @@ class HomeController extends Controller
         // dd($data->collections);  
         return view('front.index',compact('data'));
     }
+    public function ContactUs(){
+        return view('front.contact_us');
+    }
+    public function AboutUs(){
+        return view('front.about_us');
+    }
+    public function TermsAndCondition(){
+        return view('front.terms-and-conditions');
+    }
 
     public function UserGlobalMakeSlug(Request $request){
         $location = $this->customSlug($request->location);
@@ -303,7 +312,8 @@ class HomeController extends Controller
             }
             $existing_inquiries= $this->BuyerDashboardRepository->get_all_existing_inquiries_by_user($authUserId);
             $verifiedBadge = $this->userRepository->verifiedBadge();
-            return view('front.filter', compact('data', 'location', 'keyword', 'old_location', 'old_keyword', 'categories','groupWatchList', 'existing_inquiries','verifiedBadge'));
+            $trustedBadge = $this->userRepository->trustedBadge();
+            return view('front.filter', compact('data', 'location', 'keyword', 'old_location', 'old_keyword', 'categories','groupWatchList', 'existing_inquiries','verifiedBadge','trustedBadge'));
     }
     // public function UserGlobalFilter($old_location, $old_keyword){
     //     $location = str_replace('-', ' ', $old_location);
@@ -558,11 +568,11 @@ class HomeController extends Controller
             return redirect()->back();
         }
     }   
-    public function TermsConditions(){
-        return view('front.user.terms_conditions');
-    }
+    // public function TermsConditions(){
+    //     return view('front.user.terms_conditions');
+    // }
     public function PrivacyPolicy(){
-        return view('front.user.privacy_policy');
+        return view('front.privacy-policy');
 
     }
     

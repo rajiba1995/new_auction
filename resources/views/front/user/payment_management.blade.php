@@ -21,7 +21,7 @@
                                 <div class="tab-content-wrapper">
                                     <div class="top-content-bar">
                                         <a href="{{ route('user.transaction')}}" class="btn btn-animated btn-yellow btn-cta btn-download">Transaction History</a>
-                                        <!-- <a href="#" class="btn btn-animated btn-yellow btn-cta btn-download">Download Invoice</a> -->
+                                        <!-- <a href="javascript:void(0);" class="btn btn-animated btn-yellow btn-cta btn-download">Download Invoice</a> -->
                                     </div>
                                     <!-- <div class="m-2">
                                         @if (session('success'))
@@ -71,6 +71,8 @@
                                                                         <input type="hidden" name="package_amount" value="{{$item->package_price}}">
                                                                         <input type="hidden" name="package_duration" value="{{$item->package_duration}}">
                                                                         <input type="hidden" name="package_credit" value="{{$item->total_number_of_auction}}">
+                                                                        <input type="hidden" name="buyer_payment_method" value="">
+                                                                        <input type="hidden" name="buyer_razorpay_payment_id" value="">
                                                                         <div class="card-header bg-gradient-free">
                                                                             <h4>{{$item->package_name}}</h4>
                                                                             <p>{{$item->rupees_prefix}} {{$item->package_price}} /{{$item->package_type}}</p>
@@ -125,11 +127,11 @@
                                                                                     </div>
                                                                                 @else
                                                                                     <input type="hidden" name="form_type" value="upgrade">
-                                                                                    <button type="button" class="btn btn-animated btn-cta bg-free" onclick="upgrade_buyer_package({{$item->id}})">Upgrade Now</button>
+                                                                                    <button type="button" class="btn btn-animated btn-cta bg-free" onclick="upgrade_buyer_package({{$item->id}}, {{$item->package_price}})">Upgrade Now</button>
                                                                                 @endif
                                                                             @else
                                                                                 <input type="hidden" name="form_type" value="new">
-                                                                                <button type="button" class="btn btn-animated btn-cta bg-free" onclick="buy_buyer_package({{$item->id}})">Buy Now</button>
+                                                                                <button type="button" class="btn btn-animated btn-cta bg-free" onclick="buy_buyer_package({{$item->id}},{{$item->package_price}}, '{{$item->type}}')">Buy Now</button>
                                                                             @endif
                                                                         </div>
                                                                     </form>
@@ -161,6 +163,8 @@
                                                                         <input type="hidden" name="package_value" value="{{$item->package_price}}">
                                                                         <input type="hidden" name="package_duration" value="{{$item->package_duration}}">
                                                                         <input type="hidden" name="package_name" value="{{$item->package_name}}">
+                                                                        <input type="hidden" name="seller_payment_method" value="">
+                                                                        <input type="hidden" name="seller_razorpay_payment_id" value="">
                                                                         <input type="hidden" name="monthly_credit" value="{{$item->credit}}">
                                                                         <div class="card-header bg-gradient-free">
                                                                             <h4>{{$item->package_name}}</h4>
@@ -231,11 +235,11 @@
                                                                                     </div>
                                                                                 @else
                                                                                     <input type="hidden" name="form_type" value="upgrade">
-                                                                                    <button type="button" class="btn btn-animated btn-cta bg-free" onclick="upgrade_seller_package({{$item->id}})">Upgrade Now</button>
+                                                                                    <button type="button" class="btn btn-animated btn-cta bg-free" onclick="upgrade_seller_package({{$item->id}},{{$item->package_price}})">Upgrade Now</button>
                                                                                 @endif
                                                                             @else
                                                                                 <input type="hidden" name="form_type" value="new">
-                                                                                <button type="button" class="btn btn-animated btn-cta bg-free" onclick="buy_seller_package({{$item->id}})">Buy Now</button>
+                                                                                <button type="button" class="btn btn-animated btn-cta bg-free" onclick="buy_seller_package({{$item->id}}, {{$item->package_price}})">Buy Now</button>
                                                                             @endif
                                                                         </div>
                                                                     </form>
@@ -297,6 +301,46 @@
                                                                 <td>
                                                                     <p>
                                                                         {{$verifiedBadge->long_desc}}
+                                                                    </p>
+                                                                </td>
+                                                                <td>
+                                                                
+                                                                    <p> 
+                                                                        NULL
+                                                                        
+                                                                    </p>
+                                                                </td>
+                                                            </tr>
+                                                        </tbody>
+                                                        @endif
+                                                        <!-- truted badge -->
+                                                         @php 
+                                                         $user = App\Models\User::findOrFail(Auth::guard('web')->user()->id);
+                                                         @endphp
+                                                        @if(isset($user->trusted_id) && !is_null($user->trusted_id) && trustedBadge($user->trusted_id,$user->id))
+                                                        <tbody>
+                                                        <tr>
+                                                                <td>
+                                                                    <div class="badge">
+                                                                        <div class="img">
+                                                                            <img src="{{ asset($trustedBadge->logo) }}" width="30px" alt="">
+                                                                        </div>
+                                                                        <div class="name">
+                                                                        
+                                                                        <label>
+                                                                            {{ ucwords($trustedBadge->title) }}
+                                                                        </label>
+                                                                        </div>
+                                                                    </div>
+                                                                </td>
+                                                                <td>
+                                                                    <p>
+                                                                        {{$trustedBadge->short_desc}}
+                                                                    </p>
+                                                                </td>
+                                                                <td>
+                                                                    <p>
+                                                                        {{$trustedBadge->long_desc}}
                                                                     </p>
                                                                 </td>
                                                                 <td>
@@ -413,7 +457,7 @@
                                                                 <td class="name"><label class="price-label">{{$item->duration}}</label></td>
                                                                 <td class="price-td">
                                                                     <label class="price-label">{{ $item->price_prefix }} - {{ $item->price }}</label>
-                                                                    <a href="#"  class="btn btn-animated btn-yellow btn-cta purchase" data-badge_id="{{$item->id}}" data-amount="{{ $item->price }}" data-duration="{{$item->duration}}" >Buy Now</a>
+                                                                    <a href="javascript:void(0);" class="btn btn-animated btn-yellow btn-cta purchase" data-badge_id="{{$item->id}}" data-amount="{{ $item->price }}" data-duration="{{$item->duration}}">Buy Now</a>
                                                                 </td>
                                                             </tr>
                                                             @endforeach
@@ -437,28 +481,42 @@
 @endsection
 @section('script')
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
 <script>
-            $('.purchase').on("click", function() {
-                var badge_id = $(this).data('badge_id');             // console.log(id); 
-                var badge_amount = $(this).data('amount');             // console.log(id); 
-                var badge_duration = $(this).data('duration');             // console.log(id); 
-                Swal.fire({
-                title: "Are you sure you want to purchase it??",
-                // text: "Purchase this Badge?",
-                icon: "question",
-                showCancelButton: true,
-                confirmButtonColor: '#3085d6',
-                cancelButtonColor: '#d33',
-                confirmButtonText: 'Yes, Purchase it!'
-                }).then((result) => {
-                    if (result.isConfirmed) {
-                        var csrfToken = "{{csrf_token()}}";
+    $('.purchase').on("click", function() {
+        var badge_id = $(this).data('badge_id');             // console.log(id); 
+        var badge_amount = $(this).data('amount');             // console.log(id); 
+        var final_amount = parseInt(badge_amount*100);             // console.log(id); 
+        var badge_duration = $(this).data('duration');             // console.log(id); 
+        Swal.fire({
+        title: "Are you sure you want to purchase it??",
+        // text: "Purchase this Badge?",
+        icon: "question",
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Yes, Purchase it!'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                    var paymentOptions = {
+                    "key": "{{env('RAZORPAY_KEY')}}",
+                    "amount": final_amount,
+                    "currency": "INR",
+                    "name": "MILAAPP",
+                    "description": "Online payment",
+                    "image": "{{asset('frontend/assets/images/logo.png')}}",
+                    "handler": function (response){
+                        $('input[name="payment_method"]').val('online_payment');
+                        var payment_method = 'Razorpay Payment';
+                        var razorpay_payment_id = response.razorpay_payment_id;
                         $.ajax({
                             type: 'POST',
                             url: '{{ route("user.purchase.transaction") }}',
                             data: {
                                 '_token' : csrfToken ,
                                 'id' : badge_id,
+                                'payment_method' : payment_method,
+                                'razorpay_payment_id' : razorpay_payment_id,
                                 'amount' : badge_amount,
                                 'duration' : badge_duration,
                             },
@@ -472,78 +530,258 @@
                                         location.reload();
                                 }
                             },
-                            // error: function(xhr, status, error) {
-                            //     console.error(xhr.responseText);
-                            // }
+                            error: function(xhr, status, error) {
+                                console.error(xhr.responseText);
+                            }
                         });
+                    },
+                    "prefill": {
+                        "email": "{{Auth::guard('web')->user()->email}}",
+                        "contact": "{{Auth::guard('web')->user()->mobile}}"
+                    },
+                    "notes": {
+                        "address": "Razorpay Corporate Office"
+                    },
+                    "theme": {
+                        "color": "#0076D7"
                     }
-                });
-            });
+                };
+                var rzp1 = new Razorpay(paymentOptions);
 
-            function buy_seller_package(id){
-                Swal.fire({
-                title: "Are you sure you want to purchase it??",
-                // text: "Purchase this Package?",
-                icon: "question",
-                showCancelButton: true,
-                confirmButtonColor: '#3085d6',
-                cancelButtonColor: '#d33',
-                confirmButtonText: 'Yes, Purchase it!'
-                }).then((result) => {
-                    if (result.isConfirmed) {
-                       $('#seller_package_form'+id).submit();
+                rzp1.on('payment.failed', function (response){
+                    alert('OOPS ! something happened');;
+                });
+                rzp1.open();  
+                var csrfToken = "{{csrf_token()}}";
+            }
+        });
+    });
+
+    function buy_seller_package(id, price){
+        Swal.fire({
+        title: "Are you sure you want to purchase it??",
+        // text: "Purchase this Package?",
+        icon: "question",
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Yes, Purchase it!'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                var final_amount = parseInt(price*100);
+                var paymentOptions = {
+                    "key": "{{env('RAZORPAY_KEY')}}",
+                    "amount": final_amount,
+                    "currency": "INR",
+                    "name": "MILAAPP",
+                    "description": "Online payment",
+                    "image": "{{asset('frontend/assets/images/logo.png')}}",
+                    "handler": function (response){
+                        $('input[name="seller_payment_method"]').val('Razorpay Payment');
+                        $('input[name="seller_razorpay_payment_id"]').val(response.razorpay_payment_id);
+                        $('#seller_package_form'+id).submit();
+                    },
+                    "prefill": {
+                        "email": "{{Auth::guard('web')->user()->email}}",
+                        "contact": "{{Auth::guard('web')->user()->mobile}}"
+                    },
+                    "notes": {
+                        "address": "Razorpay Corporate Office"
+                    },
+                    "theme": {
+                        "color": "#0076D7"
+                    }
+                };
+                var rzp1 = new Razorpay(paymentOptions);
+
+                rzp1.on('payment.failed', function (response){
+                    alert('OOPS ! something happened');;
+                });
+                rzp1.open();  
+            }
+        });
+    }
+    function upgrade_seller_package(id, price){
+        Swal.fire({
+        title: "Are you sure you want to upgrade?",
+        // text: "Purchase this Package?",
+        icon: "question",
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Yes, upgrade it!'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                $.ajax({
+                    type: 'GET',
+                    url: '{{ route("user.seller-package-check") }}',
+                    data: {
+                        'id' : "{{Auth::guard('web')->user()->id}}",
+                        'amount':price
+                    },
+                    success: function(result) {
+                        console.log(result);
+                        if(result.status==500){
+                            Swal.fire({
+                                title: 'Error!',
+                                text: result.error,
+                                icon: 'error',
+                            });
+                            return false;
+                        }
+                        if(result.status==200){
+                            var final_amount = parseInt(result.amount*100);
+                            var paymentOptions = {
+                                "key": "{{env('RAZORPAY_KEY')}}",
+                                "amount": final_amount,
+                                "currency": "INR",
+                                "name": "MILAAPP",
+                                "description": "Online payment",
+                                "image": "{{asset('frontend/assets/images/logo.png')}}",
+                                "handler": function (response){
+                                    $('input[name="seller_payment_method"]').val('Razorpay Payment');
+                                    $('input[name="seller_razorpay_payment_id"]').val(response.razorpay_payment_id);
+                                    $('#seller_package_form'+id).submit();
+                                },
+                                "prefill": {
+                                    "email": "{{Auth::guard('web')->user()->email}}",
+                                    "contact": "{{Auth::guard('web')->user()->mobile}}"
+                                },
+                                "notes": {
+                                    "address": "Razorpay Corporate Office"
+                                },
+                                "theme": {
+                                    "color": "#0076D7"
+                                }
+                            };
+                            var rzp1 = new Razorpay(paymentOptions);
+
+                            rzp1.on('payment.failed', function (response){
+                                alert('OOPS ! something happened');;
+                            });
+                            rzp1.open();  
+                        }
+                    },
+                    error: function(xhr, status, error) {
+                        console.error(xhr.responseText);
                     }
                 });
             }
-            function upgrade_seller_package(id){
-                Swal.fire({
-                title: "Are you sure you want to upgrade?",
-                // text: "Purchase this Package?",
-                icon: "question",
-                showCancelButton: true,
-                confirmButtonColor: '#3085d6',
-                cancelButtonColor: '#d33',
-                confirmButtonText: 'Yes, upgrade it!'
-                }).then((result) => {
-                    if (result.isConfirmed) {
-                       $('#seller_package_form'+id).submit();
+        });
+    }
+    // For Buyer
+    function buy_buyer_package(id, price, package_type){
+        Swal.fire({
+        title: "Are you sure you want to purchase it??",
+        // text: "Purchase this Package?",
+        icon: "question",
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Yes, Purchase it!'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                $.ajax({
+                    type: 'GET',
+                    url: '{{ route("user.buyer-package-check") }}',
+                    data: {
+                        'id' : "{{Auth::guard('web')->user()->id}}",
+                        'package_type':package_type
+                    },
+                    success: function(result) {
+                        console.log(result);
+                        if(result.status==500){
+                            Swal.fire({
+                                title: 'Error!',
+                                text: 'Please purchase the basic package first, one time only..',
+                                icon: 'error',
+                            });
+                            return false;
+                        }else{
+                            var final_amount = parseInt(price*100);
+                            var paymentOptions = {
+                                "key": "{{env('RAZORPAY_KEY')}}",
+                                "amount": final_amount,
+                                "currency": "INR",
+                                "name": "MILAAPP",
+                                "description": "Online payment",
+                                "image": "{{asset('frontend/assets/images/logo.png')}}",
+                                "handler": function (response){
+                                    $('input[name="buyer_payment_method"]').val('Razorpay Payment');
+                                    $('input[name="buyer_razorpay_payment_id"]').val(response.razorpay_payment_id);
+                                    $('#buyer_package_form'+id).submit();
+                                },
+                                "prefill": {
+                                    "email": "{{Auth::guard('web')->user()->email}}",
+                                    "contact": "{{Auth::guard('web')->user()->mobile}}"
+                                },
+                                "notes": {
+                                    "address": "Razorpay Corporate Office"
+                                },
+                                "theme": {
+                                    "color": "#0076D7"
+                                }
+                            };
+                            var rzp1 = new Razorpay(paymentOptions);
+
+                            rzp1.on('payment.failed', function (response){
+                                alert('OOPS ! something happened');;
+                            });
+                            rzp1.open();  
+                        }
+                    },
+                    error: function(xhr, status, error) {
+                        console.error(xhr.responseText);
                     }
                 });
             }
-            // For Buyer
-            function buy_buyer_package(id){
-                Swal.fire({
-                title: "Are you sure you want to purchase it??",
-                // text: "Purchase this Package?",
-                icon: "question",
-                showCancelButton: true,
-                confirmButtonColor: '#3085d6',
-                cancelButtonColor: '#d33',
-                confirmButtonText: 'Yes, Purchase it!'
-                }).then((result) => {
-                    if (result.isConfirmed) {
-                       $('#buyer_package_form'+id).submit();
+        });
+    }
+    function upgrade_buyer_package(id, price){
+        Swal.fire({
+        title: "Are you sure you want to upgrade?",
+        // text: "Purchase this Package?",
+        icon: "question",
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Yes, upgrade it!'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                var final_amount = parseInt(price*100);
+                var paymentOptions = {
+                    "key": "{{env('RAZORPAY_KEY')}}",
+                    "amount": final_amount,
+                    "currency": "INR",
+                    "name": "MILAAPP",
+                    "description": "Online payment",
+                    "image": "{{asset('frontend/assets/images/logo.png')}}",
+                    "handler": function (response){
+                        $('input[name="buyer_payment_method"]').val('Razorpay Payment');
+                        $('input[name="buyer_razorpay_payment_id"]').val(response.razorpay_payment_id);
+                        $('#buyer_package_form'+id).submit();
+                    },
+                    "prefill": {
+                        "email": "{{Auth::guard('web')->user()->email}}",
+                        "contact": "{{Auth::guard('web')->user()->mobile}}"
+                    },
+                    "notes": {
+                        "address": "Razorpay Corporate Office"
+                    },
+                    "theme": {
+                        "color": "#0076D7"
                     }
+                };
+                var rzp1 = new Razorpay(paymentOptions);
+
+                rzp1.on('payment.failed', function (response){
+                    alert('OOPS ! something happened');;
                 });
+                rzp1.open();  
             }
-            function upgrade_buyer_package(id){
-                Swal.fire({
-                title: "Are you sure you want to upgrade?",
-                // text: "Purchase this Package?",
-                icon: "question",
-                showCancelButton: true,
-                confirmButtonColor: '#3085d6',
-                cancelButtonColor: '#d33',
-                confirmButtonText: 'Yes, upgrade it!'
-                }).then((result) => {
-                    if (result.isConfirmed) {
-                       $('#buyer_package_form'+id).submit();
-                    }
-                });
-            }
-    
-        
-               
+        });
+    }
+
 </script>
 
 <script>

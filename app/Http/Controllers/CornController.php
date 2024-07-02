@@ -16,6 +16,7 @@ use Illuminate\Database\QueryException;
 use Illuminate\Support\Facades\DB;
 use InvalidArgumentException; // Import Exception class
 
+use function GuzzleHttp\json_encode;
 
 class CornController extends Controller
 {
@@ -351,14 +352,14 @@ class CornController extends Controller
         
         // Extract the current time in 'H:i:00' format (excluding seconds)
         $currentTime = $now->format('H:i');
-
+        
         // Calculate the datetime 5 minutes after the current datetime
         $fiveMinutesAfter = Carbon::parse($currentTime)->addMinutes(5)->format('H:i');
         
         // Query Inquiry where expiry_date is within the next 5 minutes
         $data = Inquiry::with('ParticipantsData')->where('start_date',$currentDate)->whereBetween('start_time', [$currentTime, $fiveMinutesAfter])->get()->toArray();
-
-          
+        
+        
         if (count($data) > 0) {
             foreach ($data as $inquiry) {
                 // Check if there are any participants data
@@ -374,6 +375,37 @@ class CornController extends Controller
                         }
                     }
                 }
+            }
+        }
+    }
+    public function SendToSellerMail()
+    {
+        // Fetch the first 10 entries from the mail_logs table
+        $data = DB::table('mail_logs')->take(10)->get()->toArray();
+    
+        // Check if there are any entries to process
+        if (count($data) > 0) {
+            DB::beginTransaction();
+            try {
+                // Loop through each entry
+                foreach ($data as $item) {
+                    // dd($item->response);
+                         // Convert the response to an array
+                    $messageData = json_decode($item->response, true);
+                
+                    $messageData['user'] = new User($messageData['user']);
+                    $messageData['inquiry_data'] = new Inquiry($messageData['inquiry_data']);
+                    $messageData['Buyer_data'] = new User($messageData['Buyer_data']);
+                    // Send the email
+                    sendMail($messageData, $item->email, $item->subject);
+    
+                    // Delete the entry from the mail_logs table after sending the email
+                    DB::table('mail_logs')->where('id', $item->id)->delete();
+                }
+                DB::commit();
+            } catch (\Exception $e) {
+                DB::rollBack();
+                // Handle exception or log error
             }
         }
     }

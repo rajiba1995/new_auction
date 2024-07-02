@@ -321,16 +321,18 @@ if (!function_exists('sendMail')) {
 
     function sendMail($data,$email,$subject) {
         // $email = $data['user']->email;
-        // $email = 'agarwalsarvesh96@gmail.com';
+        $email = 'rajibalikhan299@gmail.com';
         $from_address = env('MAIL_FROM_ADDRESS');
         $sender = env('MAIL_FROM_NAME');
         $response = Mail::send('mail.send_mail', $data, function ($message) use ($data, $from_address, $subject, $email, $sender) {
             $message->to($email)
                     ->subject($subject)
                     ->from($from_address, $sender);
+                    if (isset($data['attachment'])) {
+                        $message->attach($data['attachment']);
+                    }
         });
         return true;
-
     }
 }
 if (!function_exists('verifiedBadge')) {

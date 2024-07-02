@@ -168,6 +168,30 @@
                                 @endforeach
                             </div>
                             <strong>Badges Section</strong>
+                            <br>
+                            <strong>Free Badges</strong>
+                            <table class="table">
+                              <tbody class="align-middle"> 
+                                @if(verifiedBadge($data->id))
+                                <tr>
+                                    <td><img src="{{ $verifiedBadge->logo ? asset($verifiedBadge->logo) : asset('frontend/assets/images/user.png') }}" alt="No-Image" height="100px" width="100px" class="img-thumbnail" srcset=""/></td>
+                                    <td> {{ $verifiedBadge->title }}</td>      
+                                    <td> {{ Str::limit($verifiedBadge->short_desc,200) }}</td>      
+                                    <td> {{ Str::limit($verifiedBadge->long_desc,200) }}</td>         
+                                </tr>
+                                @endif
+                                @if(isset($data->trusted_id) && !is_null($data->trusted_id) && trustedBadge($data->trusted_id,$data->id))
+                                <tr>
+                                    <td><img src="{{ $trustedBadge->logo ? asset($trustedBadge->logo) : asset('frontend/assets/images/user.png') }}" alt="No-Image" height="100px" width="100px" class="img-thumbnail" srcset=""/></td>
+                                    <td> {{ $trustedBadge->title }}</td>      
+                                    <td> {{ Str::limit($trustedBadge->short_desc,200) }}</td>      
+                                    <td> {{ Str::limit($trustedBadge->long_desc,200) }}</td>         
+                                </tr>
+                                @endif
+                              </tbody>
+                            </table>
+                            <br>
+                            <strong>Paid Badges</strong>
                             <table class="table">
                                 <thead>
                                     <tr class="align-middle">
@@ -177,7 +201,8 @@
                                         <th>Short Description</th>
                                         <th>Long Description</th>
                                         <th>Price</th>
-                                        <th>Date</th>
+                                        <th>Purchase Date</th>
+                                        <th>Expiry Date</th>
                                         
                                     </tr>
                                 </thead>
@@ -193,6 +218,7 @@
     
                                         <td> {{ $badge->getBadgeDetails->price_prefix }} {{ $badge->getBadgeDetails->price }}</td>      
                                         <td> {{ $badge->created_at->format('d-M-Y') }}</td>      
+                                        <td> {{ date('d-m-Y',strtotime($badge->expiry_date) )}}</td>      
                                     </tr>
                                     @endif
                                      @empty

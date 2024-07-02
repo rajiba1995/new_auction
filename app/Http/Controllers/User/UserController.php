@@ -13,6 +13,7 @@ use App\Models\Notification;
 use App\Models\Category;
 use App\Models\WatchList;
 use App\Models\MyBadge;
+use App\Models\Badge;
 use App\Models\User;
 use App\Models\MySellerWallet;
 use App\Models\OutsideParticipant;
@@ -39,6 +40,7 @@ use Carbon\Carbon;
 use Illuminate\Support\Facades\Session;
 use App\Mail\welcomeMail;
 use Illuminate\Support\Facades\Mail;
+use Barryvdh\DomPDF\Facade as PDF;
 use Hash;
 
 
@@ -534,9 +536,10 @@ class UserController extends Controller{
         $myBadgesFullDetails = $this->userRepository->myBadgesFullDetails($data->id);
         $allBadges = $this->userRepository->getAllBadges($myBadges);
         $verifiedBadge = $this->userRepository->verifiedBadge();
+        $trustedBadge = $this->userRepository->trustedBadge();
         $my_cuttent_seller_package = $this->userRepository->getCurrentSellerPackage($data->id);
         $my_cuttent_buyer_package = $this->userRepository->getCurrentBuyerPackage($data->id);
-        return view('front.user.payment_management', compact('data','packages','seller_packages','myBadges','allBadges', 'my_cuttent_seller_package', 'my_cuttent_buyer_package','myBadgesFullDetails','verifiedBadge'));
+        return view('front.user.payment_management', compact('data','packages','seller_packages','myBadges','allBadges', 'my_cuttent_seller_package', 'my_cuttent_buyer_package','myBadgesFullDetails','verifiedBadge','trustedBadge'));
     }
     public function wallet_management(){
         $data = $this->AuthCheck();
@@ -547,6 +550,7 @@ class UserController extends Controller{
         return view('front.user.wallet_management',compact('data','my_current_seller_package','seller_walletBalance','my_current_buyer_package','buyer_walletBalance'));
     }
     public function package_payment_management(Request $request){
+        // dd($request->all());
         $data = $this->AuthCheck();
         if($data){
             try {
@@ -594,6 +598,7 @@ class UserController extends Controller{
                 $my_current_package->purchase_amount = $request->package_value;    
                 $my_current_package->expiry_date = $expiryDate;
                 $my_current_package->save();
+                $package_name = $my_current_package->getPackageDetails?$my_current_package->getPackageDetails->package_name:"Package";
 
                 // Retrieve the latest wallet record for the user
                 $latest_wallet = MySellerWallet::where('user_id', $data->id)->latest()->first();
@@ -608,21 +613,20 @@ class UserController extends Controller{
                 $my_wallet->credit_unit = $request->monthly_credit;
                 $my_wallet->current_unit = $current_balance + $monthly_credit;
                 $my_wallet->save();
-
                 // For Amount Transaction
-
                 $transaction = new Transaction();
                 $transaction->user_id = $data->id;
-                $transaction->unique_id = rand(100000, 999999).''.time(); // Adjusted range for 8-digit number
+                $transaction->unique_id = 'MLAP' . date('m') . time();
                 $transaction->transaction_type = 1; //Online
+                $transaction->status = 1; //Paid
                 $transaction->user_type = 1; //Seller
-                $transaction->transaction_id = rand(100000, 999999).''.time(); // Adjusted range for 8-digit number
+                $transaction->transaction_id = $request->seller_razorpay_payment_id; // Adjusted range for 8-digit number
                 $transaction->purpose = $request->form_type=='upgrade'?'Upgrade seller package':'New seller package';
                 $transaction->actual_amount = $request->package_value;
                 $transaction->negotiable_amount = $negotiable_amount;
                 $transaction->amount = $request->package_value-$negotiable_amount;
                 $transaction->seller_package_id = $request->package_id;
-                $transaction->transaction_source = "Razorpay";
+                $transaction->transaction_source = $request->seller_payment_method;
                 $transaction->save();
                 if($transaction){
                     $websiteLog =new WebsiteLogs();
@@ -631,6 +635,51 @@ class UserController extends Controller{
                     $websiteLog->response =json_encode($transaction);
                     $websiteLog->save();
                 }
+                
+                //OrderID Generate
+                $razorpayKey = env('RAZORPAY_KEY');
+                $razorpaySecret = env('RAZORPAY_SECRET');
+
+                // Prepare the data for the order
+                $orderData = [
+                    'receipt'         => $transaction->unique_id,
+                    'amount'          => $transaction->amount * 100, // amount in the smallest currency unit
+                    'currency'        => 'INR',
+                    'payment_capture' => 1 // auto capture
+                ];
+                // Encode the order data
+                $jsonData = json_encode($orderData);
+                
+                // Initialize cURL
+                $ch = curl_init();
+
+                // Set cURL options
+                curl_setopt($ch, CURLOPT_URL, 'https://api.razorpay.com/v1/orders');
+                curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+                curl_setopt($ch, CURLOPT_POST, true);
+                curl_setopt($ch, CURLOPT_POSTFIELDS, $jsonData);
+                curl_setopt($ch, CURLOPT_HTTPHEADER, [
+                    'Content-Type: application/json',
+                    'Authorization: Basic ' . base64_encode("$razorpayKey:$razorpaySecret")
+                ]);
+
+                // Execute the cURL request
+                $response = curl_exec($ch);
+                // Check for errors
+                if ($response === false) {
+                    $errorMessage = curl_error($ch);
+                    // $order_id = "";
+                }
+
+                $data_array=[
+                    'user'=>$data,
+                    'transaction_type'=>'Seller: '.$package_name,
+                    'start_date'=>date('d-m-Y', strtotime($my_current_package->created_at)),
+                    'end_date'=>date('d-m-Y', strtotime($my_current_package->expiry_date)),
+                    'transaction'=>$transaction,
+                    'type'=>'PAYMENT_TRANSACTION',
+                ];
+                sendMail($data_array, $data->email, 'Confirmation of Payment Transaction on Milaap');
                 DB::commit();
                 if (Session::has('url.intended')) {
                     $intendedUrl = Session::get('url.intended');
@@ -649,7 +698,25 @@ class UserController extends Controller{
             return redirect()->route('login');
         }
     }
+    public function seller_package_check(Request $request){
+        $negotiable_amount = 0;
+        $my_current_package = MySellerPackage::with('getPackageDetails')->where('user_id', $request->id)->first();
+        if($my_current_package){
+            $current_package_duration = $my_current_package->package_duration;
+            $monthly_package_price = $my_current_package->monthly_package_price;
+            $negotiable_amount = $monthly_package_price*($current_package_duration-$my_current_package->usage_months);
+        }
+        $amount = $request->amount-$negotiable_amount;
+        if ($amount > 0) {
+            return response()->json(['status' => 200, 'amount' => $amount]);
+        } else {
+            return response()->json(['status' => 500, 'error' => 'Something went wrong! Please contact the support team!']);
+        }
+       
+        
+    }
     public function buyer_package_store(Request $request){
+        // dd($request->all());
         $data = $this->AuthCheck();
         try {
             DB::beginTransaction();
@@ -728,16 +795,17 @@ class UserController extends Controller{
 
             $transaction = new Transaction();
             $transaction->user_id = $data->id;
-            $transaction->unique_id = rand(100000, 999999).''.time(); // Adjusted range for 8-digit number
+            $transaction->unique_id = 'MLAP' . date('m') . time(); // Adjusted range for 8-digit number
             $transaction->transaction_type = 1; //Online
+            $transaction->status = 1; //Paid
             $transaction->user_type = 2; //Buyer
-            $transaction->transaction_id = rand(100000, 999999).''.time(); // Adjusted range for 8-digit number
+            $transaction->transaction_id = $request->buyer_razorpay_payment_id; // Adjusted range for 8-digit number
             $transaction->purpose = $request->form_type=='upgrade'?'Upgrade buyer package':'New buyer package';
             $transaction->actual_amount = $request->package_amount;
             $transaction->negotiable_amount = $negotiable_amount;
             $transaction->amount = $request->package_amount-$negotiable_amount;
             $transaction->buyer_package_id = $request->package_id;
-            $transaction->transaction_source = "Razorpay";
+            $transaction->transaction_source = $request->buyer_payment_method;
             $transaction->remarks = NULL;
             $transaction->save();
             
@@ -753,6 +821,51 @@ class UserController extends Controller{
                 $websiteLog->table_name ="transactions, my_buyer_wallets, my_buyer_packages";
                 $websiteLog->response =json_encode($json_data);
                 $websiteLog->save();
+                $package_name = $my_current_package->package_data?$my_current_package->package_data->package_name:"Package";
+
+                //OrderID Generate
+                $razorpayKey = env('RAZORPAY_KEY');
+                $razorpaySecret = env('RAZORPAY_SECRET');
+
+                // Prepare the data for the order
+                $orderData = [
+                    'receipt'         => $transaction->unique_id,
+                    'amount'          => $transaction->amount * 100, // amount in the smallest currency unit
+                    'currency'        => 'INR',
+                    'payment_capture' => 1 // auto capture
+                ];
+                // Encode the order data
+                $jsonData = json_encode($orderData);
+                
+                // Initialize cURL
+                $ch = curl_init();
+
+                // Set cURL options
+                curl_setopt($ch, CURLOPT_URL, 'https://api.razorpay.com/v1/orders');
+                curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+                curl_setopt($ch, CURLOPT_POST, true);
+                curl_setopt($ch, CURLOPT_POSTFIELDS, $jsonData);
+                curl_setopt($ch, CURLOPT_HTTPHEADER, [
+                    'Content-Type: application/json',
+                    'Authorization: Basic ' . base64_encode("$razorpayKey:$razorpaySecret")
+                ]);
+
+                // Execute the cURL request
+                $response = curl_exec($ch);
+                // Check for errors
+                if ($response === false) {
+                    $errorMessage = curl_error($ch);
+                    // $order_id = "";
+                }
+                $data_array=[
+                    'user'=>$data,
+                    'transaction_type'=>'Buyer: '.$package_name,
+                    'start_date'=>date('d-m-Y', strtotime($my_current_package->created_at)),
+                    'end_date'=>date('d-m-Y', strtotime($my_current_package->expiry_date)),
+                    'transaction'=>$transaction,
+                    'type'=>'PAYMENT_TRANSACTION',
+                ];
+                sendMail($data_array, $data->email, 'Confirmation of Payment Transaction on Milaap');
             }
              // For Amount Transaction
              DB::commit();
@@ -772,6 +885,18 @@ class UserController extends Controller{
             // dd($e->getMessage());
             // return redirect()->back()->with('error', 'An error occurred: ' . $e->getMessage());
             return redirect()->back()->with('error', 'Something went wrong, please try again later!');
+        }
+    }
+    public function buyer_package_check(Request $request){
+        $my_basic_checking = MyBuyerOpeningPackage::where('user_id', $request->id)->first();
+        if($my_basic_checking && $request->package_type=="premium" || $my_basic_checking && $request->package_type=="basic"){
+            return response()->json(['status'=>200]);
+        }else{
+            if($request->package_type=="basic"){
+                return response()->json(['status'=>200]);
+            }else{
+                return response()->json(['status'=>500]);
+            }
         }
     }
     public function settings(){
@@ -882,7 +1007,8 @@ class UserController extends Controller{
         $WatchList = WatchList::with('SellerData')->where('buyer_id', $data->id)->where('group_id', null)->get();
         $groupWatchList = GroupWatchList::orderBy('group_name', 'ASC')->where('created_by',$data->id)->get();
         $verifiedBadge = $this->userRepository->verifiedBadge();
-        return view('front.user.watchlist', compact('WatchList','groupWatchList', 'existing_inquiries','verifiedBadge'));
+        $trustedBadge = $this->userRepository->trustedBadge();
+        return view('front.user.watchlist', compact('WatchList','groupWatchList', 'existing_inquiries','verifiedBadge','trustedBadge'));
     }
 
     public function seller_buk_upload_on_group_watchlist(Request $request){
@@ -1190,9 +1316,12 @@ class UserController extends Controller{
             $WatchList =WatchList::with('SellerData')->where('group_id', $GroupWatchList->id)->get();
             $outSideParticipats =OutsideParticipant::with('BuyerDetails')->where('group_id', $GroupWatchList->id)->get();
             $verifiedBadge = $this->userRepository->verifiedBadge();
+            $trustedBadge = $this->userRepository->trustedBadge();
+
+
 
             // dd($outSideParticipats);
-             return view('front.user.watchlist_by_group', compact('WatchList', 'GroupWatchList', 'existing_inquiries','outSideParticipats','verifiedBadge'));
+             return view('front.user.watchlist_by_group', compact('WatchList', 'GroupWatchList', 'existing_inquiries','outSideParticipats','verifiedBadge','trustedBadge'));
         }else{
             return redirect()->route('user.watchlist')->with('warning', 'Group not found in your panel. Please enter a valid group name.');
         }
@@ -1200,26 +1329,88 @@ class UserController extends Controller{
     public function purchase(Request $request){
         // dd($request->all());
         try {
+            $duration =isset($request->duration)?$request->duration:12;
             $data = $this->AuthCheck();
             // Create a new transaction
             $transaction = new Transaction();
             $transaction->user_id = $data->id;
-            $transaction->unique_id = rand(10000000, 9999999);
+            $transaction->unique_id = 'MLAP' . date('m') . time();
             $transaction->transaction_type = 1;
-            $transaction->transaction_id = rand(10000000, 9999999);
+            $transaction->status = 1;
+            $transaction->transaction_id = $request->razorpay_payment_id;
             $transaction->purpose = 'Badge';
             $transaction->amount = $request->amount;
-            $transaction->transaction_source = "phonePe";
+            $transaction->transaction_source = $request->payment_method;
+            // PDF Generate
+            $data_pdf=[
+                'user'=>$data,
+                'transaction'=>$transaction,
+            ];
+            $PDFOptions = ['enable_remote' => true];
+            $pdf = PDF::setOptions($PDFOptions)->loadView('mail.pdf', $data_pdf);
+            $pathToFile = asset('uploads/pdf/'.$transaction->unique_id.'.pdf');
+            $pdf->save(public_path('uploads/pdf/'.$transaction->unique_id.'.pdf'));
+            $transaction->invoice_file = $pathToFile;
             $transaction->save();
             // Create a new MyBadge
 
             $myBadge = new MyBadge();
             $myBadge->user_id = $data->id;
             $myBadge->badge_id = $request->id;
-            $myBadge->duration = $request->duration;
-            $myBadge->expiry_date = Carbon::now()->addDays($request->duration * 30);
+            $myBadge->duration = $duration;
+            $myBadge->expiry_date = Carbon::now()->addDays($duration * 30);
             $myBadge->save();
+            $Badge = Badge::findOrFail($request->id);
+            $package = $Badge?$Badge->title:"";
             // Return success response
+
+            //OrderID Generate
+            $razorpayKey = env('RAZORPAY_KEY');
+            $razorpaySecret = env('RAZORPAY_SECRET');
+
+            // Prepare the data for the order
+            $orderData = [
+                'receipt'         => $transaction->unique_id,
+                'amount'          => $transaction->amount * 100, // amount in the smallest currency unit
+                'currency'        => 'INR',
+                'payment_capture' => 1 // auto capture
+            ];
+            // Encode the order data
+            $jsonData = json_encode($orderData);
+            
+            // Initialize cURL
+            $ch = curl_init();
+
+            // Set cURL options
+            curl_setopt($ch, CURLOPT_URL, 'https://api.razorpay.com/v1/orders');
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+            curl_setopt($ch, CURLOPT_POST, true);
+            curl_setopt($ch, CURLOPT_POSTFIELDS, $jsonData);
+            curl_setopt($ch, CURLOPT_HTTPHEADER, [
+                'Content-Type: application/json',
+                'Authorization: Basic ' . base64_encode("$razorpayKey:$razorpaySecret")
+            ]);
+
+            // Execute the cURL request
+            $response = curl_exec($ch);
+            // Check for errors
+            if ($response === false) {
+                $errorMessage = curl_error($ch);
+                // $order_id = "";
+            }
+
+            // Decode the response
+            // $responseData = json_decode($response, true);
+            $data_array=[
+                'user'=>$data,
+                'attachment'=>$transaction->invoice_file,
+                'transaction_type'=>'Badge: '.$package,
+                'start_date'=>date('d-m-Y', strtotime($myBadge->created_at)),
+                'end_date'=>date('d-m-Y', strtotime($myBadge->expiry_date)),
+                'transaction'=>$transaction,
+                'type'=>'PAYMENT_TRANSACTION',
+            ];
+            sendMail($data_array, $data->email, 'Confirmation of Payment Transaction on Milaap');
             return response()->json(['status' => 200]);
         } catch (Exception $e) {
             return response()->json(['error' => $e->getMessage()], 500);
