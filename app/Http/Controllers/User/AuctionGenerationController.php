@@ -298,13 +298,12 @@ class AuctionGenerationController extends Controller
                         notification_push(NULL,$request->created_by,$request->created_by,$credit." credit used for a new inquiry generation",NULL,$link);
                     }
                     $exist_participants = InquiryParticipant::with('SellerData')->where('inquiry_id', $inquiry->id)->get();
-                    // dd($exist_participants);
                     if(count($exist_participants)>0){
                         $Buyer_data = User::where('id', $request->created_by)->first();
                         foreach($exist_participants as $key =>$item){
                             // Existing User
                             $customer_mobile_no = $item->mobile; 
-                            $customer_mobile_no = '8617207525';
+                            // $customer_mobile_no = '8617207525';
                             $checkPhoneNumberValid = checkPhoneNumberValid($customer_mobile_no);
                             if($checkPhoneNumberValid){
                                 $sender = env('SMS_SENDER');
@@ -350,8 +349,8 @@ class AuctionGenerationController extends Controller
                                 $checkPhoneNumberValid = checkPhoneNumberValid($customer_mobile_no);
                                 if($checkPhoneNumberValid){
                                     $sender = env('SMS_SENDER');
-                                    $name = $val->name;
-                                    $buyer_name = $Buyer_data->name;
+                                    $name = $val->name?$val->name:"";
+                                    $buyer_name = $Buyer_data->name?$Buyer_data->name:"";
                                     $url = 'https://milaapp.in/seller/inquiries';
                                     // Mobile number to send the SMS to
                                     $myMessage = urlencode("Dear new user ".$name.", You have been chosen by ".$buyer_name." to register and join an auction. Details: ".$url." (owned by SMTPL) - Sarv Megh Technology OPC Private Limited");

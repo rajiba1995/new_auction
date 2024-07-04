@@ -1429,12 +1429,22 @@ class UserController extends Controller{
     $data = $this->AuthCheck();
         // Make sure both arrays have the same number of elements
       if(count($request->name) !== count($request->phone)) {
-          return response()->json(['error' => 'Names and phones arrays must have the same number of elements'], 400);
+        return response()->json(['status' => 400, 'error'=>'Names and phones arrays must have the same number of elements']);
       }
         $goupId = $request->groupId;
         // Iterate over the arrays and save each participant
         foreach($request->name as $key => $name) {
             $phone = $request->phone[$key]; // Get corresponding phone number
+            // $phone = 1000; // Get corresponding phone number
+            if($name==null){
+                return response()->json(['status' => 400, 'error'=>'Please enter name.']);
+            }
+            if($phone==null){
+                return response()->json(['status' => 400, 'error'=>'Please enter phone number.']);
+            }
+            if(checkPhoneNumberValid($phone)==false){
+                return response()->json(['status' => 400, 'error'=>'Phone number must be exactly 10 digits.']);
+            }
             $User = User::where('mobile', $phone)->first();
             if($User){
                 if($request->groupId){
@@ -1460,7 +1470,6 @@ class UserController extends Controller{
                 $outSide_participants->mobile = $phone;
                 $outSide_participants->save();
             }
-           
         }
         return response()->json(['status' => 200]);
         }

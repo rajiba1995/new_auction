@@ -391,7 +391,6 @@ class CornController extends Controller
     {
         // Fetch the first 10 entries from the mail_logs table
         $data = DB::table('mail_logs')->take(10)->get()->toArray();
-    
         // Check if there are any entries to process
         if (count($data) > 0) {
             DB::beginTransaction();
@@ -401,10 +400,16 @@ class CornController extends Controller
                     // dd($item->response);
                          // Convert the response to an array
                     $messageData = json_decode($item->response, true);
-                
+                   
+                    $cc = [
+                        $messageData['user']['email1'],
+                        $messageData['user']['email2'],
+                        $messageData['user']['email3']
+                    ];
                     $messageData['user'] = new User($messageData['user']);
                     $messageData['inquiry_data'] = new Inquiry($messageData['inquiry_data']);
                     $messageData['Buyer_data'] = new User($messageData['Buyer_data']);
+                    $messageData['cc'] = $cc;
                     // Send the email
                     sendMail($messageData, $item->email, $item->subject);
     
