@@ -19,12 +19,12 @@
                     <div class="login-logo">
                         <img src="https://milaapp.in/frontend/assets/images/logo.png">
                     </div>
-                    <h2>Sign In your Account</h2>
+                    <h2>Sign In</h2>
                     <form method="POST" action="{{ route('login') }}">
                         @csrf <!-- CSRF protection -->
     
                         <div class="form-group">
-                            <label class="form-label">Please Enter your Email ID*</label>
+                            <label class="form-label">Please Enter Email ID *</label>
                             <input type="email" name="email" class="form-control border-red @error('email') is-invalid @enderror" placeholder="Ex, info@auction.com" value="{{ old('email') }}">
                             @error('email')
                                 <span class="invalid-feedback" role="alert">

@@ -57,7 +57,7 @@
                                                 <div class="container-fluid">
                                                     <div class="row">
                                                         <div class="col-lg-4 col-md-6 col-12 info-box">
-                                                            <label>Name of the Business: </label>
+                                                            <label>Business Name: </label>
                                                             <p>{{$data->business_name}}</p>
                                                         </div>
                                                         <div class="col-lg-4 col-md-6 col-12 info-box">
@@ -81,7 +81,7 @@
                                                             <p>+91 {{$data->mobile}}</p>
                                                         </div>
                                                         <div class="col-lg-4 col-md-6 col-12 info-box">
-                                                            <label>Number of Employee:</label>
+                                                            <label>Number of Employee(s):</label>
                                                             <p>{{$data->employee}}</p>
                                                         </div>
                                                         <div class="col-lg-4 col-md-6 col-12 info-box">
@@ -92,6 +92,15 @@
                                                             <label>Legal Status of Firm:</label>
                                                             <p>{{$data->legal_status}}</p>
                                                         </div>
+                                                        <div class="col-lg-4 col-md-6 col-12 info-box">
+                                                            <label>City:</label>
+                                                            <p>{{$data->CityData? $data->CityData->name : ''}}</p>
+                                                        </div>
+                                                        <div class="col-lg-4 col-md-6 col-12 info-box">
+                                                            <label>State:</label>
+                                                            <p>{{$data->StateData? $data->StateData->name : ''}}</p>
+                                                        </div>
+                                                      
                                                         @if($data->email1 || $data->email2 || $data->email3)
                                                         <div class="col-md-6 col-12 info-box">
                                                             <label>Additional Information:</label>

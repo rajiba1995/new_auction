@@ -78,7 +78,7 @@
                                                                             <p>{{$item->rupees_prefix}} {{$item->package_price}} /{{$item->package_type}}</p>
                                                                         </div>
                                                                         <div class="card-body">
-                                                                            <p>No. of credit : {{$item->total_number_of_auction}}</p>
+                                                                            <p>No. of Credits : {{$item->total_number_of_auction}}</p>
                                                                             @if($item->type =="basic")
                                                                                 <p>Cost per credit : "Free"</p>   
                                                                                 {{-- <p>Application cost per credit:Included+Sms cost per credit:Included</p>  --}}
@@ -271,7 +271,7 @@
                                                         <thead>
                                                             <tr>
                                                                 <th>Badge Name</th>
-                                                                <th>Descriptions</th>
+                                                                <th>Description</th>
                                                                 <th>Instructions to get it</th>
                                                                 <th>Expiry Date</th>
                                                             </tr>
@@ -415,7 +415,7 @@
                                                         <thead>
                                                             <tr>
                                                                 <th>Badge Name</th>
-                                                                <th>Descriptions</th>
+                                                                <th>Description</th>
                                                                 <th>Instructions to get it</th>
                                                                 <th class="price-th">Validity(in months)</th>
                                                                 <th class="price-th">Price</th>

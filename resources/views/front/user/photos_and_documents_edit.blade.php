@@ -17,12 +17,10 @@
                             <div class="tab-content">
                                 <div class="tab-content-wrapper">
                                     <div class="top-content-bar">
+                                        <p>UPLOAD<strong>->YOUR PHOTOS &amp; DOCUMENTS</strong> </p>
                                         <a href="{{ route('user.photos_and_documents') }}" class="btn btn-normal btn-cta"><i class="fa-solid fa-backward"></i> Back</a>
                                     </div>
                                     <div class="inner">
-                                        <div class="my-4">
-                                            <p>UPLOAD<strong>->YOUR PHOTOS &amp; DOCUMENTS</strong> </p>
-                                        </div>
                                             {{-- @if (session('success'))
                                                 <div class="alert alert-success" id="message_div">
                                                     {{ session('success') }}
@@ -87,7 +85,7 @@
                                             <div class="row input-row">
                                                 <div class="col-lg-6 col-12">
                                                     <div class="form-group">
-                                                        <label class="form-label">Upload Pan</label>
+                                                        <label class="form-label">Upload PAN</label>
                                                         <label for="pan_file" class="custom-upload">
                                                             <input type="file" name="pan_file" id="pan_file">
                                                             <span class="btn btn-animated btn-upload">Upload</span>
@@ -111,7 +109,7 @@
                                             <div class="row input-row">
                                                 <div class="col-lg-6 col-12">
                                                     <div class="form-group">
-                                                        <label class="form-label">Upload Adhar</label>
+                                                        <label class="form-label">Upload AADHAR</label>
                                                         <label for="adhar_file" class="custom-upload">
                                                             <input type="file" name="adhar_file" id="adhar_file">
                                                             <span class="btn btn-animated btn-upload">Upload</span>
@@ -125,7 +123,7 @@
                                                 </div>
                                                 <div class="col-lg-6 col-12">
                                                     <div class="form-group">
-                                                        <label class="form-label">Adhar Number</label>
+                                                        <label class="form-label">AADHAR Number</label>
                                                         <input type="text" name="adhar_number" class="form-control {{$user_document && $user_document->adhar_number?"border-red":"border-danger"}}" value="{{$user_document?$user_document->adhar_number:old('adhar_number')}}">
                                                         @error('adhar_number')<span class="text-danger" role="alert"> <strong>{{ $message }}</strong> </span>
                                                         @enderror
@@ -240,7 +238,6 @@
         var id = $(this).data('id');
         Swal.fire({
             title: 'Are you sure?',
-            text: "You won't be able to revert this!",
             icon: 'warning',
             showCancelButton: true,
             confirmButtonColor: '#3085d6',

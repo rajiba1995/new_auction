@@ -53,6 +53,12 @@ class LoginController extends Controller
         $request->validate([
             'email' => 'required|email|exists:users,email', // assuming users table has email column
             'password' => 'required',
+        ],
+        [
+            'email.required' => 'Please Enter Valid Email ID ',
+            'email.email' => 'Please Enter Valid Email ID',
+            'email.exists' => 'This email does not exist in our records.',
+            'password.required' => 'Please Enter Password.',
         ]);
     
         // If validation passes, attempt to log in the user

@@ -400,7 +400,7 @@ class UserController extends Controller{
                 $data->image = $filePath;
             }
             $data->save();
-            return redirect()->back()->with('success', 'This '.$data->type . ' updated successfully');
+            return redirect()->back()->with('success', $data->type . ' updated successfully');
         }
     }
     public function RatingAndReview(){
@@ -503,7 +503,7 @@ class UserController extends Controller{
                 // Commit the transaction if all operations succeed
                 DB::commit();
             
-                return redirect()->route('user.requirements_and_consumption')->with('success', 'New Data added successfully');
+                return redirect()->route('user.requirements_and_consumption')->with('success', 'New Consumption added successfully');
             } catch (\Exception $e) {
                 // Rollback the transaction and handle the exception
                 DB::rollBack();

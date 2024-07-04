@@ -22,6 +22,7 @@
                             <div class="tab-content">
                                 <div class="tab-content-wrapper">
                                     <div class="top-content-bar">
+                                        <p>NEW ADD<strong>->YOUR REQUIREMENTS &amp; CONSUMPTIONS</strong> </p>
                                         <a href="{{route('user.profile')}}" class="btn btn-normal btn-cta"><i class="fa-solid fa-backward"></i>                                              
                                             Back
                                          </a>
@@ -33,7 +34,6 @@
                                     @endif
                                     <div class="content-box">
                                         <div class="inner"> 
-                                             <p>NEW ADD<strong>->YOUR REQUIREMENTS &amp; CONSUMPTIONS</strong> </p>
                                             <form action="{{route('user.requirements_and_consumption.store')}}" class="input-form" method="POST">
                                                 @csrf
                                                 <div class="row input-row">

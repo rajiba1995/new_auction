@@ -1,4 +1,4 @@
-@extends('front.layout.app')
+    @extends('front.layout.app')
 @section('section')
 <div class="main">
     <div class="inner-page">
@@ -21,13 +21,13 @@
                                 <div class="tab-pane {{ (request()->is('my/product-and-service*')) ? 'active' : '' }}" id="productsServices" role="tabpanel" aria-labelledby="productsServices-tab" tabindex="0">
                                     <div class="tab-content-wrapper">
                                         <div class="top-content-bar">
+                                            <p>UPDATE<strong>->{{strtoupper($Product->title)}}</strong> </p>
                                             <a href="{{route('user.product_and_service')}}" class="btn btn-normal btn-cta"><i class="fa-solid fa-backward"></i>                                              
                                                Back
                                             </a>
                                         </div>
                                         <div class="content-box">
                                             <div class="inner">
-                                                <p>UPDATE<strong>->{{strtoupper($Product->title)}}</strong> </p>
                                                     @if (session('success'))
                                                         <div class="alert alert-success" id="message_div">
                                                             {{ session('success') }}

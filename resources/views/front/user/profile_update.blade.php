@@ -21,13 +21,13 @@
                                 <div class="tab-pane {{ (request()->is('my/profile*')) ? 'active' : '' }}" id="productsServices" role="tabpanel" aria-labelledby="productsServices-tab" tabindex="0">
                                     <div class="tab-content-wrapper">
                                         <div class="top-content-bar">
+                                            <p>UPDATE<strong>->FILL YOUR BASIC INFORMATIONS</strong> </p>
                                             <a href="{{route('user.profile')}}" class="btn btn-normal btn-cta"><i class="fa-solid fa-backward"></i>                                              
                                                Back
                                             </a>
                                         </div>
                                         <div class="content-box">
                                             <div class="inner">
-                                                <p>UPDATE<strong>->FILL YOUR BASIC INFORMATIONS</strong> </p>
                                                 <form action="{{route('user.profile.update')}}" class="input-form" method="POST" enctype="multipart/form-data">
                                                     @csrf
                                                     <div class="row input-row">
@@ -75,7 +75,7 @@
                                                     <div class="row input-row">
                                                         <div class="col-12">
                                                             <div class="form-group">
-                                                                <label class="form-label">Name of your business*</label>
+                                                                <label class="form-label">Business Name*</label>
                                                                 <input type="text" class="form-control border-red" name="business_name" value="{{$data->business_name}}">
                                                                 @error('business_name')<span class="text-danger" role="alert"><strong>{{ $message }}</strong></span>@enderror
                                                             </div>
@@ -126,7 +126,7 @@
                                                     <div class="row input-row">
                                                         <div class="col-lg-6 col-12">
                                                             <div class="form-group">
-                                                                <label class="form-label">Email Id*</label>
+                                                                <label class="form-label">Email*</label>
                                                                 <input type="email" class="form-control border-red" name="email" value="{{ old('email',$data->email) }}">
                                                                 @error('email')<span class="text-danger" role="alert"><strong>{{ $message }}</strong></span>@enderror
                                                             </div>
@@ -142,7 +142,7 @@
                                                     <div class="row input-row">
                                                         <div class="col-lg-6 col-12">
                                                             <div class="form-group">
-                                                                <label class="form-label">Business Type</label>
+                                                                <label class="form-label">Nature of Business (Type)</label>
                                                                 <select class="form-control border-red" name="business_type">
                                                                     <option value="" selected hidden>Select Business</option>
                                                                         @foreach ( $business_data as $item )
@@ -154,7 +154,7 @@
                                                         </div>
                                                         <div class="col-lg-6 col-12">
                                                             <div class="form-group">
-                                                                <label class="form-label">Total no, of Employee</label>
+                                                                <label class="form-label">Total No. of Employee(s)</label>
                                                                 <input type="text" class="form-control border-red" name="employee" value="{{ old('employee',$data->employee) }}">
                                                                 @error('employee')<span class="text-danger" role="alert"><strong>{{ $message }}</strong></span>@enderror
                                                             </div>
@@ -170,7 +170,7 @@
                                                         </div>
                                                         <div class="col-lg-6 col-12">
                                                             <div class="form-group">
-                                                                <label class="form-label">Legal Status of Firm</label>
+                                                                <label class="form-label">Legal Status of Company</label>
                                                                 <select class="form-control border-red" name="legal_status">
                                                                     <option value="" selected hidden>Select Legal Status</option>
                                                                     @foreach ( $legal_status_data as $item )

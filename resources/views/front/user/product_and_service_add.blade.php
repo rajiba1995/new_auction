@@ -21,13 +21,13 @@
                                 <div class="tab-pane {{ (request()->is('my/product-and-service*')) ? 'active' : '' }}" id="productsServices" role="tabpanel" aria-labelledby="productsServices-tab" tabindex="0">
                                     <div class="tab-content-wrapper">
                                         <div class="top-content-bar">
+                                            <h2>UPLOAD YOUR PRODUCTS &amp; SERVICES INFORMATION</h2>
                                             <a href="{{route('user.product_and_service')}}" class="btn btn-normal btn-cta"><i class="fa-solid fa-backward"></i>                                              
                                                Back
                                             </a>
                                         </div>
                                         <div class="content-box">
                                             <div class="inner">
-                                                <h2>UPLOAD YOUR PRODUCTS &amp; SERVICES INFORMATIONS</h2>
                                                 <form action="{{route('user.product_and_service.store')}}" class="input-form" enctype="multipart/form-data" id="ProductServiceForm" method="POST">
                                                     @csrf
                                                     <div class="row input-row">
@@ -165,7 +165,7 @@
                                                         <div class="row input-row">
                                                             <div class="col-12">
                                                                 <div class="form-group">
-                                                                    <label class="form-label">Describe the Products*</label>
+                                                                    <label class="form-label">Product Description*</label>
                                                                     <textarea class="form-control border-red describe @error('product_description') is-invalid @enderror" name="product_description">{{ old('product_description') }}</textarea>
                                                                     <!-- Display error message for product_description -->
                                                                     @error('product_description')
@@ -179,7 +179,7 @@
                                                         <div class="row input-row">
                                                             <div class="col-12">
                                                                 <div class="form-group">
-                                                                    <label class="form-label">Price Per Unit</label>
+                                                                    <label class="form-label">Unit Price</label>
                                                                     <input type="text" class="form-control border-red @error('price') is-invalid @enderror" name="price" value="{{ old('price') }}">
                                                                     <!-- Display error message for price -->
                                                                     @error('price')
@@ -193,7 +193,7 @@
                                                         <div class="row input-row">
                                                             <div class="col-12">
                                                                 <div class="form-group">
-                                                                    <label class="form-label">Products Specifications</label>
+                                                                    <label class="form-label">Product Specification</label>
                                                                     <textarea rows="6" class="form-control border-red specifaction @error('specifications') is-invalid @enderror" name="specifications">{{ old('specifications') }}</textarea>
                                                                     <!-- Display error message for specifications -->
                                                                     @error('specifications')
@@ -313,7 +313,7 @@
                                                         <div class="row input-row">
                                                             <div class="col-12">
                                                                 <div class="form-group">
-                                                                    <label class="form-label">Describe the Service*</label>
+                                                                    <label class="form-label">Service Description*</label>
                                                                     <textarea rows="6" class="form-control border-red @error('service_description') is-invalid @enderror" name="service_description">{{ old('service_description') }}</textarea>
                                                                     <!-- Display error message for service_description -->
                                                                     @error('service_description')

@@ -68,7 +68,7 @@
                                     <img src="{{asset('frontend/assets/images/verify-icon.png')}}" alt="">
                                 </div>
                             </div>
-                            <h2>Enter OTP Code</h2>
+                            <h2>Enter OTP</h2>
                             <form class="otp-form">
                                 <div class="form-input-group">
                                     <input type="text" name="otp[]" class="form-control otp-input border-red" maxlength="1" required>

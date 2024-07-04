@@ -18,7 +18,7 @@
                                 <div class="tab-content-wrapper">
                                     <div class="top-content-bar">
                                         @if (Auth::guard('web')->check() && Auth::guard('web')->user()->id==$data->id)
-                                        <a href="{{ route('user.photos_and_documents_edit') }}" class="btn btn-normal btn-cta">Upload Photos and Documents</a>
+                                        <a href="{{ route('user.photos_and_documents_edit') }}" class="btn btn-normal btn-cta">Upload Photos & Documents</a>
                                         @endif
                                     </div>
                                     <div class="content-box">
@@ -48,7 +48,7 @@
                                                                 </div>
                                                                 <div class="right-col">
                                                                     <label>
-                                                                        GSTIN
+                                                                        GST
                                                                         <span>
                                                                             @if($user_document->gst_status==2)
                                                                                 <img src="{{asset('frontend/assets/images/failed.png')}}" alt="">
@@ -73,7 +73,7 @@
                                                                     </div>
                                                                     <div class="right-col">
                                                                         <label>
-                                                                            Pan Card
+                                                                            PAN
                                                                             <span>
                                                                                 @if($user_document->pan_status==2)
                                                                                     <img src="{{asset('frontend/assets/images/failed.png')}}" alt="">
@@ -99,7 +99,7 @@
                                                                 </div>
                                                                 <div class="right-col">
                                                                     <label>
-                                                                        Adhar Card
+                                                                        AADHAR
                                                                         <span>
                                                                             @if($user_document->adhar_status==2)
                                                                                 <img src="{{asset('frontend/assets/images/failed.png')}}" alt="">
@@ -125,7 +125,7 @@
                                                                 </div>
                                                                 <div class="right-col">
                                                                     <label>
-                                                                        Trading License
+                                                                        Trade License
                                                                         <span>
                                                                             @if($user_document->trade_license_status==2)
                                                                                 <img src="{{asset('frontend/assets/images/failed.png')}}" alt="">
