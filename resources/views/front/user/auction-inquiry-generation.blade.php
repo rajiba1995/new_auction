@@ -164,7 +164,7 @@
                                                     @php
                                                         $SellerData[] = $item->SellerData->id;
                                                     @endphp
-                                                    <label class="participant" id="exist_participant{{$item}}">
+                                                    <label class="participant" id="exist_participant{{$item->id}}">
                                                         @if($item->SellerData)
                                                             <input type="hidden" name="exist_participant[]" value="{{$item->SellerData->id}}">
                                                         @endif
@@ -189,7 +189,7 @@
                                                 <label class="form-label">Existing Outside Participants*</label>
                                                 <div class="participants-block border-red">
                                                     @foreach ($exsisting_outside_participant as $item)
-                                                        <label class="participant" id="participant{{$item}}">
+                                                        <label class="participant" id="participant{{$item->id}}">
                                                                 <input type="hidden" name="outside_participant[]" value="{{$item->id}}">
                                                             {{$item->name}}
                                                             <span class="remove exists_outside_participant_remove" data-id="{{$item->id}}">
@@ -212,7 +212,7 @@
                                                 <label class="form-label">Outside Participants*</label>
                                                 <div class="participants-block border-red">
                                                     @foreach ($outside_participant_data as $item)
-                                                        <label class="participant" id="participant{{$item}}">
+                                                        <label class="participant" id="participant{{$item->id}}">
                                                                 <input type="hidden" name="outside_participant[]" value="{{$item->id}}">
                                                             {{$item->name}}
                                                             <span class="remove outside_participant_remove" data-id="{{$item->id}}">
@@ -235,7 +235,7 @@
                                                 <label class="form-label">Outside Participants*</label>
                                                 <div class="participants-block border-red">
                                                     @foreach ($outside_participant_without_group as $item)
-                                                        <label class="participant" id="participant{{$item}}">
+                                                        <label class="participant" id="participant{{$item->id}}">
                                                                 <input type="hidden" name="outside_participant[]" value="{{$item->id}}">
                                                             {{$item->name}}
                                                             <span class="remove outside_participant_remove" data-id="{{$item->id}}">
@@ -260,7 +260,7 @@
                                                 @foreach ($watch_list_data as $item)
                                                 {{-- {{dd($SellerData)}} --}}
                                                 @if(!in_array($item->SellerData->id,$SellerData))
-                                                    <label class="participant" id="participant{{$item}}">
+                                                    <label class="participant" id="participant{{$item->id}}">
                                                         @if($item->SellerData)
                                                             <input type="hidden" name="participant[]" value="{{$item->SellerData->id}}">
                                                         @endif
@@ -490,6 +490,7 @@
                             </svg>
                         </button> --}}
                     </div>
+                    <div id="AppendData" class="mt-2"></div>
                     <button type="button" class="btn btn-animated btn-submit" onclick="submitIviteForm()">Add Now</button>
                 </form>
             </div>
@@ -664,15 +665,17 @@
                         },
                         success: function(response) {
                             if(response.status==200){
+                                $('#participant' + itemId).empty();
+                                $('#participant' + itemId).removeClass('participant');
                                 Swal.fire({
                                     title: "Success!",
                                     text: "Participant has been deleted successfully!",
                                     icon: "success"
                                 });
-                                setTimeout(function() {
-                                    // Reload the page
-                                    location.reload();
-                                }, 1000);
+                                // setTimeout(function() {
+                                //     // Reload the page
+                                //     location.reload();
+                                // }, 1000);
                             }
                         },
                         error: function(xhr, status, error) {
@@ -704,15 +707,17 @@
                         },
                         success: function(response) {
                             if(response.status==200){
+                                $('#participant' + itemId).empty();
+                                $('#participant' + itemId).removeClass('participant');
                                 Swal.fire({
                                     title: "Success!",
                                     text: "Outside Participant has been deleted successfully!",
                                     icon: "success"
                                 });
-                                setTimeout(function() {
-                                    // Reload the page
-                                    location.reload();
-                                }, 1000);
+                                // setTimeout(function() {
+                                //     // Reload the page
+                                //     location.reload();
+                                // }, 1000);
                             }
                         },
                         error: function(xhr, status, error) {
@@ -744,15 +749,17 @@
                         },
                         success: function(response) {
                             if(response.status==200){
+                                $('#participant' + itemId).empty();
+                                $('#participant' + itemId).removeClass('participant');
                                 Swal.fire({
                                     title: "Success!",
                                     text: "Existing Outside Participant has been deleted successfully!",
                                     icon: "success"
                                 });
-                                setTimeout(function() {
-                                    // Reload the page
-                                    location.reload();
-                                }, 1000);
+                                // setTimeout(function() {
+                                //     // Reload the page
+                                //     location.reload();
+                                // }, 1000);
                             }
                         },
                         error: function(xhr, status, error) {
@@ -783,6 +790,8 @@
                             id:itemId
                         },
                         success: function(response) {
+                            $('#exist_participant' + itemId).empty();
+                            $('#exist_participant' + itemId).removeClass('participant');
                             if(response.status==200){
                                 Swal.fire({
                                     title: "Success!",
@@ -814,7 +823,7 @@ $(document).ready(function() {
             success: function(response) {
                 if(response.status==200){
                     // Clear existing options before appending new ones
-                    $('select[name="sub_category"]').empty();
+                    $('select[name="sub_category"]').html("");
                     var isFirst = true;
                     // Append new options based on the response data
                     response.data.forEach(function(element) {
@@ -877,11 +886,25 @@ $(document).ready(function() {
             url: ' {{route("user.invite_outside_participants.store") }} ',
             data: formData,
             success: function(response) {
-                location.reload();
+                if(response.status==200){
+                    location.reload();
+                }
+                if(response.status==400){
+                    const alertHtml = `
+                        <div class="alert alert-danger" role="alert">
+                            ${response.error}
+                        </div>
+                    `;
+                    $('#AppendData').html(alertHtml);
+                    setTimeout(function() {
+                        $('.alert').alert('close');
+                    }, 3000); 
+                }
+                
             },
             error: function(xhr, status, error) {
                 // Handle error
-                console.error(xhr.responseText);
+                console.log(xhr.responseText);
             }
         });
 

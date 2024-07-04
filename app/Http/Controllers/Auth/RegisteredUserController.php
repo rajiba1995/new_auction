@@ -123,6 +123,7 @@ class RegisteredUserController extends Controller
         } catch (\Exception $e) {
             DB::rollBack(); // Roll back the transaction on exception
             // Handle the exception as per your application's requirement
+            // dd($e->getMessage());
             return response()->json(['status' => 500, 'message' => $e->getMessage()]);
         }
     }

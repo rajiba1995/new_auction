@@ -488,7 +488,7 @@ class BuyerDashboardController extends Controller
                         $sender = env('SMS_SENDER');
                         $inquiry_data= Inquiry::with('BuyerData')->where('id', $request->inquiry_id)->first();
                         $inquiry_id = $inquiry_data->inquiry_id?$inquiry_data->inquiry_id:"...";
-                        $company = $inquiry_data->business_name?$inquiry_data->business_name:"a company";
+                        $company = $inquiry_data->BuyerData?$inquiry_data->BuyerData->business_name:"a company";
                         $execution_date = $inquiry_data->execution_date?$inquiry_data->execution_date:"...";
                         $amount = $request->allot_amount;
                         $url = 'https://milaapp.in/seller/confirmed';
@@ -543,19 +543,27 @@ class BuyerDashboardController extends Controller
     }
 
     public function cancelled_reason(Request $request){
-        // dd($request->all());
+        
         if(isset($request->cancelled_reason)){
-            $inquiry= Inquiry::findOrFail($request->id);
+            $inquiry= Inquiry::with('BuyerData')->where('id', $request->id)->first();
+            if($inquiry->status==3){
+                $sender = env('SMS_SENDER');
+                $inquiry_id = $inquiry->inquiry_id?$inquiry->inquiry_id:"...";
+                $company = $inquiry->BuyerData?$inquiry->BuyerData->business_name:"a company";
+                $time = date('d-m-Y h:i a');
+                $seller = User::where('id', $inquiry->allot_seller)->first();
+                $url = 'https://milaapp.in/seller/cancelled';
+                $myMessage = urlencode("Auction ".$inquiry_id." has been cancelled by ".$company." on ".$time.". Details: ".$url." - Sarv-Megh Technology (OPC) Private Limited");
+                $customer_mobile_no = $seller->mobile?$seller->mobile:null;
+                $checkPhoneNumberValid = checkPhoneNumberValid($customer_mobile_no);
+                if($checkPhoneNumberValid){
+                    sendSMS($sender, $customer_mobile_no, $myMessage);
+                }
+            }
             $inquiry->cancelled_reason = $request->cancelled_reason;
             $inquiry->status = 4;  // here we do push evey paticipats staus ==2 in inquiry_participats table as buyer cancel the inquiry for reason
             $inquiry->save();
 
-            // if ($inquiry) {
-            //     $data = InquiryParticipant::where('inquiry_id', $inquiry->id)->get();
-            //        // Loop through each record and update the status to 2
-            //        foreach ($data as $participant) {
-            //         $participant->update(['status' => 2]);
-            //     }
             return redirect()->back()->with('success','Inquiry cancelled successfull.');
         }else{
             return redirect()->back()->with('warning','Please select the cancell reason.');
