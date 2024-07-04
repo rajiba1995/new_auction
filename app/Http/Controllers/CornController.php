@@ -355,11 +355,8 @@ class CornController extends Controller
         
         // Calculate the datetime 5 minutes after the current datetime
         $fiveMinutesAfter = Carbon::parse($currentTime)->addMinutes(5)->format('H:i');
-        
         // Query Inquiry where expiry_date is within the next 5 minutes
-        $data = Inquiry::with('ParticipantsData')->where('start_date',$currentDate)->whereBetween('start_time', [$currentTime, $fiveMinutesAfter])->get()->toArray();
-        
-        
+        $data = Inquiry::with('ParticipantsData', 'BuyerData')->where('start_date',$currentDate)->whereBetween('start_time', [$currentTime, $fiveMinutesAfter])->get()->toArray();
         if (count($data) > 0) {
             foreach ($data as $inquiry) {
                 // Check if there are any participants data
@@ -371,7 +368,19 @@ class CornController extends Controller
                             $data=[
                                 'user'=>$user,
                             ];
-                            sendMail($data, 'INQUIRY_START'); 
+                            $customer_mobile_no = $user->mobile; 
+                            $checkPhoneNumberValid = checkPhoneNumberValid($customer_mobile_no);
+                            if($checkPhoneNumberValid){
+                                $sender = env('SMS_SENDER');
+                                $company = $inquiry['buyer_data']?$inquiry['buyer_data']['business_name']:"a company";
+                                $url = 'https://milaapp.in/seller/inquiries';
+                                // Mobile number to send the SMS to
+                                $myMessage = urlencode("Auction starting for ".$company." Details: ".$url.". (owned by SMTPL) -Sarv Megh Technology (OPC) Private Limited");
+                                // New URL format
+                                sendSMS($sender, $customer_mobile_no, $myMessage);
+                            }
+                            $email = $user->email;
+                            sendMail($data, $email, 'INQUIRY_START'); 
                         }
                     }
                 }

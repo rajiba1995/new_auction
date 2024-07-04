@@ -679,8 +679,9 @@ class UserController extends Controller{
                     'transaction'=>$transaction,
                     'type'=>'PAYMENT_TRANSACTION',
                 ];
-                sendMail($data_array, $data->email, 'Confirmation of Payment Transaction on Milaap');
                 DB::commit();
+                sendMail($data_array, $data->email, 'Confirmation of Payment Transaction on Milaap');
+                
                 if (Session::has('url.intended')) {
                     $intendedUrl = Session::get('url.intended');
                     // Forget the intended URL from the session after using it
@@ -865,10 +866,11 @@ class UserController extends Controller{
                     'transaction'=>$transaction,
                     'type'=>'PAYMENT_TRANSACTION',
                 ];
+                DB::commit();
                 sendMail($data_array, $data->email, 'Confirmation of Payment Transaction on Milaap');
             }
              // For Amount Transaction
-             DB::commit();
+            
             if (Session::has('url.intended')) {
                 $intendedUrl = Session::get('url.intended');
                 // Forget the intended URL from the session after using it

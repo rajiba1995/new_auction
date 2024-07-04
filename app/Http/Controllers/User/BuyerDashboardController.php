@@ -447,8 +447,12 @@ class BuyerDashboardController extends Controller
 
     public function live_inquiry_seller_allot(Request $request){
         // dd($request->all());
+        if (!is_numeric($request->allot_amount)) {
+            return redirect()->back()->with('warning', 'Please enter a numeric value.');
+        }
         DB::beginTransaction();
         try {
+           
             $InquiryAllotmentData = new InquiryAllotmentData;
             $InquiryAllotmentData->inquiry_id = $request->inquiry_id;
             $InquiryAllotmentData->user_id = $request->bidder_id;
@@ -479,6 +483,15 @@ class BuyerDashboardController extends Controller
                     $allot_seller->save();
                     if($allot_seller){
                         $Buyer_data = User::where('id', $inquiry->created_by)->first();
+                        // ALLOTMENT & REALLOTMENT SMS
+                        $myMessage ="";
+                        $sender = env('SMS_SENDER');
+                        $inquiry_data= Inquiry::with('BuyerData')->where('id', $request->inquiry_id)->first();
+                        $inquiry_id = $inquiry_data->inquiry_id?$inquiry_data->inquiry_id:"...";
+                        $company = $inquiry_data->business_name?$inquiry_data->business_name:"a company";
+                        $execution_date = $inquiry_data->execution_date?$inquiry_data->execution_date:"...";
+                        $amount = $request->allot_amount;
+                        $url = 'https://milaapp.in/seller/confirmed';
                         if($request->type=="first"){
                             $data=[
                                 'user'=>$allot_seller->SellerData,
@@ -487,6 +500,7 @@ class BuyerDashboardController extends Controller
                                 'type'=>'INQUIRY_ALLOTMENT',
                             ];
                             $subject = 'Inquiry ALLOTMENT Notification for '.$Buyer_data->business_name;
+                            $myMessage = urlencode("New auction ".$inquiry_id." is assigned to you from ".$company.". Amt ".$amount." . Expected date ".$execution_date.". Details: ".$url." (owned by SMTPL) Regards, Sarv Megh Technology (OPC) Private Limited");
                         }else{
                             $reason = $request->reallot_reason?$request->reallot_reason:"";
                             $data=[
@@ -498,9 +512,19 @@ class BuyerDashboardController extends Controller
                                 'user_type'=>'Seller',
                             ];
                             $subject = 'Inquiry REALLOTMENT Notification for '.$Buyer_data->business_name;
+                            $myMessage = urlencode("Auction ".$inquiry_id." from ".$company.". is REASSIGNED to you. Amt ".$amount.". Expected: ".$execution_date." Details: ".$url.". (owned by SMTPL) Regards, Sarv Megh Technology (OPC) Private Limited");
                         }
-                        $seller_email = $allot_seller->SellerData->email;
-                        sendMail($data,$seller_email,$subject); 
+                        $customer_mobile_no = $allot_seller->SellerData?$allot_seller->SellerData->mobile:null;
+                        // $customer_mobile_no = 9007083569;
+                        $checkPhoneNumberValid = checkPhoneNumberValid($customer_mobile_no);
+                        if($checkPhoneNumberValid){
+                            sendSMS($sender, $customer_mobile_no, $myMessage);
+                        }
+                        $seller_email =$allot_seller->SellerData?$allot_seller->SellerData->email:null;
+                        if($seller_email){
+                            sendMail($data,$seller_email,$subject);
+                        }
+                        
                     }
                 }
             }
@@ -510,7 +534,7 @@ class BuyerDashboardController extends Controller
         } catch (\Exception $e) {
             // Rollback the transaction on error
             DB::rollBack();
-            dd($e->getMessage());
+            // dd($e->getMessage());
             // Log the error for debugging
             // Log::error('Error allotting seller: ' . $e->getMessage());
     

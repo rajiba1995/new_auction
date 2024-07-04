@@ -103,8 +103,16 @@ class RegisteredUserController extends Controller
                     'type'=>'REG_OTP',
                     'user_type'=>'Seller',
                 ];
-                $mail = sendMail($data, $User->email,'OTP Verification'); // Assuming sendMail function exists
                 
+                $sender = env('SMS_SENDER');
+                $user_otp = $User->otp;
+                $name = $User->name;
+                $customer_mobile_no = $User->mobile; // Mobile number to send the SMS to
+                $myMessage = urlencode("Dear ".$name." OTP for new registration is ".$user_otp." Please enter this to verify your identity and proceed with the registration request.Sarv-Megh Technology (OPC) Private Limited");
+                // New URL format
+                sendSMS($sender, $customer_mobile_no, $myMessage);
+               
+                $mail = sendMail($data, $User->email,'OTP Verification'); // Assuming sendMail function exists
                 DB::commit(); // Commit the transaction
     
                 $route = route('front.otp_validation');
@@ -152,6 +160,13 @@ class RegisteredUserController extends Controller
                 'type'=>'REG_OTP',
                 'user_type'=>'Seller',
             ];
+            $sender = env('SMS_SENDER');
+            $user_otp = $exist_User->otp;
+            $name = $exist_User->name;
+            $customer_mobile_no = $exist_User->mobile; // Mobile number to send the SMS to
+            $myMessage = urlencode("Dear ".$name." OTP for new registration is ".$user_otp." Please enter this to verify your identity and proceed with the registration request.Sarv-Megh Technology (OPC) Private Limited");
+            // New URL format
+            sendSMS($sender, $customer_mobile_no, $myMessage);
             $mail = sendMail($data,$exist_User->email,'OTP Verification'); // Assuming sendMail function exists
             $endTime = Carbon::now()->addSeconds(60);
             $counter = $endTime->format('Y-m-d H:i:s');

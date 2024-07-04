@@ -302,6 +302,21 @@ class AuctionGenerationController extends Controller
                     if(count($exist_participants)>0){
                         $Buyer_data = User::where('id', $request->created_by)->first();
                         foreach($exist_participants as $key =>$item){
+                            // Existing User
+                            $customer_mobile_no = $item->mobile; 
+                            $customer_mobile_no = '8617207525';
+                            $checkPhoneNumberValid = checkPhoneNumberValid($customer_mobile_no);
+                            if($checkPhoneNumberValid){
+                                $sender = env('SMS_SENDER');
+                                $time = date('d-m-Y h:i a',strtotime($inquiry->start_date.' '.$inquiry->start_time));
+                                $buyer_name = $Buyer_data->name;
+                                $inquiry_id = $inquiry->inquiry_id;
+                                $url = 'https://milaapp.in/seller/inquiries';
+                                // Mobile number to send the SMS to
+                                $myMessage = urlencode("Auction starts at ".$time." for inquiry number ".$inquiry_id." by ".$buyer_name.". Details: ".$url." (owned by SMTPL) - Sarv Megh Technology OPC Private Limited");
+                                // New URL format
+                                sendSMS($sender, $customer_mobile_no, $myMessage);
+                            }
                             if($item->SellerData){
                                 $data=[
                                     'user'=>$item->SellerData,
@@ -327,6 +342,24 @@ class AuctionGenerationController extends Controller
                             'type'=>'INQUIRY_GENERATION',
                             'user_type'=>'Buyer',
                         ];
+                        // Outside SMS 
+                        $OutsideParticipant = InquiryOutsideParticipant::where('inquiry_id', $inquiry->id)->get();
+                        if(count($OutsideParticipant)>0){
+                            foreach($OutsideParticipant as $k=>$val){
+                                $customer_mobile_no = $val->mobile; 
+                                $checkPhoneNumberValid = checkPhoneNumberValid($customer_mobile_no);
+                                if($checkPhoneNumberValid){
+                                    $sender = env('SMS_SENDER');
+                                    $name = $val->name;
+                                    $buyer_name = $Buyer_data->name;
+                                    $url = 'https://milaapp.in/seller/inquiries';
+                                    // Mobile number to send the SMS to
+                                    $myMessage = urlencode("Dear new user ".$name.", You have been chosen by ".$buyer_name." to register and join an auction. Details: ".$url." (owned by SMTPL) - Sarv Megh Technology OPC Private Limited");
+                                    // New URL format
+                                    sendSMS($sender, $customer_mobile_no, $myMessage);
+                                }
+                            }
+                        }
                         sendMail($data, $Buyer_data->email, 'Inquiry POST Notification');
                     }
                

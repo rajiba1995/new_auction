@@ -137,7 +137,7 @@ Route::get('/clear-cache', function() {
             Route::post('seller/set-session-and-redirect', [SellerDashboardController::class, 'setSessionAndRedirect']);
             Route::group(['prefix' => 'seller'], function() {
                 // Route::group(['middleware' => 'checkActiveSellerPackage'], function() {
-                    Route::get('/all-inquiries', [SellerDashboardController::class, 'all_inquiries'])->name('seller_all_inquiries');
+                    Route::get('/inquiries', [SellerDashboardController::class, 'all_inquiries'])->name('seller_all_inquiries');
                     Route::get('/live-inquiries', [SellerDashboardController::class, 'live_inquiries'])->name('seller_live_inquiries');
                     Route::post('/start-quotes', [SellerDashboardController::class, 'seller_start_quotes'])->name('seller_start_quotes');
                     Route::get('/live-inquiries-fetch-ajax', [SellerDashboardController::class, 'live_inquiries_fetch_ajax'])->name('seller_live_inquiries_by_ajax');
@@ -148,7 +148,7 @@ Route::get('/clear-cache', function() {
                 // });
 
                 Route::get('/pending-inquiries', [SellerDashboardController::class, 'pending_inquiries'])->name('seller_pending_inquiries');
-                Route::get('/confirmed-inquiries', [SellerDashboardController::class, 'confirmed_inquiries'])->name('seller_confirmed_inquiries');
+                Route::get('/confirmed', [SellerDashboardController::class, 'confirmed_inquiries'])->name('seller_confirmed_inquiries');
                 Route::get('/history-inquiries', [SellerDashboardController::class, 'history_inquiries'])->name('seller_history_inquiries');
                 Route::post('/cancelled-reason', [SellerDashboardController::class, 'cancelled_reason'])->name('seller_cancelled_inquiry');
                 Route::post('/after-confirm-seller-cancelled-reason', [SellerDashboardController::class, 'after_confirm_seller_cancelled_reason'])->name('after_confirm_seller_cancelled_inquiry');

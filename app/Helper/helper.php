@@ -335,6 +335,37 @@ if (!function_exists('sendMail')) {
         return true;
     }
 }
+if (!function_exists('sendSMS')) {
+
+    function sendSMS($sender, $customer_mobile_no, $myMessage) {
+        $sms_url = 'https://103.229.250.200/smpp/sendsms?username=sarvmegh&password=sms@2024&to=91'.$customer_mobile_no.'&udh=&from='.$sender.'&text='.$myMessage.'&category=bulk';
+
+        $curl = curl_init();
+
+        curl_setopt_array($curl, array(
+            CURLOPT_URL => $sms_url,
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_ENCODING => '',
+            CURLOPT_MAXREDIRS => 10,
+            CURLOPT_TIMEOUT => 0,
+            CURLOPT_FOLLOWLOCATION => true,
+            CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+            CURLOPT_CUSTOMREQUEST => 'GET',
+        ));
+
+        $response = curl_exec($curl);
+        // dd($response);
+        curl_close($curl);
+        return true;
+    }
+}
+function checkPhoneNumberValid($number){
+    $res = false;
+    if(is_numeric($number) && (strlen($number) == 10)){
+        $res = true;
+    }
+    return $res;
+}
 if (!function_exists('verifiedBadge')) {
     function verifiedBadge($id) {
         $data = UserDocument::where('user_id',$id)->first();
