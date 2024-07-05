@@ -68,9 +68,9 @@
                                                             <a href="#">
                                                                 <span>Available Balance</span>
                                                                 @if($buyer_walletBalance)  
-                                                                <h5>{{$buyer_walletBalance->current_unit}}</h5> 
+                                                                <h5>{{$buyer_walletBalance->current_unit}} Credits</h5> 
                                                                 @else
-                                                                <h5>0.00</h5>   
+                                                                <h5>0.00 Credits</h5>   
                                                                @endif
                                                             </a>
                                                         </div>

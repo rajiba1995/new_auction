@@ -27,7 +27,7 @@
                                                 </div>
                                             @endif --}}
                                         <form action="{{ route('user.photos_and_documents_update') }}" class="input-form" method="post" enctype="multipart/form-data">
-                                            @csrf
+                                            @csrf   
                                             <div class="upload-photos-block">
                                                 <label for="user_images" class="custom-upload">
                                                     <input type="file" name="user_images[]" id="user_images"  multiple="multiple">

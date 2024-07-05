@@ -39,11 +39,11 @@
                                                 <tr>
                                                     <td> {{ $key+1 }}</td>
                                                     <td> {{ $item->inquiry_id?$item->inquiry_id:"" }}</td>
-                                                    <td>{{ number_format($item->credit_unit, 2) }}</td>
-                                                    <td>{{ number_format($item->debit_unit, 2) }}</td>
-                                                    <td>{{ number_format($item->current_unit, 2) }}</td>
+                                                    <td>{{ (int)($item->credit_unit) }}</td>
+                                                    <td>{{ (int)($item->debit_unit) }}</td>
+                                                    <td>{{ (int)($item->current_unit) }}</td>
                                                     <td> {{ $item->purpose }}</td>
-                                                    <td> {{ $item->created_at->format('d-M-Y h:i A') }}</td>
+                                                    <td> {{ $item->created_at->format('d-M-Y') }}</td>
                                                 </tr>
                                                 @empty
                                                 <tr>

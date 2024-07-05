@@ -22,7 +22,7 @@
                                 <div class="tab-content-wrapper">
                                     <div class="top-content-bar">
                                         <h5 class="text-light">My Transaction History</h5>
-                                        <a href="{{route('user.settings')}}" class="btn btn-normal btn-cta"><i class="fa-solid fa-backward"></i>                                              
+                                        <a href="{{route('user.payment_management')}}" class="btn btn-normal btn-cta"><i class="fa-solid fa-backward"></i>                                              
                                         Back
                                         </a>
                                     </div>
@@ -30,12 +30,15 @@
                                         <div class="container-fluid">
                                             <div class="row">
                                                 <div class="col-lg-auto col-12">
+                                                    <label for="start_date">Start date</label>
                                                     <input type="date" class="form-control form-control-sm" name="start_date" id="start_date" value="{{ request()->input('start_date') }}" >
                                                 </div>
                                                 <div class="col-lg-auto col-12">
+                                                    <label for="end_date">End date</label>
                                                     <input type="date" class="form-control form-control-sm" name="end_date" id="end_date" value="{{ request()->input('end_date') }}" >
                                                 </div>
                                                 <div class="col-lg-auto col-12">
+                                                    {{-- <label for=""></label> --}}
                                                     <select name="mode" class="form-control" class="w-100">
                                                         <option value="1" selected>Online</option>
                                                         <option value="0">Offline</option>
@@ -65,8 +68,8 @@
                                                     <th>Purpose</th>
                                                     <th>Transaction Id</th>
                                                     <th>Transaction Source</th>
-                                                    <th>Price</th>
-                                                    <th>Date</th>
+                                                    <th>Price (₹)</th>
+                                                    <th>Purchase Date</th>
                                                 </tr>
                                             </thead>
                                             <tbody class="align-middle">

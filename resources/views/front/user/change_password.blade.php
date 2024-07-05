@@ -25,11 +25,17 @@
                                         <form method="POST" action="{{ route('user.change_password_update') }}">
                                             @csrf
                                             <div class="mb-3">
-                                              <label class="form-label">Password</label>
+                                                <label class="form-label">Old Password</label>
+                                                <input type="password" class="form-control" name="old_password" id="old_password" aria-describedby="emailHelp" placeholder="Enter old Password" value="{{old('old_password')}}">
+                                                @error('old_password')<div class="text-danger">{{ $message }}</div>@enderror
+                                              </div>
+                                            <div class="mb-3">
+                                              <label class="form-label">New Password</label>
                                               <input type="password" class="form-control" name="password" id="password" aria-describedby="emailHelp" placeholder="Enter a new Password" value="{{old('password')}}">
                                               <div id="emailHelp" class="form-text">We'll never share your password with anyone else.</div>
                                               @error('password')<div class="text-danger">{{ $message }}</div>@enderror
                                             </div>
+                                            
                                             <div class="mb-3">
                                               <label class="form-label">Confirm Password</label>
                                               <input type="password" class="form-control" id="confirm_password" name="confirm_password" value="{{old('confirm_password')}}">
@@ -55,15 +61,18 @@
 @section('script')
 <script>
     document.addEventListener("DOMContentLoaded", function() {
+        const oldPasswordField = document.getElementById('old_password');
         const passwordField = document.getElementById("password");
         const confirmPasswordField = document.getElementById("confirm_password");
         const checkbox = document.getElementById("check");
 
         checkbox.addEventListener("change", function() {
             if (checkbox.checked) {
+                oldPasswordField.type = "text";
                 passwordField.type = "text";
                 confirmPasswordField.type = "text";
             } else {
+                oldPasswordField.type = "password";
                 passwordField.type = "password";
                 confirmPasswordField.type = "password";
             }

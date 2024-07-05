@@ -26,7 +26,7 @@
                                             <h3>Photos</h3>
                                             <div class="photos">
                                                 @foreach($AllImages as $key =>$item)
-                                                <div class="photo-box"><img src="{{asset($item->image)}}" alt=""></div>
+                                                  <div class="photo-box"><img src="{{asset($item->image)}}" alt=""></div>
                                                 @endforeach
                                             </div>
                                         </div>

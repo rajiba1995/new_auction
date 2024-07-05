@@ -403,6 +403,13 @@ class UserController extends Controller{
             return redirect()->back()->with('success', $data->type . ' updated successfully');
         }
     }
+
+    public function ProductAndServiceDelete($id){
+        $data =Product::findOrFail($id);
+        $data->delete();
+        return redirect()->back()->with('success', $data->type.' deleted successfully');
+    }
+
     public function RatingAndReview(){
         $data = $this->AuthCheck();
         $review_rating = $this->userRepository->getUserAllReviewRating($data->id);
@@ -967,14 +974,19 @@ class UserController extends Controller{
         return view('front.user.change_password',compact('data'));
     }
     public function changePasswordUpdate(Request $request){
+        // dd($request->all());
         $data = $this->AuthCheck();
         // dd($data);
         $rules = [
+            'old_password'=>'required|min:6|max:12',
             'password' => 'required|min:6|max:12',
             'confirm_password' => 'required_with:password|same:password',
         ];
     
         $customMessages = [
+            'old_password.required' => 'The old password field is required.',
+            'old_password.min' => 'The old password should be at least 6 characters long.',
+            'old_password.max' => 'The old password should not exceed 12 characters.',
             'password.required' => 'The password field is required.',
             'password.min' => 'The password should be at least 6 characters long.',
             'password.max' => 'The password should not exceed 12 characters.',
@@ -987,10 +999,15 @@ class UserController extends Controller{
             if ($validator->fails()) {
                 return redirect()->back()->withErrors($validator)->withInput();
             }else{
+                // Check if the old password matches the user's current password
+
                 $user = User::findOrFail($data->id);
+                if(!Hash::check($request->old_password,$user->password)){
+                    return redirect()->back()->withErrors(['old_password' => 'The old password does not match our records.'])->withInput();
+                }
                 $user->password=Hash::make($request->password);
                 $user->save();
-                return redirect()->route('user.settings')->with('success', 'Your profile data updated successfully');
+                return redirect()->route('user.settings')->with('success', 'Your profile has been data updated successfully');
             }
     }
 

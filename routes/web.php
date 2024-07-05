@@ -93,7 +93,7 @@ Route::get('/clear-cache', function() {
             // Product
             Route::post('/product-and-service/store', [UserController::class, 'ProductAndServiceStore'])->name('user.product_and_service.store');
             Route::post('/product-and-service/update', [UserController::class, 'ProductAndServiceUpdate'])->name('user.product_and_service.update');
-       
+            Route::get('/product-and-service/delete/{id}',[UserController::class, 'ProductAndServiceDelete'])->name('user.product_and_service.delete');
     
             Route::prefix('watchlist')->group(function () {
                 Route::get('', [UserController::class, 'MyWatchlist'])->name('user.watchlist');

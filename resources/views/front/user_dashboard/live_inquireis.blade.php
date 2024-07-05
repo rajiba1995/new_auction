@@ -166,7 +166,7 @@
                                                 <th class="input-th input-end-date-th"><span>End date &amp; time</span></th>
                                                 <th class="input-th min-quote-th">Min Quote</th>
                                                 <th class="input-th max-quote-th">Max Quote</th>
-                                                <th class="output-th invited-partitipants-th">Invited vs partitipants</th>
+                                                <th class="output-th invited-partitipants-th">Invited vs participants</th>
                                                 <th class="output-th suppliers-th">Suppliers</th>
                                                 <th class="output-th quotes-th">Quotes</th>
                                                 <th class="output-th comments-th">Comments &amp; Files</th>

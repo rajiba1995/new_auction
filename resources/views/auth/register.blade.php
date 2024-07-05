@@ -40,7 +40,7 @@
                         </div>
                         <div class="form-group">
                             <label class="form-label">Phone Number*</label>
-                            <input type="text" class="form-control border-red" placeholder="Ex, xxxxxxxxxx" name="phone">
+                            <input type="text" class="form-control border-red" placeholder="XXX-XXX-XXXX" name="phone">
                         </div>
                         <div id="alertContainer">
 
@@ -68,7 +68,7 @@
                                 <img src="{{asset('assets/images/verify-icon.png')}}" alt="">
                             </div>
                         </div>
-                        <h2>Enter OTP Code</h2>
+                        <h2>Enter OTP</h2>
                         <form class="otp-form">
                             <div class="form-input-group">
                                 <input type="text" class="form-control otp-input border-red" maxlength="1">

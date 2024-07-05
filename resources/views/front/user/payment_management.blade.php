@@ -75,7 +75,9 @@
                                                                         <input type="hidden" name="buyer_razorpay_payment_id" value="">
                                                                         <div class="card-header bg-gradient-free">
                                                                             <h4>{{$item->package_name}}</h4>
-                                                                            <p>{{$item->rupees_prefix}} {{$item->package_price}} /{{$item->package_type}}</p>
+                                                                            <p>{{$item->rupees_prefix}} {{$item->package_price}}
+                                                                                 {{-- /{{$item->package_type}} --}}
+                                                                                </p>
                                                                         </div>
                                                                         <div class="card-body">
                                                                             <p>No. of Credits : {{$item->total_number_of_auction}}</p>
@@ -270,7 +272,7 @@
                                                     <table class="table badges-data-table">
                                                         <thead>
                                                             <tr>
-                                                                <th>Badge Name</th>
+                                                                <th>Badge Name</th> 
                                                                 <th>Description</th>
                                                                 <th>Instructions to get it</th>
                                                                 <th>Expiry Date</th>
@@ -489,13 +491,13 @@
         var final_amount = parseInt(badge_amount*100);             // console.log(id); 
         var badge_duration = $(this).data('duration');             // console.log(id); 
         Swal.fire({
-        title: "Are you sure you want to purchase it??",
+        title: "Are you sure you want to purchase?",
         // text: "Purchase this Badge?",
         icon: "question",
         showCancelButton: true,
         confirmButtonColor: '#3085d6',
         cancelButtonColor: '#d33',
-        confirmButtonText: 'Yes, Purchase it!'
+        confirmButtonText: 'Yes, Purchase'
         }).then((result) => {
             if (result.isConfirmed) {
                     var paymentOptions = {
@@ -559,13 +561,13 @@
 
     function buy_seller_package(id, price){
         Swal.fire({
-        title: "Are you sure you want to purchase it??",
+        title: "Are you sure you want to purchase?",
         // text: "Purchase this Package?",
         icon: "question",
         showCancelButton: true,
         confirmButtonColor: '#3085d6',
         cancelButtonColor: '#d33',
-        confirmButtonText: 'Yes, Purchase it!'
+        confirmButtonText: 'Yes, Purchase'
         }).then((result) => {
             if (result.isConfirmed) {
                 var final_amount = parseInt(price*100);
@@ -609,7 +611,7 @@
         showCancelButton: true,
         confirmButtonColor: '#3085d6',
         cancelButtonColor: '#d33',
-        confirmButtonText: 'Yes, upgrade it!'
+        confirmButtonText: 'Yes, Upgrade!'
         }).then((result) => {
             if (result.isConfirmed) {
                 $.ajax({
@@ -672,13 +674,13 @@
     // For Buyer
     function buy_buyer_package(id, price, package_type){
         Swal.fire({
-        title: "Are you sure you want to purchase it??",
+        title: "Are you sure you want to purchase?",
         // text: "Purchase this Package?",
         icon: "question",
         showCancelButton: true,
         confirmButtonColor: '#3085d6',
         cancelButtonColor: '#d33',
-        confirmButtonText: 'Yes, Purchase it!'
+        confirmButtonText: 'Yes, Purchase!'
         }).then((result) => {
             if (result.isConfirmed) {
                 $.ajax({
@@ -745,7 +747,7 @@
         showCancelButton: true,
         confirmButtonColor: '#3085d6',
         cancelButtonColor: '#d33',
-        confirmButtonText: 'Yes, upgrade it!'
+        confirmButtonText: 'Yes, Upgrade!'
         }).then((result) => {
             if (result.isConfirmed) {
                 var final_amount = parseInt(price*100);

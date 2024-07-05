@@ -56,7 +56,7 @@
                                         </div>
                                     </div>
                                 </div>
-                                <h4 class="color-red">Date of Stating Inquiry</h4>
+                                <h4 class="color-red">Inquiry Date</h4>
                                 <div class="row input-row">
                                     <div class="col-lg-6 col-12">
                                         <div class="form-group">
@@ -75,7 +75,7 @@
                                         </div>
                                     </div>
                                 </div>
-                                <h4 class="color-red">Time of Starting Auction</h4>
+                                <h4 class="color-red">Inquiry Time</h4>
                                 <div class="row input-row">
                                     <div class="col-lg-6 col-12">
                                         <div class="form-group">
@@ -97,7 +97,7 @@
                                 <div class="row input-row">
                                     <div class="col-lg-6 col-12">
                                         <div class="form-group">
-                                            <label class="form-label">Select Category*</label>
+                                            <label class="form-label">Category*</label>
                                             <select class="form-control border-red" name="category" id="category">
                                                 <option value="" selected hidden>Ex, transport service, Parlour, etc </option>
                                                 @foreach($all_category as $key=>$item)
@@ -110,7 +110,7 @@
                                     </div>
                                     <div class="col-lg-6 col-12">
                                         <div class="form-group">
-                                            <label class="form-label">Select Subcategory*</label>
+                                            <label class="form-label">Sub-Category*</label>
                                             <select class="form-control border-red" name="sub_category" id="sub_category">
                                                 <option value="" selected hidden>Ex, transport service, Parlour, etc </option>
                                                 @if($existing_inquiry)
@@ -125,7 +125,7 @@
                                 <div class="row input-row">
                                     <div class="col-12">
                                         <div class="form-group">
-                                            <label class="form-label">Description of the Service</label>
+                                            <label class="form-label">Service Description</label>
                                             <textarea class="form-control border-red" rows="9" placeholder="Ex, transport service, Parlour, etc " name="description" id="description">{{$existing_inquiry ? $existing_inquiry->description : old('description')}}</textarea>
                                             @error('description')<span class="text-danger" role="alert"><strong>{{ $message }}</strong></span>
                                             @enderror
@@ -136,7 +136,7 @@
                                 <div class="row input-row">
                                     <div class="col-lg-6 col-12">
                                         <div class="form-group">
-                                            <label class="form-label">Date of execution of the task*</label>
+                                            <label class="form-label">Execution Date*</label>
                                             <input type="date" class="form-control border-red" name="execution_date" value="{{$existing_inquiry ? $existing_inquiry->execution_date : old('execution_date')}}">
                                             @error('execution_date')<span class="text-danger" role="alert"><strong>{{ $message }}</strong></span>
                                             @enderror
@@ -921,7 +921,7 @@ $(document).ready(function() {
         var category =$('#category').val().trim();
         var subCategory =$('#sub_category').val().trim();
         if(category.length === 0  &&  subCategory.length === 0){
-            Swal.fire("Please Seelect Category & Subcategory first before Add Participants!");
+            Swal.fire("Please select Category & Sub-Category before adding participants");
             return false;
             
         }else{
