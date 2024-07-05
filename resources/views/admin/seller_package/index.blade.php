@@ -5,12 +5,12 @@
     <div class="report-table-box">
         <div class="heading-row">
             <h3>Seller Package List</h3>
-            <div class="d-flex">
+            {{-- <div class="d-flex">
                 <a href="{{route('admin.seller.package.create')}}" class="btn btn-add btn-sm">
                     <i class="fa-solid fa-plus"></i>
                     Add Package
                 </a>
-            </div>
+            </div> --}}
         </div>
         {{-- <form action="" method="get" id="searchForm">
             <div class="container-fluid">
