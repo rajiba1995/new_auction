@@ -215,7 +215,7 @@
                                                                                 </li>
                                                                                 <li>
                                                                                     <label>Description of the Service</label>
-                                                                                    <p class="hidden">{{ucfirst($item['description'])}}</p>
+                                                                                    <p class="hidden">{!!$item['description']!!}</p>
                                                                                     <div class="read-more"><span>read more</span></div>
                                                                                 </li>
                                                                                 <li>

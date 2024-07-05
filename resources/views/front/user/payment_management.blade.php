@@ -486,10 +486,12 @@
 <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
 <script>
     $('.purchase').on("click", function() {
+        
         var badge_id = $(this).data('badge_id');             // console.log(id); 
         var badge_amount = $(this).data('amount');             // console.log(id); 
         var final_amount = parseInt(badge_amount*100);             // console.log(id); 
-        var badge_duration = $(this).data('duration');             // console.log(id); 
+        var badge_duration = $(this).data('duration');   
+        var csrfToken = "{{csrf_token()}}";          // console.log(id); 
         Swal.fire({
         title: "Are you sure you want to purchase?",
         // text: "Purchase this Badge?",
@@ -508,6 +510,7 @@
                     "description": "Online payment",
                     "image": "{{asset('frontend/assets/images/logo.png')}}",
                     "handler": function (response){
+                        $('.page-loader').fadeIn('fast');
                         $('input[name="payment_method"]').val('online_payment');
                         var payment_method = 'Razorpay Payment';
                         var razorpay_payment_id = response.razorpay_payment_id;
@@ -529,7 +532,7 @@
                                         text: 'Your Badge Successfully Purchased.',
                                         icon: 'success',
                                     });
-                                        location.reload();
+                                    location.reload();
                                 }
                             },
                             error: function(xhr, status, error) {
@@ -552,9 +555,10 @@
 
                 rzp1.on('payment.failed', function (response){
                     alert('OOPS ! something happened');;
+                     location.reload();
                 });
                 rzp1.open();  
-                var csrfToken = "{{csrf_token()}}";
+                
             }
         });
     });
@@ -579,6 +583,7 @@
                     "description": "Online payment",
                     "image": "{{asset('frontend/assets/images/logo.png')}}",
                     "handler": function (response){
+                        $('.page-loader').fadeIn('fast');
                         $('input[name="seller_payment_method"]').val('Razorpay Payment');
                         $('input[name="seller_razorpay_payment_id"]').val(response.razorpay_payment_id);
                         $('#seller_package_form'+id).submit();
@@ -641,6 +646,7 @@
                                 "description": "Online payment",
                                 "image": "{{asset('frontend/assets/images/logo.png')}}",
                                 "handler": function (response){
+                                    $('.page-loader').fadeIn('fast');
                                     $('input[name="seller_payment_method"]').val('Razorpay Payment');
                                     $('input[name="seller_razorpay_payment_id"]').val(response.razorpay_payment_id);
                                     $('#seller_package_form'+id).submit();
@@ -709,6 +715,7 @@
                                 "description": "Online payment",
                                 "image": "{{asset('frontend/assets/images/logo.png')}}",
                                 "handler": function (response){
+                                    $('.page-loader').fadeIn('fast');
                                     $('input[name="buyer_payment_method"]').val('Razorpay Payment');
                                     $('input[name="buyer_razorpay_payment_id"]').val(response.razorpay_payment_id);
                                     $('#buyer_package_form'+id).submit();
@@ -759,6 +766,7 @@
                     "description": "Online payment",
                     "image": "{{asset('frontend/assets/images/logo.png')}}",
                     "handler": function (response){
+                        $('.page-loader').fadeIn('fast');
                         $('input[name="buyer_payment_method"]').val('Razorpay Payment');
                         $('input[name="buyer_razorpay_payment_id"]').val(response.razorpay_payment_id);
                         $('#buyer_package_form'+id).submit();
@@ -787,120 +795,120 @@
 </script>
 
 <script>
-    $(document).ready(function() {
+    // $(document).ready(function() {
 
-    const consumptionChart = new Chart(document.getElementById("buyer-creditChart"), {
-        type: "pie",
-            data: {
-                labels: [
-                    'Credits Left',
-                    'Credits Used'
-                ],
-                datasets: [{
-                    label: '',
-                    data: [200, 300],
-                    backgroundColor: [
-                        '#30BA00',
-                        '#D82C42'
-                    ],
-                    hoverOffset: 0,
-                    borderWidth: 0,
-                    maxHeight: 16,
-                    maxHeight: 16
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: {
-                    legend: {
-                        position: 'right',
-                        labels: {
-                            boxWidth: 16,
-                            boxHeight: 16,
-                            color: '#000000',
-                            padding: 20,
-                            font: {
-                                family: "'Poppins', sans-serif",
-                                weight: 400,
-                                size: 12,
-                                lineHeight: 1.5
-                            }
-                        }
+    // const consumptionChart = new Chart(document.getElementById("buyer-creditChart"), {
+    //     type: "pie",
+    //         data: {
+    //             labels: [
+    //                 'Credits Left',
+    //                 'Credits Used'
+    //             ],
+    //             datasets: [{
+    //                 label: '',
+    //                 data: [200, 300],
+    //                 backgroundColor: [
+    //                     '#30BA00',
+    //                     '#D82C42'
+    //                 ],
+    //                 hoverOffset: 0,
+    //                 borderWidth: 0,
+    //                 maxHeight: 16,
+    //                 maxHeight: 16
+    //             }]
+    //         },
+    //         options: {
+    //             responsive: true,
+    //             maintainAspectRatio: false,
+    //             plugins: {
+    //                 legend: {
+    //                     position: 'right',
+    //                     labels: {
+    //                         boxWidth: 16,
+    //                         boxHeight: 16,
+    //                         color: '#000000',
+    //                         padding: 20,
+    //                         font: {
+    //                             family: "'Poppins', sans-serif",
+    //                             weight: 400,
+    //                             size: 12,
+    //                             lineHeight: 1.5
+    //                         }
+    //                     }
                         
-                    },
-                    title: {
-                        display: true,
-                        text: 'Total Credits - 500',
-                        color: '#000000',
-                        font: {
-                            size: 12,
-                            weight: 600
-                        },
-                        position: 'right',
-                    }
-                },
-            }
-        });
-    });
+    //                 },
+    //                 title: {
+    //                     display: true,
+    //                     text: 'Total Credits - 500',
+    //                     color: '#000000',
+    //                     font: {
+    //                         size: 12,
+    //                         weight: 600
+    //                     },
+    //                     position: 'right',
+    //                 }
+    //             },
+    //         }
+    //     });
+    // });
 </script>
 <script>
-    $(document).ready(function() {
+    // $(document).ready(function() {
 
-    const consumptionChart = new Chart(document.getElementById("seller-creditChart"), {
-        type: "pie",
-            data: {
-                labels: [
-                    'Credits Left',
-                    'Credits Used'
-                ],
-                datasets: [{
-                    label: '',
-                    data: [100, 400],
-                    backgroundColor: [
-                        '#30BA00',
-                        '#D82C42'
-                    ],
-                    hoverOffset: 0,
-                    borderWidth: 0,
-                    maxHeight: 16,
-                    maxHeight: 16
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: {
-                    legend: {
-                        position: 'right',
-                        labels: {
-                            boxWidth: 16,
-                            boxHeight: 16,
-                            color: '#000000',
-                            padding: 20,
-                            font: {
-                                family: "'Poppins', sans-serif",
-                                weight: 400,
-                                size: 12,
-                                lineHeight: 1.5
-                            }
-                        }
+    // const consumptionChart = new Chart(document.getElementById("seller-creditChart"), {
+    //     type: "pie",
+    //         data: {
+    //             labels: [
+    //                 'Credits Left',
+    //                 'Credits Used'
+    //             ],
+    //             datasets: [{
+    //                 label: '',
+    //                 data: [100, 400],
+    //                 backgroundColor: [
+    //                     '#30BA00',
+    //                     '#D82C42'
+    //                 ],
+    //                 hoverOffset: 0,
+    //                 borderWidth: 0,
+    //                 maxHeight: 16,
+    //                 maxHeight: 16
+    //             }]
+    //         },
+    //         options: {
+    //             responsive: true,
+    //             maintainAspectRatio: false,
+    //             plugins: {
+    //                 legend: {
+    //                     position: 'right',
+    //                     labels: {
+    //                         boxWidth: 16,
+    //                         boxHeight: 16,
+    //                         color: '#000000',
+    //                         padding: 20,
+    //                         font: {
+    //                             family: "'Poppins', sans-serif",
+    //                             weight: 400,
+    //                             size: 12,
+    //                             lineHeight: 1.5
+    //                         }
+    //                     }
                         
-                    },
-                    title: {
-                        display: true,
-                        text: 'Total Credits - 500',
-                        color: '#000000',
-                        font: {
-                            size: 12,
-                            weight: 600
-                        },
-                        position: 'right',
-                    }
-                },
-            }
-        });
-    });
+    //                 },
+    //                 title: {
+    //                     display: true,
+    //                     text: 'Total Credits - 500',
+    //                     color: '#000000',
+    //                     font: {
+    //                         size: 12,
+    //                         weight: 600
+    //                     },
+    //                     position: 'right',
+    //                 }
+    //             },
+    //         }
+    //     });
+    // });
 </script>
 @endsection
 

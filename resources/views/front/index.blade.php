@@ -32,17 +32,23 @@
                                         
                                         <div class="swiper-slide">
                                             <div class="slider-img">
-                                                <img src="{{asset('frontend/assets/images/home-banner-1.jpg')}}" alt="">
+                                                <a href="#">
+                                                    <img src="{{asset('frontend/assets/images/home-banner-1.jpg')}}" alt="">
+                                                </a>
                                             </div>
                                         </div>
                                         <div class="swiper-slide">
                                             <div class="slider-img">
-                                                <img src="{{asset('frontend/assets/images/home-banner-2.jpg')}}" alt="">
+                                                <a href="#">
+                                                    <img src="{{asset('frontend/assets/images/home-banner-2.jpg')}}" alt="">
+                                                </a>
                                             </div>
                                         </div>
                                         <div class="swiper-slide">
                                             <div class="slider-img">
-                                                <img src="{{asset('frontend/assets/images/home-banner-3.jpg')}}" alt="">
+                                                <a href="#">
+                                                    <img src="{{asset('frontend/assets/images/home-banner-3.jpg')}}" alt="">
+                                                </a>
                                             </div>
                                         </div>
                                        

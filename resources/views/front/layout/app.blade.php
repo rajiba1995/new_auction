@@ -8,6 +8,7 @@
     <link rel="stylesheet" href="{{asset('frontend/assets/css/bootstrap.min.css')}}">
     <link rel="stylesheet" href="{{asset('frontend/assets/css/swiper-bundle.min.css')}}">
     <link rel="stylesheet" href="{{asset('frontend/assets/css/style.css')}}">
+    <link rel="stylesheet" href="{{asset('frontend/assets/css/loader.css')}}">
     <link rel="stylesheet" href="{{asset('frontend/assets/css/responsive.css')}}">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css" rel="stylesheet" />
     {{-- <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"> --}}
@@ -17,8 +18,6 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js"></script>
-    
-   
 </head>
 <body>
 
@@ -286,7 +285,10 @@
             </div>
         </header>
     @endif
-
+    <div class="page-loader " style="display: none;">
+        <div class="spinner"></div>
+        <p class="txt">Please Wait...</p>
+    </div>
     @yield('section')
 
     
@@ -466,7 +468,6 @@
     @yield('script')
     <script src="{{asset('frontend/assets/js/custom.js')}}"></script>
     <script>
-         
          $(document).ready(function() {
             @if (session('success'))
                 toastr.success('{{ session('success') }}');

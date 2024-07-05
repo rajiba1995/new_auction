@@ -40,7 +40,7 @@ use Carbon\Carbon;
 use Illuminate\Support\Facades\Session;
 use App\Mail\welcomeMail;
 use Illuminate\Support\Facades\Mail;
-use Barryvdh\DomPDF\Facade as PDF;
+use PDF;
 use Hash;
 
 
@@ -163,7 +163,7 @@ class UserController extends Controller{
             // 'category' => 'required_if:prodserv,productdetails',
             // 'sub_category' => 'required_if:prodserv,productdetails',
             'product_description' => 'required_if:prodserv,productdetails',
-            'price' => 'required_if:prodserv,productdetails',
+            // 'price' => 'required_if:prodserv,productdetails',
         
             // Define validation rules for service details
             'service_image' => 'nullable:prodserv,servicedetails|image|mimes:jpeg,png,jpg,gif',
@@ -560,7 +560,7 @@ class UserController extends Controller{
         // dd($request->all());
         $data = $this->AuthCheck();
         if($data){
-            try {
+            // try {
                 $negotiable_amount = 0;
                 $my_current_package = MySellerPackage::with('getPackageDetails')->where('user_id', $data->id)->first();
                 if($request->form_type=='upgrade'){
@@ -571,7 +571,7 @@ class UserController extends Controller{
                     }
                 }
                 // Start a database transaction
-                DB::beginTransaction();
+                // DB::beginTransaction();
                 $duration = 30*$request->package_duration;
                 $monthly_package_price = $request->package_value/$request->package_duration;
                 
@@ -616,7 +616,7 @@ class UserController extends Controller{
                 $my_wallet = new MySellerWallet();
                 $my_wallet->user_id = $data->id;
                 $my_wallet->type = 1; //Credit
-                $my_wallet->purpose = "For purchase package"; 
+                $my_wallet->purpose = $package_name; 
                 $my_wallet->credit_unit = $request->monthly_credit;
                 $my_wallet->current_unit = $current_balance + $monthly_credit;
                 $my_wallet->save();
@@ -678,17 +678,42 @@ class UserController extends Controller{
                     // $order_id = "";
                 }
 
-                $data_array=[
+                $data_pdf=[
                     'user'=>$data,
+                    'package'=>$package_name,
+                    'transaction'=>$transaction,
+                ];
+                
+                // Generate the PDF
+                $PDFOptions = ['enable_remote' => true];
+                $pdf = PDF::setOptions($PDFOptions)->loadView('mail.pdf', $data_pdf);
+                // Save the PDF to a file on the local server
+                $pdfPath = storage_path('app/public/transaction.pdf');
+                $pdf->save($pdfPath);
+
+                $data_array=[
+                    'cc'=>[],
+                    'user'=>$data,
+                    'attachment'=>$pdfPath,
                     'transaction_type'=>'Seller: '.$package_name,
                     'start_date'=>date('d-m-Y', strtotime($my_current_package->created_at)),
                     'end_date'=>date('d-m-Y', strtotime($my_current_package->expiry_date)),
                     'transaction'=>$transaction,
                     'type'=>'PAYMENT_TRANSACTION',
                 ];
-                DB::commit();
-                sendMail($data_array, $data->email, 'Confirmation of Payment Transaction on Milaap');
                 
+                $sender = env('SMS_SENDER');
+                $amount = $transaction->amount?$transaction->amount:"";
+                $expiry_date = strtotime($my_current_package->expiry_date);
+                $url = 'https://milaapp.in/';
+                $myMessage = urlencode("Payment of ".$amount." for the subscription of ".$package_name." is confirmed. Valid till ".$expiry_date." For details: ".$url." Sarv Megh Technology OPC Private Limited");
+                $customer_mobile_no = $data->mobile?$data->mobile:null;
+                $checkPhoneNumberValid = checkPhoneNumberValid($customer_mobile_no);
+                if($checkPhoneNumberValid){
+                    sendSMS($sender, $customer_mobile_no, $myMessage);
+                }
+                sendMail($data_array, $data->email, 'Confirmation of Payment Transaction on Milaap');
+                // DB::commit();
                 if (Session::has('url.intended')) {
                     $intendedUrl = Session::get('url.intended');
                     // Forget the intended URL from the session after using it
@@ -697,11 +722,11 @@ class UserController extends Controller{
                 }else{
                     return redirect()->route('user.payment_management')->with('success', 'Package has been successfully purchased');  
                 }
-            } catch (\Exception $e) {
-                // Rollback the transaction and handle the exception
-                DB::rollBack();
-                return redirect()->back()->with('error', 'An error occurred: ' . $e->getMessage());
-            }
+            // } catch (\Exception $e) {
+            //     // Rollback the transaction and handle the exception
+            //     DB::rollBack();
+            //     return redirect()->back()->with('error', 'An error occurred: ' . $e->getMessage());
+            // }
         }else{
             return redirect()->route('login');
         }
@@ -865,8 +890,23 @@ class UserController extends Controller{
                     $errorMessage = curl_error($ch);
                     // $order_id = "";
                 }
-                $data_array=[
+                $data_pdf=[
                     'user'=>$data,
+                    'package'=>$package_name,
+                    'transaction'=>$transaction,
+                ];
+                
+                // Generate the PDF
+                $PDFOptions = ['enable_remote' => true];
+                $pdf = PDF::setOptions($PDFOptions)->loadView('mail.pdf', $data_pdf);
+                // Save the PDF to a file on the local server
+                $pdfPath = storage_path('app/public/transaction.pdf');
+                $pdf->save($pdfPath);
+
+                $data_array=[
+                    'cc'=>[],
+                    'user'=>$data,
+                    'attachment'=>$pdfPath,
                     'transaction_type'=>'Buyer: '.$package_name,
                     'start_date'=>date('d-m-Y', strtotime($my_current_package->created_at)),
                     'end_date'=>date('d-m-Y', strtotime($my_current_package->expiry_date)),
@@ -1347,30 +1387,36 @@ class UserController extends Controller{
     }
     public function purchase(Request $request){
         // dd($request->all());
-        try {
+       if($request->razorpay_payment_id){
             $duration =isset($request->duration)?$request->duration:12;
             $data = $this->AuthCheck();
             // Create a new transaction
+            $Badge = Badge::findOrFail($request->id);
+            $package = $Badge?$Badge->title:"";
             $transaction = new Transaction();
             $transaction->user_id = $data->id;
             $transaction->unique_id = 'MLAP' . date('m') . time();
             $transaction->transaction_type = 1;
             $transaction->status = 1;
             $transaction->transaction_id = $request->razorpay_payment_id;
-            $transaction->purpose = 'Badge';
+            $transaction->purpose = 'Badge: '.$package;
             $transaction->amount = $request->amount;
             $transaction->transaction_source = $request->payment_method;
+            $transaction->save();
+            
             // PDF Generate
             $data_pdf=[
                 'user'=>$data,
+                'package'=>$package,
                 'transaction'=>$transaction,
             ];
+            
+            // Generate the PDF
             $PDFOptions = ['enable_remote' => true];
             $pdf = PDF::setOptions($PDFOptions)->loadView('mail.pdf', $data_pdf);
-            $pathToFile = asset('uploads/pdf/'.$transaction->unique_id.'.pdf');
-            $pdf->save(public_path('uploads/pdf/'.$transaction->unique_id.'.pdf'));
-            $transaction->invoice_file = $pathToFile;
-            $transaction->save();
+            // Save the PDF to a file on the local server
+            $pdfPath = storage_path('app/public/transaction.pdf');
+            $pdf->save($pdfPath);
             // Create a new MyBadge
 
             $myBadge = new MyBadge();
@@ -1379,8 +1425,7 @@ class UserController extends Controller{
             $myBadge->duration = $duration;
             $myBadge->expiry_date = Carbon::now()->addDays($duration * 30);
             $myBadge->save();
-            $Badge = Badge::findOrFail($request->id);
-            $package = $Badge?$Badge->title:"";
+            
             // Return success response
 
             //OrderID Generate
@@ -1421,19 +1466,30 @@ class UserController extends Controller{
             // Decode the response
             // $responseData = json_decode($response, true);
             $data_array=[
+                'cc'=>[],
                 'user'=>$data,
-                'attachment'=>$transaction->invoice_file,
+                'attachment'=>$pdfPath,
                 'transaction_type'=>'Badge: '.$package,
                 'start_date'=>date('d-m-Y', strtotime($myBadge->created_at)),
                 'end_date'=>date('d-m-Y', strtotime($myBadge->expiry_date)),
                 'transaction'=>$transaction,
                 'type'=>'PAYMENT_TRANSACTION',
             ];
+            $sender = env('SMS_SENDER');
+            $amount = $transaction->amount?$transaction->amount:"";
+            $expiry_date = strtotime($myBadge->expiry_date);
+            $url = 'https://milaapp.in';
+            $myMessage = urlencode("Payment of ".$amount." for the subscription of ".$package." is confirmed. Valid till ".$expiry_date." For details: ".$url." Sarv Megh Technology OPC Private Limited");
+            $customer_mobile_no = $data->mobile?$data->mobile:null;
+            $checkPhoneNumberValid = checkPhoneNumberValid($customer_mobile_no);
+            if($checkPhoneNumberValid){
+                sendSMS($sender, $customer_mobile_no, $myMessage);
+            }
             sendMail($data_array, $data->email, 'Confirmation of Payment Transaction on Milaap');
             return response()->json(['status' => 200]);
-        } catch (Exception $e) {
-            return response()->json(['error' => $e->getMessage()], 500);
-        }
+       }else{
+        return response()->json(['status' => 400]);
+       }
         
     }
 

@@ -320,24 +320,29 @@ if (!function_exists('previously_worked')) {
 if (!function_exists('sendMail')) {
 
     function sendMail($data,$email,$subject) {
-        // if ($data['cc']) {
-        //     $data['cc'] = array_filter($data['cc'], function($value){
-        //         return $value !==null; 
-        //     });
-        // }
-        $email = 'rajibalikhan299@gmail.com';
+        $cc = $data['cc'];
+        if($cc){
+            $cc = array_filter($cc, function($value) {
+                return !is_null($value);
+            });
+            // Reindex the array (optional)
+            $cc = array_values($cc);
+        }
         $from_address = env('MAIL_FROM_ADDRESS');
         $sender = env('MAIL_FROM_NAME');
         $response = Mail::send('mail.send_mail', $data, function ($message) use ($data, $from_address, $subject, $email, $sender) {
             $message->to($email)
                     ->subject($subject)
-                    // ->cc($data['cc'])
+                    ->cc($data['cc'])
                     ->from($from_address, $sender);
                     // Attachments
                     if (isset($data['attachment'])) {
                         $message->attach($data['attachment']);
                     }
         });
+        if (file_exists($data['attachment'])) {
+            unlink($data['attachment']);
+        }
         return true;
     }
 }

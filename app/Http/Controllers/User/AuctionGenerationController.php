@@ -84,6 +84,12 @@ class AuctionGenerationController extends Controller
             try{
                 $id = Crypt::decrypt($request->seller);
                 $watch_list_data = WatchList::with('SellerData')->where('group_id', null)->where('buyer_id', $user->id)->where('seller_id', $id)->get();
+                if(count($watch_list_data)==0){
+                    $AddWatchList = new WatchList;
+                    $AddWatchList->buyer_id = $user->id;
+                    $AddWatchList->seller_id = $id;
+                    $AddWatchList->save();
+                }
                 $outside_participant_data = [];
                 $outside_participant_without_group = [];
                 // return view('front.user.auction-inquiry-generation', compact('group_id','user','watch_list_data', 'inquiry_id', 'all_category', 'existing_inquiry', 'outside_participant_data', 'outside_participant_without_group'));
@@ -102,6 +108,7 @@ class AuctionGenerationController extends Controller
     }
 
     public function auction_inquiry_generation_store(Request $request){
+        // dd($request->all());
         $validator = Validator::make($request->all(), [
             'title' => 'required|string',
             'start_date' => 'required|date',
@@ -254,9 +261,12 @@ class AuctionGenerationController extends Controller
                             $participant->save();
                         }
                     }
+                }else{
+                    return redirect()->back()->with('warning', 'In this location, there are no sellers.')->withErrors($validator)->withInput();
                 }
             }
-            if($request->submit_type == "generate"){
+            if (($request->submit_type == "generate") || ($request->submit_type == "save" && !empty($request->inquiry_id))) {
+                
                 $exist_total_participants = InquiryParticipant::where('inquiry_id', $inquiry->id)->count();
                 $buyer_active_credit = $this->MasterRepository->getBuyerActiveCredit($request->created_by);
                 $link = route('user.buyer_wallet_transaction');
@@ -298,11 +308,13 @@ class AuctionGenerationController extends Controller
                         notification_push(NULL,$request->created_by,$request->created_by,$credit." credit used for a new inquiry generation",NULL,$link);
                     }
                     $exist_participants = InquiryParticipant::with('SellerData')->where('inquiry_id', $inquiry->id)->get();
+                    
                     if(count($exist_participants)>0){
                         $Buyer_data = User::where('id', $request->created_by)->first();
                         foreach($exist_participants as $key =>$item){
                             // Existing User
-                            $customer_mobile_no = $item->mobile; 
+                           
+                            $customer_mobile_no = $item->SellerData?$item->SellerData->mobile:null; 
                             // $customer_mobile_no = '8617207525';
                             $checkPhoneNumberValid = checkPhoneNumberValid($customer_mobile_no);
                             if($checkPhoneNumberValid){

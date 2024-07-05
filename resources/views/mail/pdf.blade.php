@@ -32,12 +32,12 @@
                                 <tbody>
                                     <tr>
                                         <td style="font-family: 'Poppins', sans-serif; font-size: 14px; font-weight: 500; padding: 5px;">
-                                            <strong>Invoice Date : </strong> 08-Feb-2023
+                                            <strong>Invoice Date : </strong> {{date('d-M-Y')}}
                                         </td>
                                     </tr>
                                     <tr>
                                         <td style="font-family: 'Poppins', sans-serif; font-size: 14px; font-weight: 500; padding: 5px;">
-                                            <strong>Invoice Number : </strong> 1813875582
+                                            <strong>Invoice Number : </strong> {{$transaction->unique_id}}
                                         </td>
                                     </tr>
                                 </tbody>
@@ -60,22 +60,22 @@
                                 <tbody>
                                     <tr>
                                         <td style="font-family: 'Poppins', sans-serif; font-size: 14px; font-weight: 500; padding: 5px;">
-                                            <strong>Name of Customer : </strong> Chowdhary Season Wears
+                                            <strong>Name of Customer : </strong> {{$user->name}}
                                         </td>
                                     </tr>
                                     <tr>
                                         <td style="font-family: 'Poppins', sans-serif; font-size: 14px; font-weight: 500; padding: 5px;">
-                                            <strong>Address : </strong> 1ST FLOOR 8/2A RUPCHAND ROY STREET KOLKATA, Kolkata, West Bengal - 700007, India
+                                            <strong>Address : </strong> {{$user->address}}, {{$user->city}},{{$user->state}}, India
                                         </td>
                                     </tr>
                                     <tr>
                                         <td style="font-family: 'Poppins', sans-serif; font-size: 14px; font-weight: 500; padding: 5px;">
-                                            <strong>Pincode : </strong> 700007
+                                            <strong>Pincode : </strong> {{$user->pincode}}
                                         </td>
                                     </tr>
                                     <tr>
                                         <td style="font-family: 'Poppins', sans-serif; font-size: 14px; font-weight: 500; padding: 5px;">
-                                            <strong>GST : </strong> 19AADFC0642D1ZY
+                                            <strong>GST : </strong> 
                                         </td>
                                     </tr>
                                 </tbody>
@@ -97,41 +97,46 @@
                                     </tr>
                                 </thead>
                                 <tbody>
+                                    @php
+                                        $taxRate = 18;
+                                        $taxableAmount = $transaction->amount / (1 + ($taxRate / 100));
+                                        $gstAmount = $transaction->amount - $taxableAmount;
+                                    @endphp
                                     <tr>
                                         <td style="font-family: 'Poppins', sans-serif; font-size: 14px; font-weight: 400; text-align: center; border-bottom: 1px solid #000; border-right: 1px solid #000; padding: 5px;">1</td>
-                                        <td style="font-family: 'Poppins', sans-serif; font-size: 14px; font-weight: 400; text-align: center; border-bottom: 1px solid #000; border-right: 1px solid #000; padding: 5px;">Milaap web services (TS Combo 2 year)</td>
+                                        <td style="font-family: 'Poppins', sans-serif; font-size: 14px; font-weight: 400; text-align: center; border-bottom: 1px solid #000; border-right: 1px solid #000; padding: 5px;">{{$package}}</td>
                                         <td style="border-bottom: 1px solid #000; border-right: 1px solid #000;"></td>
-                                        <td style="font-family: 'Poppins', sans-serif; font-size: 14px; font-weight: 400; text-align: right; border-bottom: 1px solid #000;">54,000</td>
+                                        <td style="font-family: 'Poppins', sans-serif; font-size: 14px; font-weight: 400; text-align: right; border-bottom: 1px solid #000;">{{ number_format($transaction->actual_amount, 2, '.', ',') }}</td>
                                     </tr>
                                     <tr>
                                         <td style="font-family: 'Poppins', sans-serif; font-size: 14px; font-weight: 400; text-align: center; border-bottom: 1px solid #000; border-right: 1px solid #000; padding: 5px;"></td>
                                         <td style="font-family: 'Poppins', sans-serif; font-size: 16px; font-weight: 700; text-align: right; border-bottom: 1px solid #000; border-right: 1px solid #000; padding: 5px;">Negotiable Amount</td>
                                         <td style="font-family: 'Poppins', sans-serif; font-size: 14px; font-weight: 400; text-align: right; border-bottom: 1px solid #000; border-right: 1px solid #000;"></td>
-                                        <td style="font-family: 'Poppins', sans-serif; font-size: 16px; font-weight: 700; text-align: right; border-bottom: 1px solid #000;">54,000</td>
+                                        <td style="font-family: 'Poppins', sans-serif; font-size: 16px; font-weight: 700; text-align: right; border-bottom: 1px solid #000;">{{ number_format($transaction->negotiable_amount, 2, '.', ',') }}</td>
                                     </tr>
                                     <tr>
                                         <td style="font-family: 'Poppins', sans-serif; font-size: 14px; font-weight: 400; text-align: center; border-bottom: 1px solid #000; border-right: 1px solid #000; padding: 5px;"></td>
                                         <td style="font-family: 'Poppins', sans-serif; font-size: 16px; font-weight: 700; text-align: right; border-bottom: 1px solid #000; border-right: 1px solid #000; padding: 5px;">Paid Amount</td>
                                         <td style="font-family: 'Poppins', sans-serif; font-size: 14px; font-weight: 400; text-align: right; border-bottom: 1px solid #000; border-right: 1px solid #000;"></td>
-                                        <td style="font-family: 'Poppins', sans-serif; font-size: 16px; font-weight: 700; text-align: right; border-bottom: 1px solid #000;">54,000</td>
+                                        <td style="font-family: 'Poppins', sans-serif; font-size: 16px; font-weight: 700; text-align: right; border-bottom: 1px solid #000;">{{ number_format($transaction->amount, 2, '.', ',') }}</td>
                                     </tr>
                                     <tr>
                                         <td style="font-family: 'Poppins', sans-serif; font-size: 14px; font-weight: 400; text-align: center; border-bottom: 1px solid #000; border-right: 1px solid #000; padding: 5px;"></td>
                                         <td style="font-family: 'Poppins', sans-serif; font-size: 16px; font-weight: 700; text-align: right; border-bottom: 1px solid #000; border-right: 1px solid #000; padding: 5px;">Taxable Amount</td>
                                         <td style="font-family: 'Poppins', sans-serif; font-size: 14px; font-weight: 400; text-align: right; border-bottom: 1px solid #000; border-right: 1px solid #000;"></td>
-                                        <td style="font-family: 'Poppins', sans-serif; font-size: 16px; font-weight: 700; text-align: right; border-bottom: 1px solid #000;">54,000</td>
+                                        <td style="font-family: 'Poppins', sans-serif; font-size: 16px; font-weight: 700; text-align: right; border-bottom: 1px solid #000;">{{number_format($taxableAmount, 2, '.', ',')}}</td>
                                     </tr>
                                     <tr>
                                         <td style="font-family: 'Poppins', sans-serif; font-size: 14px; font-weight: 400; text-align: center; border-bottom: 1px solid #000; border-right: 1px solid #000; padding: 5px;"></td>
                                         <td style="font-family: 'Poppins', sans-serif; font-size: 14px; font-weight: 400; text-align: right; border-bottom: 1px solid #000; border-right: 1px solid #000; padding: 5px;">IGST</td>
-                                        <td style="font-family: 'Poppins', sans-serif; font-size: 14px; font-weight: 400; text-align: right; border-bottom: 1px solid #000; border-right: 1px solid #000;">14%</td>
-                                        <td style="font-family: 'Poppins', sans-serif; font-size: 14px; font-weight: 400; text-align: right; border-bottom: 1px solid #000;">9,720</td>
+                                        <td style="font-family: 'Poppins', sans-serif; font-size: 14px; font-weight: 400; text-align: right; border-bottom: 1px solid #000; border-right: 1px solid #000;">{{$taxRate}}%</td>
+                                        <td style="font-family: 'Poppins', sans-serif; font-size: 14px; font-weight: 400; text-align: right; border-bottom: 1px solid #000;">{{number_format($gstAmount, 2, '.', ',')}}</td>
                                     </tr>
                                     <tr>
                                         <td style="font-family: 'Poppins', sans-serif; font-size: 14px; font-weight: 400; text-align: center; border-right: 1px solid #000; padding: 5px;"></td>
                                         <td style="font-family: 'Poppins', sans-serif; font-size: 16px; font-weight: 700; text-align: right; border-right: 1px solid #000; padding: 5px;">Total Amount</td>
                                         <td style="font-family: 'Poppins', sans-serif; font-size: 14px; font-weight: 400; text-align: right; border-right: 1px solid #000;"></td>
-                                        <td style="font-family: 'Poppins', sans-serif; font-size: 16px; font-weight: 700; text-align: right;">63,720</td>
+                                        <td style="font-family: 'Poppins', sans-serif; font-size: 16px; font-weight: 700; text-align: right;">{{ number_format($transaction->amount, 2, '.', ',') }}</td>
                                     </tr>
                                 </tbody>
                             </table>
@@ -152,10 +157,10 @@
                                                         <td style="font-family: 'Poppins', sans-serif; font-size: 14px; font-weight: 400; padding: 10px 5px;">Whether the tax is payable on reverse charge basis: No</td>
                                                     </tr>
                                                     <tr>
-                                                        <td style="font-family: 'Poppins', sans-serif; font-size: 14px; font-weight: 400; padding: 10px 5px;"><strong>IGST : </strong> 18%</td>
+                                                        <td style="font-family: 'Poppins', sans-serif; font-size: 14px; font-weight: 400; padding: 10px 5px;"><strong>IGST : </strong> {{$taxRate}}%</td>
                                                     </tr>
                                                     <tr>
-                                                        <td style="font-family: 'Poppins', sans-serif; font-size: 14px; font-weight: 400; padding: 10px 5px;"><strong>HSN : </strong> 998365</td>
+                                                        <td style="font-family: 'Poppins', sans-serif; font-size: 14px; font-weight: 400; padding: 10px 5px;"><strong>HSN : </strong> </td>
                                                     </tr>
                                                 </tbody>
                                             </table>

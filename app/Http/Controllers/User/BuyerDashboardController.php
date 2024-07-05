@@ -446,7 +446,6 @@ class BuyerDashboardController extends Controller
     }
 
     public function live_inquiry_seller_allot(Request $request){
-        // dd($request->all());
         if (!is_numeric($request->allot_amount)) {
             return redirect()->back()->with('warning', 'Please enter a numeric value.');
         }
@@ -492,8 +491,14 @@ class BuyerDashboardController extends Controller
                         $execution_date = $inquiry_data->execution_date?$inquiry_data->execution_date:"...";
                         $amount = $request->allot_amount;
                         $url = 'https://milaapp.in/seller/confirmed';
+                        $cc =[
+                            0=>$allot_seller->SellerData->email1,
+                            1=>$allot_seller->SellerData->email2,
+                            2=>$allot_seller->SellerData->email3,
+                        ];
                         if($request->type=="first"){
                             $data=[
+                                'cc'=>$cc,
                                 'user'=>$allot_seller->SellerData,
                                 'inquiry_data'=>$inquiry,
                                 'Buyer_data'=>$Buyer_data,
@@ -504,6 +509,7 @@ class BuyerDashboardController extends Controller
                         }else{
                             $reason = $request->reallot_reason?$request->reallot_reason:"";
                             $data=[
+                                'cc'=>$cc,
                                 'user'=>$allot_seller->SellerData,
                                 'inquiry_data'=>$inquiry,
                                 'Buyer_data'=>$Buyer_data,
@@ -523,6 +529,21 @@ class BuyerDashboardController extends Controller
                         $seller_email =$allot_seller->SellerData?$allot_seller->SellerData->email:null;
                         if($seller_email){
                             sendMail($data,$seller_email,$subject);
+                        }
+                        if($Buyer_data){
+                            $exist_participants = InquiryParticipant::with('SellerData')->where('inquiry_id', $inquiry->id)->get();
+                            $reason = $request->reallot_reason?$request->reallot_reason:"";
+                            $data=[
+                                'cc'=>null,
+                                'user'=>$allot_seller->SellerData,
+                                'inquiry_data'=>$inquiry,
+                                'Buyer_data'=>$Buyer_data,
+                                'reason'=>$reason,
+                                'participants'=>$exist_participants,
+                                'type'=>'INQUIRY_REALLOTMENT',
+                                'user_type'=>'Buyer',
+                            ];
+                            sendMail($data,$Buyer_data->email,$subject);
                         }
                         
                     }
