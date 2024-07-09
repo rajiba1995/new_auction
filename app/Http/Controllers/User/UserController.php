@@ -623,7 +623,7 @@ class UserController extends Controller{
                 // For Amount Transaction
                 $transaction = new Transaction();
                 $transaction->user_id = $data->id;
-                $transaction->unique_id = 'MLAP' . date('m') . time();
+                $transaction->unique_id = GenerateYearWiseTransaction(8, 'transactions', date('Y'));
                 $transaction->transaction_type = 1; //Online
                 $transaction->status = 1; //Paid
                 $transaction->user_type = 1; //Seller
@@ -828,7 +828,7 @@ class UserController extends Controller{
 
             $transaction = new Transaction();
             $transaction->user_id = $data->id;
-            $transaction->unique_id = 'MLAP' . date('m') . time(); // Adjusted range for 8-digit number
+            $transaction->unique_id = GenerateYearWiseTransaction(8, 'transactions', date('Y')); // Adjusted range for 8-digit number
             $transaction->transaction_type = 1; //Online
             $transaction->status = 1; //Paid
             $transaction->user_type = 2; //Buyer
@@ -964,11 +964,18 @@ class UserController extends Controller{
         // Check if any of the parameters are provided
         // If keyword is provided or both start_date and end_date are provided
         if (!empty($mode) || !empty($startDate) || !empty($endDate)|| !empty($purpose)) {  
-            $transactions = $this->userRepository->getSearchTransactionByUserId($data->id,$startDate, $endDate,$mode,$purpose);
+            $transactions = $this->userRepository->getSearchTransactionByUserId($data->id,$purpose,$mode,$startDate, $endDate);
         }else{
             $transactions = $this->userRepository->getAllTransactionByUserId($data->id);
         }
-        return view('front.user.transaction',compact('data','transactions'));
+        $purpose_array = [];
+        if(count($transactions)>0){
+            foreach($transactions as $k=>$item){
+                $purpose_array[] = $item->purpose;
+            }
+            $purpose_array = array_unique($purpose_array);
+        }
+        return view('front.user.transaction',compact('data','transactions', 'purpose_array'));
     }
     public function notifications(Request $request){
         $data = $this->AuthCheck();
@@ -1395,7 +1402,7 @@ class UserController extends Controller{
             $package = $Badge?$Badge->title:"";
             $transaction = new Transaction();
             $transaction->user_id = $data->id;
-            $transaction->unique_id = 'MLAP' . date('m') . time();
+            $transaction->unique_id = GenerateYearWiseTransaction(8, 'transactions', date('Y'));
             $transaction->transaction_type = 1;
             $transaction->status = 1;
             $transaction->transaction_id = $request->razorpay_payment_id;

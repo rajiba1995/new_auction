@@ -549,6 +549,7 @@
     $(document).ready(function(){
         $('#auction_requirement_form button[type="submit"]').click(function(event){
             event.preventDefault();
+            
             var participantsInside = $('[name="participant[]"]').length;
             var exist_participant = $('[name="exist_participant[]"]').length;
             var participantsOutside = $('[name="outside_participant[]"]').length;
@@ -606,11 +607,13 @@
                                 var button = $('#generate_btn');
                                 button.prop('disabled', true); // Disable the button
                                 button.text('Please wait...');
+                                $('.page-loader').fadeIn('fast');
                                 $('#auction_requirement_form').submit(); // Submit the form
                             }
                         });
                     }
                 }else{
+                    $('.page-loader').fadeIn('fast');
                     $('#auction_requirement_form').submit(); // Submit the form
                 }
             } else{
@@ -621,6 +624,7 @@
                         icon: "warning"
                     }).then((result) => {
                         if (result.isConfirmed) {
+                            $('.page-loader').fadeIn('fast');
                             var button = $('#generate_btn');
                             button.prop('disabled', true); // Disable the button
                             button.text('Please wait...');
@@ -628,6 +632,7 @@
                         }
                     });
                 }else{
+                    $('.page-loader').fadeIn('fast');
                     $('#auction_requirement_form').submit(); // Submit the form
                 }
             }

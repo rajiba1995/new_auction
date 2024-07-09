@@ -73,10 +73,12 @@ class RegisteredUserController extends Controller
                     $exist_User->save();
                     session(['user' => $exist_User]);
                     $data=[
+                        'cc'=>[],
                         'user'=>$exist_User,
                         'type'=>'REG_OTP',
                         'user_type'=>'Seller',
                     ];
+                    
                     $mail = sendMail($data,$exist_User->email,'OTP Verification'); // Assuming sendMail function exists
                     DB::commit(); // Commit the transaction
                     $route = route('front.otp_validation');
@@ -98,19 +100,24 @@ class RegisteredUserController extends Controller
                 // You may perform additional operations within the transaction here
     
                 session(['user' => $User]);
+                
                 $data=[
+                    'cc'=>[],
                     'user'=>$User,
                     'type'=>'REG_OTP',
                     'user_type'=>'Seller',
                 ];
-                
+               
                 $sender = env('SMS_SENDER');
                 $user_otp = $User->otp;
                 $name = $User->name;
                 $customer_mobile_no = $User->mobile; // Mobile number to send the SMS to
                 $myMessage = urlencode("Dear ".$name." OTP for new registration is ".$user_otp." Please enter this to verify your identity and proceed with the registration request.Sarv-Megh Technology (OPC) Private Limited");
                 // New URL format
-                sendSMS($sender, $customer_mobile_no, $myMessage);
+                $checkPhoneNumberValid = checkPhoneNumberValid($customer_mobile_no);
+                if($checkPhoneNumberValid){
+                    sendSMS($sender, $customer_mobile_no, $myMessage);
+                }
                
                 $mail = sendMail($data, $User->email,'OTP Verification'); // Assuming sendMail function exists
                 DB::commit(); // Commit the transaction
@@ -158,6 +165,7 @@ class RegisteredUserController extends Controller
             session(['user' => $exist_User]);
             $data=[
                 'user'=>$exist_User,
+                'cc'=>[],
                 'type'=>'REG_OTP',
                 'user_type'=>'Seller',
             ];
@@ -209,6 +217,62 @@ class RegisteredUserController extends Controller
             return response()->json(['status'=>200]);
         }else{
             return response()->json(['status'=>500, 'message'=>"OTP does not match. Please try again!"]);
+        }
+    }
+    public function ForgotPassword(Request $request){
+        return view('auth.forgot-password');
+    }
+    public function ForgotPasswordSendOTP(Request $request)
+    {
+        $request->validate(['email' => 'required|email|exists:users,email']);
+
+        $otp = rand(1000, 9999);
+        $user = User::where('email', $request->email)->first();
+        $sender = env('SMS_SENDER');
+        $user->otp = $otp;
+        $user->save();
+        $name = $user->name;
+        $customer_mobile_no = $user->mobile; // Mobile number to send the SMS to
+        $myMessage = urlencode("Dear ".$name." OTP for new password generation is ".$otp.". . -Sarv-Megh Technology (OPC) Private Limited");
+        // New URL format
+        $checkPhoneNumberValid = checkPhoneNumberValid($customer_mobile_no);
+        if($checkPhoneNumberValid){
+            sendSMS($sender, $customer_mobile_no, $myMessage);
+        }
+        Session::put('otp', $otp);
+        Session::put('email', $request->email);
+        return response()->json(['message' => 'OTP sent to your email', 'status'=>200]);
+    }
+
+    public function verifyOtp(Request $request)
+    {
+        $request->validate(['otp' => 'required']);
+        if ($request->otp == Session::get('otp')) {
+            return response()->json(['message' => 'OTP verified', 'status'=>200]);
+        } else {
+            return response()->json(['message' => 'Invalid OTP', 'status'=>400]);
+        }
+    }
+
+    public function passwordReset(Request $request)
+    {
+        $request->validate([
+            'email' => 'required|email|exists:users,email',
+            'password' => 'required|min:6|confirmed',
+            'otp' => 'required'
+        ]);
+
+        if ($request->otp == Session::get('otp') && $request->email == Session::get('email')) {
+            $user = User::where('email', $request->email)->first();
+            $user->password = Hash::make($request->password);
+            $user->save();
+
+            Session::forget('otp');
+            Session::forget('email');
+
+            return response()->json(['message' => 'Password reset successful', 'status'=>200]);
+        } else {
+            return response()->json(['message' => 'Invalid OTP or email', 'status'=>400]);
         }
     }
 }

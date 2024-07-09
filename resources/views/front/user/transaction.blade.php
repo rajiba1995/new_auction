@@ -4,7 +4,25 @@
 .total-row {
     background-color: #c8e9f5 !important;/* Blue background color */
 }
+.search_btn {
+    height: 37px !important;width: 117%!important;margin-top: 2px!important;line-height: 40px !important;
+}
+.align_div{
+    width: 215px !important;
+}
+
 </style>
+@php
+    use Carbon\Carbon;
+
+    // Calculate the default start date (one month before today)
+    $defaultStartDate = Carbon::now()->subMonth()->format('Y-m-d');
+
+    // Get the provided start and end dates from the request or set default values
+    $startDate = request()->input('start_date') ?? $defaultStartDate;
+    $endDate = request()->input('end_date') ?? Carbon::now()->format('Y-m-d');
+
+@endphp
 <div class="main">
     <div class="inner-page">
         <div class="profile-page-wrapper">
@@ -29,35 +47,48 @@
                                     <form action="" method="get" id="">
                                         <div class="container-fluid">
                                             <div class="row">
-                                                <div class="col-lg-auto col-12">
+                                                <div class="col-lg-auto col-12 mb-2 align_div">
                                                     <label for="start_date">Start date</label>
-                                                    <input type="date" class="form-control form-control-sm" name="start_date" id="start_date" value="{{ request()->input('start_date') }}" >
+                                                    <input type="date" class="form-control form-control-sm" name="start_date" id="start_date" value="{{ request()->input('end_date') ?? $startDate }}">
                                                 </div>
-                                                <div class="col-lg-auto col-12">
+                                                <div class="col-lg-auto col-12 mb-2 align_div">
                                                     <label for="end_date">End date</label>
-                                                    <input type="date" class="form-control form-control-sm" name="end_date" id="end_date" value="{{ request()->input('end_date') }}" >
+                                                    <input type="date" class="form-control form-control-sm" name="end_date" id="end_date" value="{{ request()->input('end_date') ?? $endDate }}">
                                                 </div>
-                                                <div class="col-lg-auto col-12">
-                                                    {{-- <label for=""></label> --}}
-                                                    <select name="mode" class="form-control" class="w-100">
-                                                        <option value="1" selected>Online</option>
-                                                        <option value="0">Offline</option>
+                                                <div class="col-lg-auto col-12 mb-2 align_div">
+                                                    <label for="mode">Mode</label>
+                                                    <select name="mode" class="form-control form-control-sm w-100">
+                                                        <option value="1" {{ request()->input('mode') == "1" ? 'selected' : '' }}>Online</option>
+                                                        <option value="0" {{ request()->input('mode') == "0" ? 'selected' : '' }}>Offline</option>
                                                     </select>
                                                 </div>
-                                                <div class="col-lg-auto col-12">
-                                                    <select name="purpose" class="form-control" class="w-100">
-                                                        <option value="Package" selected>Package</option>
-                                                        <option value="Badge">Badge</option>
+                                                <div class="col-lg-auto col-12 mb-2 align_div">
+                                                    <label for="purpose">Purpose</label>
+                                                    <select name="purpose" class="form-control form-control-sm w-100">
+                                                        <option value="" selected hidden>Purpose</option>
+                                                        @if(count($purpose_array)>0)
+                                                            @foreach ($purpose_array as $item)
+                                                                <option value="Package" {{ request()->input('purpose') == $item ? 'selected' : '' }}>{{$item}}</option>
+                                                            @endforeach
+                                                        @endif
+                                                        
                                                     </select>
                                                 </div>
-                                                <div class="col-lg-auto col-12 text-end">
-                                                    <button type="submit" class="btn btn-sm btn-primary"><i class="fa-solid fa-magnifying-glass"></i>Search</button>
-                                                    <a href="{{route('user.transaction')}}" class="btn btn-danger btn-sm"><i class="fa-solid fa-xmark"></i></a>
+                                                <div class="col-lg-auto col-12 mb-2 align_div text-center" style="margin-top: 23px;">
+                                                    <button type="submit" class="btn btn-sm btn-primary search_btn">
+                                                        <i class="fa-solid fa-magnifying-glass"></i> Search
+                                                    </button>
                                                     {{-- <a href="{{ route('admin.employee.details.export',['start_date'=>request()->input('start_date'),'end_date'=>request()->input('end_date'),'keyword'=>request()->input('keyword')]) }}" class="btn btn-sm btn-success" data-toggle="tooltip" title="Export">Export</a> --}}
+                                                </div>
+                                                <div class="col-lg-auto col-12 mb-2 align_div text-center" style="margin-top: 23px;">
+                                                    <a href="{{route('user.transaction')}}" class="btn btn-danger">
+                                                        <i class="fa-solid fa-xmark"></i>
+                                                    </a>
                                                 </div>
                                             </div>
                                         </div>
                                     </form>
+                                    
                                     <div class="content-box">
                                         <table class="table">
                                             <thead>

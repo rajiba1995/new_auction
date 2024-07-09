@@ -43,7 +43,8 @@
                         </div>
                         <button type="submit" class="btn btn-animated">Login</button>
                         <div class="resend-block mt-4">
-                            <label>If you haven't registered yet,</label>
+                            {{-- <label>If you haven't registered yet,</label> --}}
+                            <a href="{{route('forgot-password')}}">Forgot your password?</a>
                             <a href="{{route('register')}}">Register Here</a>
                         </div>
                     </form>

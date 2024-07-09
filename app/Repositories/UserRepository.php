@@ -366,25 +366,25 @@ class UserRepository implements UserContract
        return Transaction::where('user_id',$id)->paginate(20);
        
     }
-    public function getSearchTransactionByUserId($id,$purpose,$mode,$startDate,$endDate){
-        // dd($id,$purpose,$mode,$startDate,$endDate);
-        // $query = Transaction::query();
+    public function getSearchTransactionByUserId($id, $purpose, $mode, $startDate, $endDate){
         $query = Transaction::query()->where('user_id', $id);
-        
-        $query->when($mode || $purpose, function ($query) use ($mode, $purpose) {
-            $query->where('transaction_type', 'like', '%' . $mode . '%')
-                ->orWhere('purpose', 'like', '%' . $purpose . '%');
+
+        // Apply mode and purpose filters if they are provided
+        $query->when($mode, function ($query, $mode) {
+            $query->where('transaction_type', $mode);
         });
 
+        $query->when($purpose, function ($query, $purpose) {
+            $query->where('purpose', 'like', '%' . $purpose . '%');
+        });
 
+        // Apply date range filters if both start and end dates are provided
         if (!is_null($startDate) && !is_null($endDate)) {
-      
-            $query->when($startDate && $endDate, function($query) use ($startDate, $endDate) {
-                $query->where('created_at', '>=', $startDate." 00:00:00")
-                      ->where('created_at', '<=', date("Y-m-d 23:59:59",strtotime($endDate)));
-            });
+            $query->whereBetween('created_at', [$startDate . " 00:00:00", date("Y-m-d 23:59:59", strtotime($endDate))]);
         }
-    return $query->paginate(25);
+
+        // Get the raw SQL query
+        return $query->paginate(25);
        
     }
     public function getSellerAllWalletTransactionByUserId($id){

@@ -331,6 +331,7 @@ class AuctionGenerationController extends Controller
                             if($item->SellerData){
                                 $data=[
                                     'user'=>$item->SellerData,
+                                    'cc'=>[],
                                     'inquiry_data'=>$inquiry,
                                     'Buyer_data'=>$Buyer_data,
                                     'type'=>'INQUIRY_GENERATION',
@@ -347,6 +348,7 @@ class AuctionGenerationController extends Controller
                         }
                         $data=[
                             'user'=>$Buyer_data,
+                            'cc'=>[],
                             'inquiry_data'=>$inquiry,
                             'Buyer_data'=>$Buyer_data,
                             'participants'=>$exist_participants,
@@ -382,7 +384,7 @@ class AuctionGenerationController extends Controller
             }
         } catch (\Exception $e) {
             DB::rollBack();
-            // dd($e->getMessage());
+            dd($e->getMessage());
              return abort(404);
          }
     }

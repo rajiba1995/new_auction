@@ -661,6 +661,27 @@
                  $('#successAlert').fadeOut('slow');
              }, 3000);
          });
+         function displayErrors(errors, selector, alert) {
+            let errorMessages = '<div class="alert alert-'+alert+'" role="alert">';
+            $.each(errors, function(key, value) {
+                errorMessages += value[0] + '<br>';
+            });
+            errorMessages += '</div>';
+            $(selector).html(errorMessages);
+
+            setTimeout(function() {
+                $(selector).html('');
+            }, 3000);
+        }
+        function toggleButton(button, disable, text) {
+            if (disable) {
+                button.prop('disabled', true);
+                button.text(text);
+            } else {
+                button.prop('disabled', false);
+                button.text(text);
+            }
+        }
     </script>
 </body>
 </html>

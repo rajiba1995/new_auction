@@ -30,6 +30,10 @@ Route::get('/clear-cache', function() {
     Route::get('/terms-and-conditions',[HomeController::class,'TermsAndCondition'])->name('front.terms-and-conditions');
     Route::get('/about-us',[HomeController::class,'AboutUs'])->name('front.about-us');
     Route::get('/contact-us',[HomeController::class,'ContactUs'])->name('front.contact-us');
+    Route::get('/forgot-password',[RegisteredUserController::class,'ForgotPassword'])->name('forgot-password');
+    Route::post('/forgot-password/send-otp',[RegisteredUserController::class,'ForgotPasswordSendOTP'])->name('forgot.password.sendOtp');
+    Route::post('/forgot-password/verify-Otp',[RegisteredUserController::class,'verifyOtp'])->name('forgot.password.verifyOtp');
+    Route::post('/forgot-password/reset-password',[RegisteredUserController::class,'passwordReset'])->name('forgot.password.reset');
     Route::post('/register-check',[RegisteredUserController::class,'RegisterCheck'])->name('register-check');
     Route::get('/verify',[RegisteredUserController::class,'UserVerifyData'])->name('front.otp_validation');
     Route::get('/resend-otp-validation',[RegisteredUserController::class,'resend_otp_validation'])->name('front.resend_otp_validation');
@@ -130,6 +134,7 @@ Route::get('/clear-cache', function() {
             Route::get('/cancelled-inquiries', [BuyerDashboardController::class, 'cancelled_inquiries'])->name('buyer_cancelled_inquiries');
             Route::post('/cancelled-reason', [BuyerDashboardController::class, 'cancelled_reason'])->name('buyer_cancelled_reason');
             Route::get('/live-inquiries-fetch-ajax', [BuyerDashboardController::class, 'live_inquiries_fetch_ajax'])->name('buyer_live_inquiries_by_ajax');
+            Route::post('/live-inquiries-credit-bit', [BuyerDashboardController::class, 'CreditBuyerBit'])->name('buyer_live_inquiries_credit_bit');
             Route::post('/live-inquiry-seller-allot', [BuyerDashboardController::class, 'live_inquiry_seller_allot'])->name('live_inquiry_seller_allot');
         });
         // Seller Dashboard
