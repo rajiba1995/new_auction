@@ -26,12 +26,12 @@
                     </div>
                     <div class="form-wrap mb-3">
                         <label for="">Short Description</label>
-                        <textarea type="text" class="form-control" name="short_description" id="short_description">{{ $data->short_desc }}</textarea>
+                        <textarea type="text" class="form-control ckeditor" name="short_description" id="short_description">{{ $data->short_desc }}</textarea>
                         @error('short_description')<div class="text-danger">{{ $message }}</div>@enderror
                     </div>
                     <div class="form-wrap mb-3">
                         <label for="">Long Description</label>
-                        <textarea type="text" class="form-control" name="long_description" id="long_description">{{ $data->long_desc }}</textarea>
+                        <textarea type="text" class="form-control ckeditor" name="long_description" id="long_description">{{ $data->long_desc }}</textarea>
                         @error('long_description')<div class="text-danger">{{ $message }}</div>@enderror
                     </div>
                     <div class="row">
@@ -80,10 +80,6 @@
 </div>
 @endsection
 @push('scripts')
-
-<script>
-    CKEDITOR.replace('short_description');
-    CKEDITOR.replace('long_description');
-</script>
-
+<script type="text/javascript" src="{{ asset('frontend/ckeditor/ckeditor.js') }}"></script>
+<script type="text/javascript" src="{{ asset('frontend/ckeditor/adapters/jquery.js') }}"></script>
 @endpush

@@ -62,18 +62,39 @@ if (!function_exists('GroupslugGenerateUpdate')) {
         return $slug;
     }
 }
-function genAutoIncreNoYearWiseInquiry($length=4,$table='inquiries',$year,$month){
+function genAutoIncreNoYearWiseInquiry($length=6,$table='inquiries',$year,$month){
     # PO , GRN, SALES ORDER , RETURN ORDER
     $val = 1;    
-    $data = DB::table($table)->whereRaw("DATE_FORMAT(created_at, '%Y-%m') = '".$year."-".$month."'  ")->count();
+    $data = DB::table($table)->whereRaw("DATE_FORMAT(created_at, '%Y') = '".$year."' ")->count();
     if(!empty($data)){
         $val = ($data + 1);
     }
     $number = str_pad($val,$length,"0",STR_PAD_LEFT);
-
-    return $year.''.$month.''.$number;
+    return 'MLAP'.$year.''.$number;
 }
+function GenerateYearWiseTransaction($length=6, $table="transactions", $year){
+     # PO , GRN, SALES ORDER , RETURN ORDER
+     $val = 1;    
+     $data = DB::table($table)->whereRaw("DATE_FORMAT(created_at, '%Y') = '".$year."' ")->count();
+     
+     if(!empty($data)){
+         $val = ($data + 1);
+     }
+      // Generate the padded number
+    $number = str_pad($val, $length, "0", STR_PAD_LEFT);
+    
+    // Get current year in 2 digits
+    $currentYear = date('y');
+    
+    // Get upcoming year in 2 digits
+    $upcomingYear = $currentYear + 1;
+    
+    // Format the transaction ID
+    $transactionId = "MLAP/MRV-{$number}/{$currentYear}-{$upcomingYear}";
+    
+    return $transactionId;
 
+}
 //cities
 if (!function_exists('slugGenerateForCity')) {
     function slugGenerateForCity($title, $table) {
@@ -340,8 +361,10 @@ if (!function_exists('sendMail')) {
                         $message->attach($data['attachment']);
                     }
         });
-        if (file_exists($data['attachment'])) {
-            unlink($data['attachment']);
+        if (isset($data['attachment'])) {
+            if (file_exists($data['attachment'])) {
+                unlink($data['attachment']);
+            }
         }
         return true;
     }
@@ -365,7 +388,6 @@ if (!function_exists('sendSMS')) {
         ));
 
         $response = curl_exec($curl);
-        // dd($response);
         curl_close($curl);
         return true;
     }

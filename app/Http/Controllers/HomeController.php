@@ -16,6 +16,8 @@ use App\Models\SocialMedia;
 use App\Models\State;
 use App\Models\ReviewRating;
 use App\Models\City;
+use App\Models\Badge;
+use App\Models\UserDocument;
 use App\Models\User;
 use App\Contracts\BuyerDashboardContract;
 use App\Models\RequirementConsumption;
@@ -86,7 +88,7 @@ class HomeController extends Controller
         return redirect()->route('user.global.filter', [$location,$keyword]);
         // return response()->json(['status'=>200, 'route'=>$route]);
     }
-    public function customSlug($string, $separator = '-', $preserve = ['&', '@']) {
+    public function customSlug($string, $separator = '-', $preserve = ['.', '&', '@']) {
         // Convert string to lowercase
         $string = Str::lower($string);
     
@@ -315,54 +317,141 @@ class HomeController extends Controller
             $trustedBadge = $this->userRepository->trustedBadge();
             return view('front.filter', compact('data', 'location', 'keyword', 'old_location', 'old_keyword', 'categories','groupWatchList', 'existing_inquiries','verifiedBadge','trustedBadge'));
     }
-    // public function UserGlobalFilter($old_location, $old_keyword){
-    //     $location = str_replace('-', ' ', $old_location);
-    //     $keyword = str_replace('-', ' ', $old_keyword);
-    //     $exist_state = "";
-    //     $exist_city = "";
-    //     $exist_state = State::where('name', 'like', '%' . $location . '%')->value('id');
-    //     $exist_city = City::where('name', 'like', '%' . $location . '%')->value('id');
-    //     $userIds = User::where('state', $exist_state)
-    //         ->orWhere('city', $exist_city)->whereNotNull('business_name')->whereNotNull('slug_business_name')
-    //         ->pluck('id')
-    //         ->toArray();
+    
+    public function filter_partisipants_from_website(Request $request){
+        $location = $request->location;
+        $keyword = $request->keyword;
+        $exist_state = "";
+        $exist_city = "";
+        $exist_state = State::where('name', 'like', '%' . $location . '%')->value('id');
+        $exist_city = City::where('name', 'like', '%' . $location . '%')->value('id');
+        $userIds = User::where('state', $exist_state)
+            ->orWhere('city', $exist_city)->whereNotNull('business_name')->whereNotNull('slug_business_name')
+            ->pluck('id')
+            ->toArray();
 
-    //     $category = Collection::where('title', $keyword)
-    //         ->pluck('id')
-    //         ->toArray();
+        $category = Collection::where('title','like', '%' . $keyword . '%')
+            ->pluck('id')
+            ->toArray();
+        $User_products = Product::whereIn('user_id', $userIds)
+            ->where('title', 'like', '%' . $keyword . '%')
+            ->pluck('user_id')
+            ->toArray();
+        $User_products = array_merge($User_products, Product::whereIn('user_id', $userIds)
+            ->whereIn('category_id', $category)
+            ->pluck('user_id')
+            ->toArray());
+            $authUserId = Auth::guard('web')->check() ? Auth::guard('web')->user()->id : null;
 
-    //     $User_products = Product::whereIn('user_id', $userIds)
-    //         ->where('title', 'like', '%' . $keyword . '%')
-    //         ->pluck('user_id')
-    //         ->toArray();
-    //     $User_products = array_merge($User_products, Product::whereIn('user_id', $userIds)
-    //         ->whereIn('category_id', $category)
-    //         ->pluck('user_id')
-    //         ->toArray());
-    //         $authUserId = Auth::guard('web')->check() ? Auth::guard('web')->user()->id : null;
-    //         $data = User::with('MyBadgeData')->whereIn('id', $User_products)
-    //         ->where('id', '!=', $authUserId)
-    //         ->get();
-    //         $groupWatchList = GroupWatchList::where('created_by',$authUserId)->get();
-    //         $product_categories = [];
-    //         if(count($data)>0){
-    //             foreach($data as $item){
-    //                 if($item->UserProductData){
-    //                     foreach($item->UserProductData as $Ditem){
-    //                         $product_categories[] = $Ditem->category_id;
-    //                     }
-                      
-    //                 }
-    //             }
-    //         }
-    //         $categories = [];
-    //         if(count($product_categories)>0){
-    //             $categories = Collection::whereIn('id', $product_categories)->pluck('title')
-    //             ->toArray();
-    //         }
-    //         $existing_inquiries= $this->BuyerDashboardRepository->get_all_existing_inquiries_by_user($authUserId);
-    //         return view('front.filter', compact('data', 'location', 'keyword', 'old_location', 'old_keyword', 'categories','groupWatchList', 'existing_inquiries'));
-    // }
+            // Fetching users based on User_products array
+            $data1 = User::with('MyBadgeData', 'UserProductData', 'MyPackageData', 'StateData', 'CityData')
+            ->whereIn('id', $User_products)
+            ->where('id', '!=', $authUserId)
+            ->get();
+            // Fetching users based on keyword search
+            $data2 = User::with('MyBadgeData', 'UserProductData', 'MyPackageData', 'StateData', 'CityData')
+            ->where(function($query) use ($keyword) {
+                $query->where('name', 'like', '%'.$keyword.'%')
+                    ->orWhere('business_name', 'like', '%'.$keyword.'%')
+                    ->orWhere('mobile', 'like', '%'.$keyword.'%')
+                    ->orWhere('address', 'like', '%'.$keyword.'%')
+                    ->orWhere('pincode', 'like', '%'.$keyword.'%')
+                    ->orWhere('short_bio', 'like', '%'.$keyword.'%')
+                    ->orWhere('business_type', 'like', '%'.$keyword.'%')
+                    ->orWhere('employee', 'like', '%'.$keyword.'%')
+                    ->orWhere('Establishment_year', 'like', '%'.$keyword.'%')
+                    ->orWhere('legal_status', 'like', '%'.$keyword.'%')
+                    ->orWhere('email', 'like', '%'.$keyword.'%');
+            })
+            ->where('id', '!=', $authUserId)
+            ->get();
+            // Merging both collections
+            $mergedData = $data1->merge($data2);
+
+            // Removing duplicate users by 'id'
+            $uniqueData = $mergedData->unique('id');
+
+            // Optionally converting the collection to an array
+            $data = $uniqueData->values()->toArray();
+            $package_data = [];
+            foreach ($data as $k => $value) {
+                // Free Badge List
+                $verifiedBadge = $this->userRepository->verifiedBadge();
+                $trustedBadge = $this->userRepository->trustedBadge();
+                $data[$k]['verified_badge'] = verifiedBadge($value['id']); 
+                $data[$k]['verified_badge_logo'] = $verifiedBadge->logo?asset($verifiedBadge->logo):""; 
+                $data[$k]['verified_badge_short_desc'] = $verifiedBadge->short_desc; 
+                if(isset($value['trusted_id']) && !is_null($value['trusted_id']) && trustedBadge($value['trusted_id'],$value['id'])){
+                    $data[$k]['trusted_badge_logo'] = $trustedBadge->logo?asset($trustedBadge->logo):""; 
+                    $data[$k]['trusted_badge_short_desc'] = $trustedBadge->short_desc;
+                }else{
+                    $data[$k]['trusted_badge_logo'] = null; 
+                    $data[$k]['trusted_badge_short_desc'] = null;
+                }
+                // Paid Badge List
+                $paid_badge_list =[];
+                if(count($value['my_badge_data'])>0){
+                    foreach($value['my_badge_data'] as $key =>$bitem){
+                        $badge_list = [];
+                        $badge = Badge::where('id', $bitem['badge_id'])->first();
+                        $badge_list['logo'] = $badge->logo?asset($badge->logo):"";
+                        $badge_list['desc'] = $badge->short_desc?$badge->short_desc:"";
+                        $paid_badge_list[$key]=$badge_list;
+                    }
+                }
+                $data[$k]['paid_badge_list'] = $paid_badge_list;
+
+                // Seller Rating System
+                $asSeller = ReviewRating::where('rated_on', $value['id'])->where('type', 2)->count();
+                $asSellerOverAllRating = ReviewRating::where('rated_on',$value['id'])->where('type',2)->sum('overall_rating');
+                
+                if ($asSeller > 0) {
+                    $sellerOverAllRating = number_format(($asSellerOverAllRating / $asSeller), 1);
+                } else {
+                    $sellerOverAllRating = 0;
+                }
+                $data[$k]['seller_over_all_rating'] = $sellerOverAllRating;
+
+                $data[$k]['serial_no'] = 99;
+                switch (count($value['my_badge_data'])) {
+                    case 3:
+                        $data[$k]['serial_no'] = 1;
+                        break;
+                    case 2:
+                        $data[$k]['serial_no'] = 2;
+                        break;
+                    case 1:
+                        $data[$k]['serial_no'] = 3;
+                        break;
+                    default:
+                        if(count($value['my_package_data'])>0){
+                            $package_data[$k]['id']=$value['id'];
+                            $package_data[$k]['purchase_amount']=$value['my_package_data'][0]['purchase_amount'];
+                        }
+                       
+                        $data[$k]['serial_no'] = 99; // Default case if none of the above match
+                        break;
+                }
+            }
+            if(count($package_data)>0){
+                uasort($package_data, function($a, $b) {
+                    return $b['purchase_amount'] <=> $a['purchase_amount'];
+                });
+                $sl = 0;
+                foreach($package_data as $k=>$pak_item){
+                    $data[$k]['serial_no'] = 4+$sl;
+                    $sl++;
+                }
+            }
+            uasort($data, function($a, $b) {
+                return $a['serial_no'] <=> $b['serial_no'];
+            });
+            
+            $master_date = [
+                'data'=>$data,
+            ];
+            return response()->json(['status' => 'success', 'master_date' => $master_date]);
+    }
     public function UserGlobalFilterAddParticipant($old_location, $old_keyword){
         $location = str_replace('-', ' ', $old_location);
         $keyword = str_replace('-', ' ', $old_keyword);
@@ -410,6 +499,19 @@ class HomeController extends Controller
             }
             $existing_inquiries= $this->BuyerDashboardRepository->get_all_existing_inquiries_by_user($authUserId);
             return view('front.filter', compact('data', 'location', 'keyword', 'old_location', 'old_keyword', 'categories','groupWatchList', 'existing_inquiries'));
+    }
+    public function filter_verify_badge(Request $request){
+        $data = UserDocument::where('user_id',$request->id)->first();
+        if ($data) {
+            if ($data->gst_status == 1 && 
+                $data->pan_status == 1 && 
+                $data->adhar_status == 1 && 
+                $data->trade_license_status == 1 && 
+                $data->cancelled_cheque_status == 1) {
+                return response()->json(['status' => true]);
+            }
+        }
+        return response()->json(['status' => true]);
     }
 
     public function UserProfileFetch($location, $slug_keyword){

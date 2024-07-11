@@ -4,6 +4,10 @@
     #group_list .search-bar{
         max-width: unset !important;
     }
+    .blurred-text {
+        filter: blur(5px);
+        cursor: none;
+    }
 </style>
 <div class="main">
     <div class="inner-page">
@@ -162,10 +166,8 @@
                                                 <th class="input-th input-title-th">Title</th>
                                                 <th class="input-th input-details-th">Details</th>
                                                 <th class="input-th input-participants-th">Participants</th>
-                                                <th class="input-th input-start-date-th"><span>Start date &amp; time</span></th>
-                                                <th class="input-th input-end-date-th"><span>End date &amp; time</span></th>
-                                                <th class="input-th min-quote-th">Min Quote</th>
-                                                <th class="input-th max-quote-th">Max Quote</th>
+                                                <th class="input-th input-start-date-th"><span>Start date &amp; <br> End date</span></th>
+                                                <th class="input-th min-quote-th">Min Quote &amp; <br> Max Quote</th>
                                                 <th class="output-th invited-partitipants-th">Invited vs participants</th>
                                                 <th class="output-th suppliers-th">Suppliers</th>
                                                 <th class="output-th quotes-th">Quotes</th>
@@ -178,7 +180,7 @@
                                         <tbody id="inquiries_data_append">
                                             @foreach($live_inquiries as $item)
                                             <tr>
-                                                <td class="input-table-column" colspan="8">
+                                                <td class="input-table-column" colspan="6">
                                                     <table class="table input-table">
                                                         <tbody>
                                                             <tr>
@@ -223,10 +225,17 @@
                                                                     </ul>
                                                                     <div class="see-more"><span>see more</span></div>
                                                                 </td>
-                                                                <td class="input-start-date-td">{{date('d M, Y', strtotime($item->start_date))}} {{date("h:i A", strtotime($item->start_time))}}</td>
-                                                                <td class="input-end-date-td">{{date('d M, Y', strtotime($item->end_date))}} {{date("h:i A", strtotime($item->end_time))}}</td>
-                                                                <td class="min-quote-td">{{number_format($item->minimum_quote_amount, 2, '.', ',')}}</td>
-                                                                <td class="max-quote-td">{{number_format($item->maximum_quote_amount, 2, '.', ',')}}</td>
+                                                                <td class="input-start-date-td">
+                                                                    {{date('d M, Y', strtotime($item->start_date))}} {{date("h:i A", strtotime($item->start_time))}} <br>
+                                                                    <img src="{{asset('frontend/assets/images/chevron-down.png')}}" alt=""><br>
+                                                                    {{date('d M, Y', strtotime($item->end_date))}} {{date("h:i A", strtotime($item->end_time))}}
+                                                                </td>
+                                                                <td class="min-quote-td">
+                                                                    {{number_format($item->minimum_quote_amount, 2, '.', ',')}}
+                                                                    <br>
+                                                                    <img src="{{asset('frontend/assets/images/chevron-down.png')}}" alt=""><br>
+                                                                    {{number_format($item->maximum_quote_amount, 2, '.', ',')}}
+                                                                </td>
                                                             </tr>
                                                             <tr>
                                                                 <td colspan="8" class="note-td">
@@ -488,6 +497,30 @@
         </div>
     </div>
 </div>
+<div class="modal fade allot-rate-modal UnlockSellerModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true" id="unlock_modal">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form method="POST" id="UnlockSellerModal">
+                    @csrf
+                    <input type="hidden" name="unlock_inquiry_id" id="unlock_inquiry_id" value="">
+                    <div class="">
+                        <label for="">Credit</label>
+                        <input type="number" class="form-control" id="unlock_bit" name="credit_bit" value="1">
+                        <span><small class="text-danger">1 CREDIT = 25 PARTICIPANTS</small></span>
+                        <span id="unlock_error">
+
+                        </span>
+                    </div>
+                    <button type="submit" class="btn btn-animated btn-submit w-75">Submit</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
 
 <div class="modal fade allot-rate-modal allotRateModal" id="allotRateModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
     <div class="modal-dialog">
@@ -675,6 +708,9 @@
         var data = $('#viewFileModal'+id).html();
         $('#viewFileModal').html(data);
     }
+    function UnlockSellerModal(id){
+        $('#unlock_inquiry_id').val(id);
+    }
     function allotRateModal(id){
         var value_quotes = $('#value_quotes'+id).val();
         var bidder_id = $('#bidder_id'+id).val();
@@ -752,9 +788,9 @@
                             var noParticipantHtml = '<li></li>';
                         }
                        
-
+                        var inquiry_id = item.id;
                        var htmlString = '<tr>'+
-                            '<td class="input-table-column" colspan="8">' +
+                            '<td class="input-table-column" colspan="6">' +
                             '<table class="table input-table">' +
                             '<tbody>' +
                             '<tr>' +
@@ -793,10 +829,8 @@
                                 htmlString +='<div class="see-more"><span>see more</span></div>';
                             }
                             htmlString +='</td>' +
-                            '<td class="input-start-date-td">' + item.start_date_time + '</td>' +
-                            '<td class="input-end-date-td">' + item.end_date_time + '</td>' +
-                            '<td class="min-quote-td">' + (item.minimum_quote_amount ? formatCurrency(item.minimum_quote_amount) : '----') + '</td>' +
-                            '<td class="max-quote-td">' + (item.maximum_quote_amount ? formatCurrency(item.maximum_quote_amount) : '----') + '</td>' +
+                            '<td class="input-start-date-td">' + item.start_date_time + '<br> <img src="{{asset("frontend/assets/images/chevron-down.png")}}" alt=""><br>' + item.end_date_time + '</td>' +
+                            '<td class="min-quote-td">' + (item.minimum_quote_amount ? formatCurrency(item.minimum_quote_amount) : '----') + '<br> <img src="{{asset("frontend/assets/images/chevron-down.png")}}" alt=""><br>' + (item.maximum_quote_amount ? formatCurrency(item.maximum_quote_amount) : '----') + '</td>' +
                             '</tr>' +
                             '<tr>' +
                             '<td colspan="8" class="note-td">' +
@@ -815,7 +849,15 @@
                             '<tbody>';
                             if (item.seller_data.length > 0) {
                                 $.each(item.seller_data, function(key, value) {
-                                    htmlString += '<tr>';
+                                    rowClass = "";
+                                    if (item.inquiry_type === "open auction" && value.selected_from==0) {
+                                        var rowClass = "blurred-text";
+                                        var buyer_bit_for_open_auction = item.buyer_bit_for_open_auction;   
+                                        if (item.buyer_bit_for_open_auction > 0 && key < buyer_bit_for_open_auction * 25) {
+                                            rowClass = "";
+                                        }
+                                    }
+                                    htmlString += '<tr class="'+rowClass+'">';
                                         if(key==0){
                                             if (item.inquiry_type=="close auction") {
                                             htmlString += '<td class="invited-partitipants-td" rowspan="'+item.participants_count+'">'+item.invted_participants_count+'/'+item.participants_count+'</td>';
@@ -921,7 +963,7 @@
                                         htmlString +='<td class="actions-td">' +
                                         '<a href="javascript:void(0)" data-bs-toggle="modal" data-bs-target=".allotRateModal" class="btn btn-yellow btn-allot" onclick="allotRateModal(' + value.id + ')">Allot</a>' +
                                         '</td>' +
-                                        '</tr>' +
+                                        '</tr> ' +
                                         '<div class="modal fade all-quotes-modal" id="allQuotesModal' + value.id + '" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">' +
                                         '<div class="modal-dialog">' +
                                         '<div class="modal-content">' +
@@ -944,6 +986,10 @@
                                         '</div>' +
                                         '</div>';
                                 });
+                                if(item.inquiry_type === "open auction"){
+                                    htmlString += '<tr><td colspan="5"><a href="javascript:void(0)" data-bs-toggle="modal" data-bs-target=".UnlockSellerModal" class="fixed-button btn btn-yellow btn-allot-offline unlock_seller_modal" onclick="UnlockSellerModal(' + inquiry_id + ')"><img src="{{asset("frontend/assets/images/unlock.png")}}" alt="Pdf">Unlock here</a></td></tr>';
+                                }
+                               
                             }
 
                         htmlString += '</tbody>' +
@@ -978,31 +1024,35 @@
         }, 1000); // 1000 milliseconds = 1 second
         // });
     });
-
-    // $(document).ready(function(){
-    //     $('#group_wies_search').keyup(function(){
-    //         var selectedValue = $(this).val().toLowerCase(); // Convert to lowercase for case-insensitive comparison
-    //         $('.item').show();
-    //         var found = false; // Flag to track if any items are found
-    //         $('.item').each(function() {
-    //             var inquiry_title = $(this).find('.inquiry_title').text().toLowerCase(); // Get location text and convert to lowercase
-    //             if (inquiry_title.indexOf(selectedValue) === -1) {
-    //                 $(this).hide(); // Hide the item if location doesn't match
-    //             } else {
-    //                 found = true; // Set the flag to true if at least one item is found
-    //             }
-    //         });
-    //         if (!found) {
-    //             $('#noDataAlert').remove(); // Remove the alert if items are found
-    //             var append = `<div class="alert alert-danger" id="noDataAlert" role="alert">
-    //             No data found
-    //             </div>`;
-    //             $('.dashboard_groups').append(append);
-    //         } else {
-    //             $('#noDataAlert').remove(); // Remove the alert if items are found
-    //         }
-    //     });
-    // });
+    $('#UnlockSellerModal').on('submit', function(e) {
+        e.preventDefault();
+        let submitButton = $(this).find('button[type="submit"]');
+        toggleButton(submitButton, true, 'Please wait..')
+        $.ajax({
+            url: "{{ route('buyer_live_inquiries_credit_bit') }}",
+            method: "POST",
+            data: $(this).serialize(),
+            success: function(response) {
+                if(response.status==200){
+                    toastr.error(response.message);
+                    $('#unlock_modal').modal('hide'); // Hide the modal
+                }
+                if(response.status==400){
+                    toastr.error(response.message);
+                    $('#unlock_modal').modal('hide'); // Hide the modal
+                }
+                if (response.errors) {
+                    displayErrors(response.errors, '#unlock_error', 'danger');
+                }
+                
+                toggleButton(submitButton, false, 'Submit');
+            },
+            error: function(response) {
+                displayErrors(response.responseJSON.errors, '#unlock_error', 'danger');
+                toggleButton(submitButton, false, 'Submit');
+            }
+        });
+    });
 </script>
 
 @endsection

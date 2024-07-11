@@ -132,7 +132,24 @@
                         </div>
                     </div>
                     <div class="row filter-row" id="group_list">
-                        <div class="col-lg-12 col-12">
+                        <div class="col-md-2">
+                            <label for="start_date" class="form-label">Start Date</label>
+                            <input type="date" class="form-control" id="start_date" placeholder="Select start date" name="start_date">
+                        </div>
+                        <div class="col-md-2">
+                            <label for="end_date" class="form-label">End Date</label>
+                            <input type="date" class="form-control" id="end_date" placeholder="Select end date" name="end_date">
+                        </div>
+                        <div class="col-md-3">
+                            <label for="seller" class="form-label">Suppliers</label>
+                            <select class="form-select seller" name="seller">
+                                <option>1</option>
+                                <option>2</option>
+                                <option>3</option>
+                                <option>4</option>
+                            </select>
+                        </div>
+                        <div class="col-lg-5 col-12">
                             <div class="search-bar">
                                 <form>
                                     <input type="search" name="" placeholder="Search by inquiry title..." id="group_wies_search">
@@ -162,10 +179,8 @@
                                                         <th class="input-th input-id-th">Id</th>
                                                         <th class="input-th input-title-th">Title</th>
                                                         <th class="input-th input-details-th">Details</th>
-                                                        <th class="input-th input-start-date-th"><span>Start date &amp; time</span></th>
-                                                        <th class="input-th input-end-date-th"><span>End date &amp; time</span></th>
-                                                        <th class="input-th min-quote-th">Min Quote</th>
-                                                        <th class="input-th max-quote-th">Max Quote</th>
+                                                        <th class="input-th input-start-date-th"><span>Start date &amp; <br> End date</span></th>
+                                                        <th class="input-th min-quote-th">Min Quote &amp; <br> Max Quote</th>
                                                         <th class="output-th invited-partitipants-th">Invited vs partitipants</th>
                                                         <th class="output-th suppliers-th">Suppliers</th>
                                                         <th class="output-th quotes-th">Quotes</th>
@@ -181,7 +196,7 @@
                                                         @foreach($cancelled_inquiries as $item)
                                                         <tr class="item">
                                                             {{-- {{dd($item)}} --}}
-                                                            <td class="input-table-column" colspan="7">
+                                                            <td class="input-table-column" colspan="5">
                                                                 <table class="table input-table">
                                                                     <tbody>
                                                                         <tr>
@@ -216,10 +231,16 @@
                                                                                     </li>
                                                                                 </ul>
                                                                             </td> 
-                                                                            <td class="input-start-date-td">{{$item['start_date_time']}}</td>
-                                                                            <td class="input-end-date-td">{{$item['end_date_time'] }}</td>
-                                                                            <td class="min-quote-td">{{$item['minimum_quote_amount']?number_format($item['minimum_quote_amount'],2, '.', ','):"----"}}</td>
-                                                                            <td class="max-quote-td">{{$item['maximum_quote_amount']?number_format($item['maximum_quote_amount'],2, '.', ','):"----"}}</td>
+                                                                            <td class="input-start-date-td">
+                                                                                {{$item['start_date_time']}}<br>
+                                                                                <img src="{{asset('frontend/assets/images/chevron-down.png')}}" alt=""><br>
+                                                                               <span> {{$item['end_date_time']}}</span>
+                                                                            </td>
+                                                                            <td class="min-quote-td">
+                                                                                {{$item['minimum_quote_amount']?number_format($item['minimum_quote_amount'],2, '.', ','):"----"}}<br>
+                                                                                <img src="{{asset('frontend/assets/images/chevron-down.png')}}" alt=""><br>
+                                                                                {{$item['maximum_quote_amount']?number_format($item['maximum_quote_amount'],2, '.', ','):"----"}}
+                                                                            </td>
                                                                         </tr>
                                                                         <tr>
                                                                             <td colspan="7" class="note-td">
@@ -432,7 +453,7 @@
                                                                                 <!--    <img src="{{asset('frontend/assets/images/restart.png')}}" alt="Allot Offline">-->
                                                                                 <!--    Restart Inquiry-->
                                                                                 <!--</a>-->
-                                                                                <a href="{{route('buyer.inquiry.pdf',$item['id'])}}" class="btn btn-success btn-allot-offline">
+                                                                                <a href="{{route('buyer.inquiry.pdf',$item['id'])}}" class="btn btn-success btn-allot-offline mt-2">
                                                                                     <img src="{{asset('frontend/assets/images/pdf.png')}}" alt="Pdf">
                                                                                     Download Pdf
                                                                                 </a>
@@ -572,6 +593,12 @@
                 $('#noDataAlert').remove(); // Remove the alert if items are found
             }
         });
+    });
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js"></script>
+<script>
+     $(document).ready(function () {
+        $(".seller").select2();
     });
 </script>
 @endsection

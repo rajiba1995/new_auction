@@ -88,14 +88,14 @@ class BuyerDashboardController extends Controller
         $live_inquiries =  $this->BuyerDashboardRepository->live_inquiries_by_user($this->getAuthenticatedUserId());
         $saved_inquiries =  $this->BuyerDashboardRepository->saved_inquiries_by_user($this->getAuthenticatedUserId());
 
-
-
-
         $pending_inquiries = [];
+        $suppliers = [];
+        
         if(count($pending_inquiries_data)>0){
             foreach ($pending_inquiries_data as $key => $value) {
                 $seller_data = [];
                 $all_inquiries = [];
+               
                 $all_inquiries['id'] = $value->id;
                 $all_inquiries['inquiry_id'] = $value->inquiry_id;
                 $all_inquiries['created_by'] = $value->BuyerData->name;
@@ -115,14 +115,17 @@ class BuyerDashboardController extends Controller
                 $all_inquiries['inquiry_amount'] = $value->inquiry_amount;
                 $all_inquiries['location'] = $value->location;
                 $all_inquiries['status'] = $value->status;
-
+                $sub_suppliers = [];
                 if($value->ParticipantsData){
                     foreach($value->ParticipantsData as $k =>$item){
-                       
                         $all_inquiries['participants'][]= $item->SellerData->business_name;
+                        $Suppliers_data['id']= $item->SellerData->id;
+                        $Suppliers_data['name']= $item->SellerData->business_name;
+                       
                         // if($item->status==1){
                             $all_inquiries['invted_participants'][]= $item->SellerData->business_name;
                         // }
+                        $sub_suppliers[] = $Suppliers_data;
                     }
                 }
                 $all_inquiries['invted_participants_count'] = 0;
@@ -162,9 +165,29 @@ class BuyerDashboardController extends Controller
                     $all_inquiries['seller_data'] = $seller_data;
                 
                 $pending_inquiries[] = $all_inquiries;
+                $suppliers[] = $sub_suppliers;
+               
+                
             }
+            // For Suppliers data filter
+            $main_suppliers = [];
+            if(count($suppliers)>0){
+                foreach($suppliers as $k=>$item){
+                    foreach($item as $index=>$value){
+                        $semi_suppliers['name'] = $value['name'];
+                        $semi_suppliers['id'] = $value['id'];
+                        $main_suppliers[]=$semi_suppliers;
+                    }
+                }
+            }
+            // Extract unique IDs
+            $uniqueIds = array_unique(array_column($main_suppliers, 'id'));
+
+            // Filter the original array to include only unique items
+            $suppliers_data = array_intersect_key($main_suppliers, $uniqueIds);
+           
         }
-        return view('front.user_dashboard.pending_inquireis', compact('pending_inquiries','live_inquiries','saved_inquiries','group_wise_list','confirmed_inquiry_data','pending_inquiries_data','cancelled_inquiry_data'));
+        return view('front.user_dashboard.pending_inquireis', compact('pending_inquiries','live_inquiries','saved_inquiries','group_wise_list','confirmed_inquiry_data','pending_inquiries_data','cancelled_inquiry_data', 'suppliers_data'));
     }
     public function confirmed_inquiries(Request $request){
         $confirmed_inquiry_data =  $this->BuyerDashboardRepository->confirmed_inquiries_by_user($this->getAuthenticatedUserId());
@@ -340,6 +363,7 @@ class BuyerDashboardController extends Controller
             foreach ($live_inquiries as $key => $value) {
                 $seller_data = [];
                 $all_inquiries = [];
+                $all_inquiries['buyer_bit_for_open_auction'] = $value->buyer_bit_for_open_auction;
                 $all_inquiries['id'] = $value->id;
                 $all_inquiries['inquiry_id'] = $value->inquiry_id;
                 $all_inquiries['created_by'] = $value->BuyerData->name;
@@ -408,10 +432,12 @@ class BuyerDashboardController extends Controller
                 }
                     if(count($getAllSellerQuotes)>0){
                         foreach($getAllSellerQuotes as $k =>$itemk){
+                            $InquiryParticipant = InquiryParticipant::where('inquiry_id', $itemk->inquiry_id)->where('user_id', $itemk->seller_id)->first();
                             $seller = [];
                             $seller['id'] = $itemk->id;
                             $seller['inquiry_id'] = $itemk->inquiry_id;
                             $seller['seller_id'] = $itemk->seller_id;
+                            $seller['selected_from'] = $InquiryParticipant?$InquiryParticipant->selected_from:"1";
                             // $seller['quotes'] = $itemk->quotes;
                             $seller['name'] = $itemk->name;
                             $seller['country_code'] = $itemk->country_code;
@@ -443,6 +469,26 @@ class BuyerDashboardController extends Controller
         }else{
             return response()->json(['status'=>400]);
         }
+    }
+    public function CreditBuyerBit(Request $request){
+        $validator = Validator::make($request->all(), [
+            'unlock_inquiry_id' => 'required|exists:inquiries,id', // Ensure unlock_inquiry_id exists in 'inquiries' table
+            'credit_bit' => 'required|numeric|min:1', // Validate unlock_bit is numeric and at least 1
+        ]);
+
+        // If validation fails, return error response
+        if ($validator->fails()) {
+            return response()->json(['error' => $validator->errors()], 400);
+        }
+        $Inquiry = Inquiry::findOrFail($request->unlock_inquiry_id);
+        $Inquiry->buyer_bit_for_open_auction = $request->credit_bit;
+        $Inquiry->save();
+        if($Inquiry){
+            return response()->json(['message' => 'Data has been successfully updated', 'status'=>200]);
+        }else{
+            return response()->json(['message' => 'Something wend wrong!', 'status'=>400]);
+        }
+        
     }
 
     public function live_inquiry_seller_allot(Request $request){
@@ -503,6 +549,7 @@ class BuyerDashboardController extends Controller
                                 'inquiry_data'=>$inquiry,
                                 'Buyer_data'=>$Buyer_data,
                                 'type'=>'INQUIRY_ALLOTMENT',
+                                'user_type'=>'Seller',
                             ];
                             $subject = 'Inquiry ALLOTMENT Notification for '.$Buyer_data->business_name;
                             $myMessage = urlencode("New auction ".$inquiry_id." is assigned to you from ".$company.". Amt ".$amount." . Expected date ".$execution_date.". Details: ".$url." (owned by SMTPL) Regards, Sarv Megh Technology (OPC) Private Limited");
@@ -534,7 +581,7 @@ class BuyerDashboardController extends Controller
                             $exist_participants = InquiryParticipant::with('SellerData')->where('inquiry_id', $inquiry->id)->get();
                             $reason = $request->reallot_reason?$request->reallot_reason:"";
                             $data=[
-                                'cc'=>null,
+                                'cc'=>[],
                                 'user'=>$allot_seller->SellerData,
                                 'inquiry_data'=>$inquiry,
                                 'Buyer_data'=>$Buyer_data,

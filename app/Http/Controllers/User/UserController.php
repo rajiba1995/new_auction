@@ -554,7 +554,11 @@ class UserController extends Controller{
         $my_current_buyer_package = MyBuyerPackage::where('user_id',$data->id)->latest()->first();
         $seller_walletBalance = MySellerWallet::where(["user_id"=>$data->id])->latest()->first();
         $buyer_walletBalance = MyBuyerWallet::where(["user_id"=>$data->id])->latest()->first();
-        return view('front.user.wallet_management',compact('data','my_current_seller_package','seller_walletBalance','my_current_buyer_package','buyer_walletBalance'));
+        $buyer_credit_left = MyBuyerWallet::where(["user_id"=>$data->id])->sum('credit_unit');
+        $buyer_credit_used = MyBuyerWallet::where(["user_id"=>$data->id])->sum('debit_unit');
+        $seller_credit_left = MySellerWallet::where(["user_id"=>$data->id])->sum('credit_unit');
+        $seller_credit_used = MySellerWallet::where(["user_id"=>$data->id])->sum('debit_unit');
+        return view('front.user.wallet_management',compact('data','my_current_seller_package','seller_walletBalance','my_current_buyer_package','buyer_walletBalance', 'buyer_credit_left', 'buyer_credit_used', 'seller_credit_left', 'seller_credit_used'));
     }
     public function package_payment_management(Request $request){
         // dd($request->all());
@@ -623,7 +627,7 @@ class UserController extends Controller{
                 // For Amount Transaction
                 $transaction = new Transaction();
                 $transaction->user_id = $data->id;
-                $transaction->unique_id = 'MLAP' . date('m') . time();
+                $transaction->unique_id = GenerateYearWiseTransaction(8, 'transactions', date('Y'));
                 $transaction->transaction_type = 1; //Online
                 $transaction->status = 1; //Paid
                 $transaction->user_type = 1; //Seller
@@ -828,7 +832,7 @@ class UserController extends Controller{
 
             $transaction = new Transaction();
             $transaction->user_id = $data->id;
-            $transaction->unique_id = 'MLAP' . date('m') . time(); // Adjusted range for 8-digit number
+            $transaction->unique_id = GenerateYearWiseTransaction(8, 'transactions', date('Y')); // Adjusted range for 8-digit number
             $transaction->transaction_type = 1; //Online
             $transaction->status = 1; //Paid
             $transaction->user_type = 2; //Buyer
@@ -964,11 +968,18 @@ class UserController extends Controller{
         // Check if any of the parameters are provided
         // If keyword is provided or both start_date and end_date are provided
         if (!empty($mode) || !empty($startDate) || !empty($endDate)|| !empty($purpose)) {  
-            $transactions = $this->userRepository->getSearchTransactionByUserId($data->id,$startDate, $endDate,$mode,$purpose);
+            $transactions = $this->userRepository->getSearchTransactionByUserId($data->id,$purpose,$mode,$startDate, $endDate);
         }else{
             $transactions = $this->userRepository->getAllTransactionByUserId($data->id);
         }
-        return view('front.user.transaction',compact('data','transactions'));
+        $purpose_array = [];
+        if(count($transactions)>0){
+            foreach($transactions as $k=>$item){
+                $purpose_array[] = $item->purpose;
+            }
+            $purpose_array = array_unique($purpose_array);
+        }
+        return view('front.user.transaction',compact('data','transactions', 'purpose_array'));
     }
     public function notifications(Request $request){
         $data = $this->AuthCheck();
@@ -1206,12 +1217,36 @@ class UserController extends Controller{
         $wasDeleted = $watchList->delete();
         if ($wasDeleted) {
             $title = $buyerName . ' removed you from his watchlist';
-
             notification_push(NULL,$watchList->buyer_id,$watchList->seller_id,$title,NULL,NULL);
         }
     
         // Return a JSON response indicating success
         return response()->json(['status' => 200]);
+    }
+    public function AddSingleWatchlist(Request $request){
+        $user = $this->AuthCheck();
+        $exist_user = WatchList::with('SellerData')->where('buyer_id', $user->id)->where('seller_id', $request->seller_id)->first();
+        if(!isset($exist_user)){
+            $WatchList = new WatchList;
+            $WatchList->seller_id =$request->seller_id;
+            $WatchList->buyer_id =$user->id;
+            $WatchList->save();
+    
+            if($WatchList){
+                // Retrieve the buyer's name
+                $buyer = User::find($user->id);
+                $buyerName = $buyer ? $buyer->first_name : '';
+                $title = $buyerName . ' added you to a watchlist';
+                notification_push(NULL,$user->id,$request->seller_id,$title,NULL,NULL);
+            }
+            // Return a JSON response indicating success
+            return response()->json(['status' => 200, 'item_id'=>$WatchList->id]);
+        }else{
+            // Return a JSON response indicating success
+            return response()->json(['status' => 400]);    
+        }
+        
+         
     }
     
     public function MyWatchlistDataDelete($id){
@@ -1395,7 +1430,7 @@ class UserController extends Controller{
             $package = $Badge?$Badge->title:"";
             $transaction = new Transaction();
             $transaction->user_id = $data->id;
-            $transaction->unique_id = 'MLAP' . date('m') . time();
+            $transaction->unique_id = GenerateYearWiseTransaction(8, 'transactions', date('Y'));
             $transaction->transaction_type = 1;
             $transaction->status = 1;
             $transaction->transaction_id = $request->razorpay_payment_id;

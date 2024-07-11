@@ -18,6 +18,19 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js"></script>
+    <style>
+        .bidder-box .badge-rating{
+            margin-left: 0px !important;
+        }
+        .rating-star-values ul.solid-stars {
+            left: 30px !important;
+        }
+        .rating-star-values ul.rating-stars {
+            position: absolute;
+            top: 0;
+            left: 30px !important;
+        }
+    </style>
 </head>
 <body>
 
@@ -661,6 +674,27 @@
                  $('#successAlert').fadeOut('slow');
              }, 3000);
          });
+         function displayErrors(errors, selector, alert) {
+            let errorMessages = '<div class="alert alert-'+alert+'" role="alert">';
+            $.each(errors, function(key, value) {
+                errorMessages += value[0] + '<br>';
+            });
+            errorMessages += '</div>';
+            $(selector).html(errorMessages);
+
+            setTimeout(function() {
+                $(selector).html('');
+            }, 3000);
+        }
+        function toggleButton(button, disable, text) {
+            if (disable) {
+                button.prop('disabled', true);
+                button.text(text);
+            } else {
+                button.prop('disabled', false);
+                button.text(text);
+            }
+        }
     </script>
 </body>
 </html>

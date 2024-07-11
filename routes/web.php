@@ -30,6 +30,10 @@ Route::get('/clear-cache', function() {
     Route::get('/terms-and-conditions',[HomeController::class,'TermsAndCondition'])->name('front.terms-and-conditions');
     Route::get('/about-us',[HomeController::class,'AboutUs'])->name('front.about-us');
     Route::get('/contact-us',[HomeController::class,'ContactUs'])->name('front.contact-us');
+    Route::get('/forgot-password',[RegisteredUserController::class,'ForgotPassword'])->name('forgot-password');
+    Route::post('/forgot-password/send-otp',[RegisteredUserController::class,'ForgotPasswordSendOTP'])->name('forgot.password.sendOtp');
+    Route::post('/forgot-password/verify-Otp',[RegisteredUserController::class,'verifyOtp'])->name('forgot.password.verifyOtp');
+    Route::post('/forgot-password/reset-password',[RegisteredUserController::class,'passwordReset'])->name('forgot.password.reset');
     Route::post('/register-check',[RegisteredUserController::class,'RegisterCheck'])->name('register-check');
     Route::get('/verify',[RegisteredUserController::class,'UserVerifyData'])->name('front.otp_validation');
     Route::get('/resend-otp-validation',[RegisteredUserController::class,'resend_otp_validation'])->name('front.resend_otp_validation');
@@ -105,6 +109,7 @@ Route::get('/clear-cache', function() {
                 Route::post('/report/store', [UserController::class, 'UserToSellerReportStore'])->name('user.report.store');
                 Route::post('/group-watchlist/store', [UserController::class, 'MyGroupWatchlistDataSore'])->name('user.group.watchlist.store');
                 Route::get('/delete/{id}', [UserController::class, 'myWatchlistDataDelete'])->name('user.watchlist.delete');
+                Route::get('/single_watchlist/add', [UserController::class, 'AddSingleWatchlist'])->name('user.single_watchlist.add');
                 Route::get('/single_watchlist/delete', [UserController::class, 'DeleteSingleWatchlist'])->name('user.single_watchlist.delete');
                 Route::get('/{slug}', [UserController::class, 'my_watchlist_by_group'])->name('user.watchlist.my_watchlist_by_group');
                 Route::post('/invite_outside_participants', [UserController::class, 'InviteOutSideParticipants'])->name('user.invite_outside_participants.store');
@@ -130,6 +135,7 @@ Route::get('/clear-cache', function() {
             Route::get('/cancelled-inquiries', [BuyerDashboardController::class, 'cancelled_inquiries'])->name('buyer_cancelled_inquiries');
             Route::post('/cancelled-reason', [BuyerDashboardController::class, 'cancelled_reason'])->name('buyer_cancelled_reason');
             Route::get('/live-inquiries-fetch-ajax', [BuyerDashboardController::class, 'live_inquiries_fetch_ajax'])->name('buyer_live_inquiries_by_ajax');
+            Route::post('/live-inquiries-credit-bit', [BuyerDashboardController::class, 'CreditBuyerBit'])->name('buyer_live_inquiries_credit_bit');
             Route::post('/live-inquiry-seller-allot', [BuyerDashboardController::class, 'live_inquiry_seller_allot'])->name('live_inquiry_seller_allot');
         });
         // Seller Dashboard
@@ -186,6 +192,8 @@ Auth::routes();
 
 // Search User Module
 Route::get('/user/suggestion', [HomeController::class, 'Suggestion'])->name('user.suggestion');
+Route::get('/user/filter_partisipants_from_website', [HomeController::class, 'filter_partisipants_from_website'])->name('user.filter_partisipants_from_website');
+Route::get('/user/filter_verify_badge', [HomeController::class, 'filter_verify_badge'])->name('user.filter_verify_badge');
 Route::get('/user/make_slug', [HomeController::class, 'UserGlobalMakeSlug'])->name('user.global.make_slug');
 Route::get('/user/make_slug/add_participant', [HomeController::class, 'UserGlobalMakeSlugParticipant'])->name('user.global.make_slug.participant');
 Route::get('/profile/{location}/{keyword}', [HomeController::class, 'UserProfileFetch'])->name('user.profile.fetch');

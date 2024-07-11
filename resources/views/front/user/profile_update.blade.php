@@ -267,7 +267,7 @@ $(document).ready(function() {
 
 
     $(document).ready(function () {
-  $(".all-cities").select2();
-});
+        $(".all-cities").select2();
+    });
 </script>
 @endsection

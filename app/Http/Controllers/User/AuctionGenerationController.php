@@ -92,6 +92,7 @@ class AuctionGenerationController extends Controller
                 }
                 $outside_participant_data = [];
                 $outside_participant_without_group = [];
+                $watch_list_data = WatchList::with('SellerData')->where('group_id', null)->where('buyer_id', $user->id)->get();
                 // return view('front.user.auction-inquiry-generation', compact('group_id','user','watch_list_data', 'inquiry_id', 'all_category', 'existing_inquiry', 'outside_participant_data', 'outside_participant_without_group'));
             } catch ( DecryptException $e) {
                 return abort(404);
@@ -331,6 +332,7 @@ class AuctionGenerationController extends Controller
                             if($item->SellerData){
                                 $data=[
                                     'user'=>$item->SellerData,
+                                    'cc'=>[],
                                     'inquiry_data'=>$inquiry,
                                     'Buyer_data'=>$Buyer_data,
                                     'type'=>'INQUIRY_GENERATION',
@@ -347,6 +349,7 @@ class AuctionGenerationController extends Controller
                         }
                         $data=[
                             'user'=>$Buyer_data,
+                            'cc'=>[],
                             'inquiry_data'=>$inquiry,
                             'Buyer_data'=>$Buyer_data,
                             'participants'=>$exist_participants,
@@ -382,7 +385,7 @@ class AuctionGenerationController extends Controller
             }
         } catch (\Exception $e) {
             DB::rollBack();
-            // dd($e->getMessage());
+            dd($e->getMessage());
              return abort(404);
          }
     }
