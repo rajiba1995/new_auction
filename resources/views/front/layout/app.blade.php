@@ -18,6 +18,19 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js"></script>
+    <style>
+        .bidder-box .badge-rating{
+            margin-left: 0px !important;
+        }
+        .rating-star-values ul.solid-stars {
+            left: 30px !important;
+        }
+        .rating-star-values ul.rating-stars {
+            position: absolute;
+            top: 0;
+            left: 30px !important;
+        }
+    </style>
 </head>
 <body>
 

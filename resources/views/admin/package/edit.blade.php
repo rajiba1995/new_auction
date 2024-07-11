@@ -136,7 +136,7 @@
                     </div>
                     <div class="form-wrap mb-3">
                     <label for="">Package Description</label>
-                        <textarea class="form-control" name="package_description" id="package_description">{{$data->package_description}}</textarea>
+                        <textarea class="form-control ckeditor" name="package_description" id="package_description">{{$data->package_description}}</textarea>
                         @error('package_description')<div class="text-danger">{{ $message }}</div>@enderror                       
                     </div>
                 </div>
@@ -153,8 +153,10 @@
 </div>
 @endsection
 @push('scripts')
+<script type="text/javascript" src="{{ asset('frontend/ckeditor/ckeditor.js') }}"></script>
+<script type="text/javascript" src="{{ asset('frontend/ckeditor/adapters/jquery.js') }}"></script>
 <script>
-    CKEDITOR.replace( 'package_description' );
+    
     document.addEventListener('DOMContentLoaded', function() {
         const inquiryAuctionSelect = document.getElementById('inquiry_auction');
         const additionalInputField = document.getElementById('number_of_auction');

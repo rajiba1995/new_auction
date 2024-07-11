@@ -36,7 +36,7 @@
                     </div>
                     <div class="form-wrap mb-3">
                         <label for="">Message</label>
-                        <textarea type="text" class="form-control" name="message" id="message">{{  $data->message }}</textarea>
+                        <textarea type="text" class="form-control ckeditor" name="message" id="message">{{  $data->message }}</textarea>
                         @error('message')<div class="text-danger">{{ $message }}</div>@enderror
                     </div>
                 </div>
@@ -53,7 +53,6 @@
 </div>
 @endsection
 @push('scripts')
-<script>
-    CKEDITOR.replace( 'message' );
-</script>
+<script type="text/javascript" src="{{ asset('frontend/ckeditor/ckeditor.js') }}"></script>
+<script type="text/javascript" src="{{ asset('frontend/ckeditor/adapters/jquery.js') }}"></script>
 @endpush

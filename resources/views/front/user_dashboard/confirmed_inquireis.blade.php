@@ -256,7 +256,7 @@
                                                             <tbody>
                                                                     @if(count($item['seller_data'])>0)
                                                                         @foreach ($item['seller_data'] as $seller_key => $seller_item)
-                                                                        <tr class="blurred-text">
+                                                                        <tr>
                                                                             @if($seller_key==0)
                                                                             <td class="invited-partitipants-td" rowspan="{{count($item['seller_data'])}}">{{$item['invted_participants_count']}}/{{$item['participants_count']}}</td>
                                                                             @endif
@@ -459,11 +459,6 @@
                                                                             </td>
                                                                         </tr>
                                                                         @endforeach
-                                                                        <tr>
-                                                                            <td colspan="5"><button class="fixed-button btn btn-yellow btn-allot-offline"> 
-                                                                                <img src="{{asset('frontend/assets/images/unlock.png')}}" alt="Pdf">Unlock here</button>
-                                                                            </td>
-                                                                        </tr>
                                                                     @endif
                                                             </tbody>
                                                         </table>

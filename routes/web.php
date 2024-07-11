@@ -109,6 +109,7 @@ Route::get('/clear-cache', function() {
                 Route::post('/report/store', [UserController::class, 'UserToSellerReportStore'])->name('user.report.store');
                 Route::post('/group-watchlist/store', [UserController::class, 'MyGroupWatchlistDataSore'])->name('user.group.watchlist.store');
                 Route::get('/delete/{id}', [UserController::class, 'myWatchlistDataDelete'])->name('user.watchlist.delete');
+                Route::get('/single_watchlist/add', [UserController::class, 'AddSingleWatchlist'])->name('user.single_watchlist.add');
                 Route::get('/single_watchlist/delete', [UserController::class, 'DeleteSingleWatchlist'])->name('user.single_watchlist.delete');
                 Route::get('/{slug}', [UserController::class, 'my_watchlist_by_group'])->name('user.watchlist.my_watchlist_by_group');
                 Route::post('/invite_outside_participants', [UserController::class, 'InviteOutSideParticipants'])->name('user.invite_outside_participants.store');
@@ -191,6 +192,8 @@ Auth::routes();
 
 // Search User Module
 Route::get('/user/suggestion', [HomeController::class, 'Suggestion'])->name('user.suggestion');
+Route::get('/user/filter_partisipants_from_website', [HomeController::class, 'filter_partisipants_from_website'])->name('user.filter_partisipants_from_website');
+Route::get('/user/filter_verify_badge', [HomeController::class, 'filter_verify_badge'])->name('user.filter_verify_badge');
 Route::get('/user/make_slug', [HomeController::class, 'UserGlobalMakeSlug'])->name('user.global.make_slug');
 Route::get('/user/make_slug/add_participant', [HomeController::class, 'UserGlobalMakeSlugParticipant'])->name('user.global.make_slug.participant');
 Route::get('/profile/{location}/{keyword}', [HomeController::class, 'UserProfileFetch'])->name('user.profile.fetch');

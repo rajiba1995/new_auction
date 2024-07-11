@@ -92,6 +92,7 @@ class AuctionGenerationController extends Controller
                 }
                 $outside_participant_data = [];
                 $outside_participant_without_group = [];
+                $watch_list_data = WatchList::with('SellerData')->where('group_id', null)->where('buyer_id', $user->id)->get();
                 // return view('front.user.auction-inquiry-generation', compact('group_id','user','watch_list_data', 'inquiry_id', 'all_category', 'existing_inquiry', 'outside_participant_data', 'outside_participant_without_group'));
             } catch ( DecryptException $e) {
                 return abort(404);

@@ -244,6 +244,7 @@ form button[type="submit"] {
     font-size: 12px;
     font-weight: 400;
     color: #0076D7;
+    cursor: default;
 }
 .resend-block a:disabled {
     color: #505050;
@@ -6073,6 +6074,23 @@ header.logged .search-bar {
 }
 
 .autocomplete-suggestions {
+    position: absolute;
+    top: 112%;
+    left: 0;
+    width: 100%;
+    height: 350px;
+    overflow: auto;
+    background: #fff;
+    z-index: 6;
+    border-radius: 9px;
+    border: 1px solid #E0DFDF;
+    padding: 7px 6px;  
+}
+.autocomplete-suggestions2:empty{
+    display: none;
+}
+
+.autocomplete-suggestions2 {
     position: absolute;
     top: 112%;
     left: 0;

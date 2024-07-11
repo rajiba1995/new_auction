@@ -554,7 +554,11 @@ class UserController extends Controller{
         $my_current_buyer_package = MyBuyerPackage::where('user_id',$data->id)->latest()->first();
         $seller_walletBalance = MySellerWallet::where(["user_id"=>$data->id])->latest()->first();
         $buyer_walletBalance = MyBuyerWallet::where(["user_id"=>$data->id])->latest()->first();
-        return view('front.user.wallet_management',compact('data','my_current_seller_package','seller_walletBalance','my_current_buyer_package','buyer_walletBalance'));
+        $buyer_credit_left = MyBuyerWallet::where(["user_id"=>$data->id])->sum('credit_unit');
+        $buyer_credit_used = MyBuyerWallet::where(["user_id"=>$data->id])->sum('debit_unit');
+        $seller_credit_left = MySellerWallet::where(["user_id"=>$data->id])->sum('credit_unit');
+        $seller_credit_used = MySellerWallet::where(["user_id"=>$data->id])->sum('debit_unit');
+        return view('front.user.wallet_management',compact('data','my_current_seller_package','seller_walletBalance','my_current_buyer_package','buyer_walletBalance', 'buyer_credit_left', 'buyer_credit_used', 'seller_credit_left', 'seller_credit_used'));
     }
     public function package_payment_management(Request $request){
         // dd($request->all());
@@ -1213,12 +1217,36 @@ class UserController extends Controller{
         $wasDeleted = $watchList->delete();
         if ($wasDeleted) {
             $title = $buyerName . ' removed you from his watchlist';
-
             notification_push(NULL,$watchList->buyer_id,$watchList->seller_id,$title,NULL,NULL);
         }
     
         // Return a JSON response indicating success
         return response()->json(['status' => 200]);
+    }
+    public function AddSingleWatchlist(Request $request){
+        $user = $this->AuthCheck();
+        $exist_user = WatchList::with('SellerData')->where('buyer_id', $user->id)->where('seller_id', $request->seller_id)->first();
+        if(!isset($exist_user)){
+            $WatchList = new WatchList;
+            $WatchList->seller_id =$request->seller_id;
+            $WatchList->buyer_id =$user->id;
+            $WatchList->save();
+    
+            if($WatchList){
+                // Retrieve the buyer's name
+                $buyer = User::find($user->id);
+                $buyerName = $buyer ? $buyer->first_name : '';
+                $title = $buyerName . ' added you to a watchlist';
+                notification_push(NULL,$user->id,$request->seller_id,$title,NULL,NULL);
+            }
+            // Return a JSON response indicating success
+            return response()->json(['status' => 200, 'item_id'=>$WatchList->id]);
+        }else{
+            // Return a JSON response indicating success
+            return response()->json(['status' => 400]);    
+        }
+        
+         
     }
     
     public function MyWatchlistDataDelete($id){

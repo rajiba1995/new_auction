@@ -142,14 +142,14 @@
                                                             @endforeach
                                                         </div>
                                                     </div>
-                                                    <!-- <div class="content-box bg-gray-1">
+                                                    <div class="content-box bg-gray-1">
                                                         <div class="inner">
                                                             <h3 class="mb-4">Credit Usages As a Buyer</h3>
                                                             <div class="credit-charts">
                                                                 <canvas id="buyer-creditChart" style="width:632px;height:632px;"></canvas>
                                                             </div>
                                                         </div>
-                                                    </div> -->
+                                                    </div>
                                                 </div>
 
                                                 <div class="tab-pane fade {{$package_type=='seller'?"show active":""}}" id="sellers" role="tabpanel" aria-labelledby="sellers-tab" tabindex="0">
@@ -250,14 +250,14 @@
                                                             @endforeach
                                                         </div>
                                                     </div>
-                                                    <!-- <div class="content-box bg-gray-1">
+                                                    <div class="content-box bg-gray-1">
                                                         <div class="inner">
                                                             <h3>Credit Usages As a Seller</h3>
                                                             <div class="credit-charts">
                                                                 <canvas id="seller-creditChart"></canvas>
                                                             </div>
                                                         </div>
-                                                    </div>                -->
+                                                    </div>
                                                 </div>
                                             </div>
                                         </div>
@@ -794,121 +794,6 @@
 
 </script>
 
-<script>
-    // $(document).ready(function() {
 
-    // const consumptionChart = new Chart(document.getElementById("buyer-creditChart"), {
-    //     type: "pie",
-    //         data: {
-    //             labels: [
-    //                 'Credits Left',
-    //                 'Credits Used'
-    //             ],
-    //             datasets: [{
-    //                 label: '',
-    //                 data: [200, 300],
-    //                 backgroundColor: [
-    //                     '#30BA00',
-    //                     '#D82C42'
-    //                 ],
-    //                 hoverOffset: 0,
-    //                 borderWidth: 0,
-    //                 maxHeight: 16,
-    //                 maxHeight: 16
-    //             }]
-    //         },
-    //         options: {
-    //             responsive: true,
-    //             maintainAspectRatio: false,
-    //             plugins: {
-    //                 legend: {
-    //                     position: 'right',
-    //                     labels: {
-    //                         boxWidth: 16,
-    //                         boxHeight: 16,
-    //                         color: '#000000',
-    //                         padding: 20,
-    //                         font: {
-    //                             family: "'Poppins', sans-serif",
-    //                             weight: 400,
-    //                             size: 12,
-    //                             lineHeight: 1.5
-    //                         }
-    //                     }
-                        
-    //                 },
-    //                 title: {
-    //                     display: true,
-    //                     text: 'Total Credits - 500',
-    //                     color: '#000000',
-    //                     font: {
-    //                         size: 12,
-    //                         weight: 600
-    //                     },
-    //                     position: 'right',
-    //                 }
-    //             },
-    //         }
-    //     });
-    // });
-</script>
-<script>
-    // $(document).ready(function() {
-
-    // const consumptionChart = new Chart(document.getElementById("seller-creditChart"), {
-    //     type: "pie",
-    //         data: {
-    //             labels: [
-    //                 'Credits Left',
-    //                 'Credits Used'
-    //             ],
-    //             datasets: [{
-    //                 label: '',
-    //                 data: [100, 400],
-    //                 backgroundColor: [
-    //                     '#30BA00',
-    //                     '#D82C42'
-    //                 ],
-    //                 hoverOffset: 0,
-    //                 borderWidth: 0,
-    //                 maxHeight: 16,
-    //                 maxHeight: 16
-    //             }]
-    //         },
-    //         options: {
-    //             responsive: true,
-    //             maintainAspectRatio: false,
-    //             plugins: {
-    //                 legend: {
-    //                     position: 'right',
-    //                     labels: {
-    //                         boxWidth: 16,
-    //                         boxHeight: 16,
-    //                         color: '#000000',
-    //                         padding: 20,
-    //                         font: {
-    //                             family: "'Poppins', sans-serif",
-    //                             weight: 400,
-    //                             size: 12,
-    //                             lineHeight: 1.5
-    //                         }
-    //                     }
-                        
-    //                 },
-    //                 title: {
-    //                     display: true,
-    //                     text: 'Total Credits - 500',
-    //                     color: '#000000',
-    //                     font: {
-    //                         size: 12,
-    //                         weight: 600
-    //                     },
-    //                     position: 'right',
-    //                 }
-    //             },
-    //         }
-    //     });
-    // });
-</script>
 @endsection
 

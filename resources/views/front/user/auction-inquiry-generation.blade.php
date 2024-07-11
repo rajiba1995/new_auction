@@ -8,7 +8,18 @@
         list-style-type: none;
     }
     select.select2 {
-    width: 300px;
+        width: 300px;
+    }
+    .img-new-holder{
+        width: 124px !important;
+        height: 125px !important;
+    }
+    .add_btn{
+        cursor: pointer;
+    }
+    .search-height {
+        max-height: 650px;
+        overflow-y: auto;
     }
 </style>
 <div class="main">
@@ -126,7 +137,7 @@
                                     <div class="col-12">
                                         <div class="form-group">
                                             <label class="form-label">Service Description</label>
-                                            <textarea class="form-control border-red" rows="9" placeholder="Ex, transport service, Parlour, etc " name="description" id="description">{{$existing_inquiry ? $existing_inquiry->description : old('description')}}</textarea>
+                                            <textarea class="form-control border-red ckeditor" rows="9" placeholder="Ex, transport service, Parlour, etc " name="description" id="description">{{$existing_inquiry ? $existing_inquiry->description : old('description')}}</textarea>
                                             @error('description')<span class="text-danger" role="alert"><strong>{{ $message }}</strong></span>
                                             @enderror
                                         </div>
@@ -256,7 +267,7 @@
                                     <div class="col-12">
                                         <div class="form-group">
                                             <label class="form-label">New Participants*</label>
-                                            <div class="participants-block border-red">
+                                            <div class="participants-block border-red" id="append_new_partisipants">
                                                 @foreach ($watch_list_data as $item)
                                                 {{-- {{dd($SellerData)}} --}}
                                                 @if(!in_array($item->SellerData->id,$SellerData))
@@ -280,7 +291,7 @@
                                 </div>
                                 @endif
                                 <div class="add-invite-row">
-                                    <button type="button" onclick="checkModal()" class="btn btn-add-invite" data-bs-toggle="modal" data-bs-target="#inviteModalWebsite">
+                                    <button type="button" onclick="checkModal()" id="checkModal" class="btn btn-add-invite" data-bs-toggle="modal" data-bs-target="#inviteModalWebsite">
                                         <svg width="23" height="20" viewBox="0 0 23 20" fill="none" xmlns="http://www.w3.org/2000/svg">
                                             <g clip-path="url(#clip0_613_9373)">
                                             <path d="M15.332 17.5V15.8333C15.332 14.9493 14.9282 14.1014 14.2093 13.4763C13.4904 12.8512 12.5154 12.5 11.4987 12.5H4.79036C3.7737 12.5 2.79868 12.8512 2.07979 13.4763C1.3609 14.1014 0.957031 14.9493 0.957031 15.8333V17.5" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
@@ -500,7 +511,7 @@
 </div>
 
    {{-- invite modal from website --}}
-   {{-- <div class="modal fade show" id="inviteModalWebsite" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+   <div class="modal fade show" id="inviteModalWebsite" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-xl">
             <div class="modal-content">
                 <div class="modal-header">
@@ -509,39 +520,30 @@
                 </div>
                 <div class="modal-body">
                     <div class="row">
-                        <div class="col">
-                            <div class="location-bar">
+                        <div class="search-section">
+                            <div class="location-bar location_bar" style="width: 32% !important;">
                                 <img src="{{asset('frontend/assets/images/location.png')}}" alt="">
-
-                                <select class="select2" id="stateInput_modal" name="global_state_name_modal">
-                                    @foreach ($global_filter_location as $key =>$value)
-                                        <option value="{{$value}}">{{$value}}</option>
-                                    @endforeach
-                                </select>
-                                <input type="text" placeholder="Select Location" id="stateInput_modal" name="global_state_name_modal" value="@yield('location')">
+                                <input type="text" placeholder="Select Location" id="location_input" name="global_state_name" autocomplete="off" value="west bengal">
                             </div>
-                            <div id="stateSuggestions_modal"></div>
+                            <div id="stateSuggestions"></div>
+                            
+                            <div class="search-bar search_bar">
+                                <input type="search" name="keyword" id="partisipants_location" placeholder="Search" autocomplete="off">
+                            </div>
+                             <!-- <div id="filterSuggestions"></div> -->
                         </div>
-                        <div class="col">
-                            <div class="search-bar">
-                                <form>
-                                    <input type="search" name="keyword_modal" id="global_filter_data_modal" placeholder="Search for Service, Category, etc" value="@yield('keyword')">
-                                    <button type="button" class="btn-search btn-animated" id="global_form_submit_modal">
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
-                                            <path d="M11 19C15.4183 19 19 15.4183 19 11C19 6.58172 15.4183 3 11 3C6.58172 3 3 6.58172 3 11C3 15.4183 6.58172 19 11 19Z" stroke="white" stroke-linecap="round" stroke-linejoin="round"/>
-                                            <path d="M20.9999 21.0004L16.6499 16.6504" stroke="white" stroke-linecap="round" stroke-linejoin="round"/>
-                                        </svg>
-                                    </button>
-                                </form>
+                    </div>
+                    <div class="row mt-4">
+                        <div class="col-lg-12 col-12 left-col">
+                            <div id="append_website_partisipant" class="search-height">
+
                             </div>
-                            <div id="filterSuggestions_modal"></div>
                         </div>
                     </div>
                 </div>
-        
             </div>
         </div>
-    </div> --}}
+    </div>
 
 @endsection
 @section('script')
@@ -672,11 +674,11 @@
                             if(response.status==200){
                                 $('#participant' + itemId).empty();
                                 $('#participant' + itemId).removeClass('participant');
-                                Swal.fire({
-                                    title: "Success!",
-                                    text: "Participant has been deleted successfully!",
-                                    icon: "success"
-                                });
+                                // Swal.fire({
+                                //     title: "Success!",
+                                //     text: "Participant has been deleted successfully!",
+                                //     icon: "success"
+                                // });
                                 // setTimeout(function() {
                                 //     // Reload the page
                                 //     location.reload();
@@ -714,11 +716,11 @@
                             if(response.status==200){
                                 $('#participant' + itemId).empty();
                                 $('#participant' + itemId).removeClass('participant');
-                                Swal.fire({
-                                    title: "Success!",
-                                    text: "Outside Participant has been deleted successfully!",
-                                    icon: "success"
-                                });
+                                // Swal.fire({
+                                //     title: "Success!",
+                                //     text: "Outside Participant has been deleted successfully!",
+                                //     icon: "success"
+                                // });
                                 // setTimeout(function() {
                                 //     // Reload the page
                                 //     location.reload();
@@ -756,11 +758,11 @@
                             if(response.status==200){
                                 $('#participant' + itemId).empty();
                                 $('#participant' + itemId).removeClass('participant');
-                                Swal.fire({
-                                    title: "Success!",
-                                    text: "Existing Outside Participant has been deleted successfully!",
-                                    icon: "success"
-                                });
+                                // Swal.fire({
+                                //     title: "Success!",
+                                //     text: "Existing Outside Participant has been deleted successfully!",
+                                //     icon: "success"
+                                // });
                                 // setTimeout(function() {
                                 //     // Reload the page
                                 //     location.reload();
@@ -798,11 +800,11 @@
                             $('#exist_participant' + itemId).empty();
                             $('#exist_participant' + itemId).removeClass('participant');
                             if(response.status==200){
-                                Swal.fire({
-                                    title: "Success!",
-                                    text: "Participant has been deleted successfully!",
-                                    icon: "success"
-                                });
+                                // Swal.fire({
+                                //     title: "Success!",
+                                //     text: "Participant has been deleted successfully!",
+                                //     icon: "success"
+                                // });
                                 setTimeout(function() {
                                     // Reload the page
                                     location.reload();
@@ -817,39 +819,39 @@
             });
         });
     });
-$(document).ready(function() {
-    $('select[name="category"]').change(function(){
-        var selectedCategory = $(this).val();
-        // Perform an AJAX request to fetch sub-categories based on the selected category
-        $.ajax({
-            url: "{{route('user.collection_wise_category_by_title')}}", // Replace this with your actual route
-            type: 'GET',
-            data: {category: selectedCategory},
-            success: function(response) {
-                if(response.status==200){
-                    // Clear existing options before appending new ones
-                    $('select[name="sub_category"]').html("");
-                    var isFirst = true;
-                    // Append new options based on the response data
-                    response.data.forEach(function(element) {
-                        var option = '<option value="' + element.title + '">' + element.title + '</option>';
-                        // Check the first option
-                        if (isFirst) {
-                            option = '<option value="' + element.title + '" selected>' + element.title + '</option>';
-                            isFirst = false; // Reset the flag after the first iteration
-                        }
-                        // Append the option to the select element
-                        $('select[name="sub_category"]').append(option);
-                    });
+    $(document).ready(function() {
+        $('select[name="category"]').change(function(){
+            var selectedCategory = $(this).val();
+            // Perform an AJAX request to fetch sub-categories based on the selected category
+            $.ajax({
+                url: "{{route('user.collection_wise_category_by_title')}}", // Replace this with your actual route
+                type: 'GET',
+                data: {category: selectedCategory},
+                success: function(response) {
+                    if(response.status==200){
+                        // Clear existing options before appending new ones
+                        $('select[name="sub_category"]').html("");
+                        var isFirst = true;
+                        // Append new options based on the response data
+                        response.data.forEach(function(element) {
+                            var option = '<option value="' + element.title + '">' + element.title + '</option>';
+                            // Check the first option
+                            if (isFirst) {
+                                option = '<option value="' + element.title + '" selected>' + element.title + '</option>';
+                                isFirst = false; // Reset the flag after the first iteration
+                            }
+                            // Append the option to the select element
+                            $('select[name="sub_category"]').append(option);
+                        });
+                    }
+                },
+                error: function(xhr, status, error) {
+                    console.error(error);
+                    // Handle errors if any
                 }
-            },
-            error: function(xhr, status, error) {
-                console.error(error);
-                // Handle errors if any
-            }
+            });
         });
     });
-});
 </script>
 <script src="https://code.jquery.com/jquery-1.11.3.js"></script>
     <script>
@@ -916,61 +918,241 @@ $(document).ready(function() {
     }
 </script>
 <script src="{{asset('frontend/assets/js/custom.js')}}"></script>
-<script src="https://cdn.ckeditor.com/4.17.2/standard/ckeditor.js"></script>
-<script>
-    CKEDITOR.replace('description');
-</script>
-<script>
 
-     function checkModal(){
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    function checkModal(){
         var category =$('#category').val().trim();
         var subCategory =$('#sub_category').val().trim();
-        if(category.length === 0  &&  subCategory.length === 0){
-            Swal.fire("Please select Category & Sub-Category before adding participants");
-            return false;
-            
-        }else{
+        // if(category.length === 0  &&  subCategory.length === 0){
+        //     Swal.fire("Please select Category & Sub-Category before adding participants");
+        //     return false;
+        // }else{
             $('#inviteModalWebsite').modal('show');
-            $('#global_form_submit_modal').on('click', function() {
-                var category = $('#category').val();
-                var sub_category = $('#sub_category').val();
-                var location = $('#stateInput_modal').val();
-                var keyword = $('#global_filter_data_modal').val();
-                // Check if location is empty
-                if(location.trim().length === 0){
-                    $('.location-bar').css('border', '1px solid red');
-                    return; // Stop further execution  
-                }
-                // Check if keyword is empty
-                if(keyword.trim().length === 0){
-                    $('.search-bar').css('border', '1px solid red');
-                    return; // Stop further execution
-                }
-                $.ajax({
-                    url: "{{route('user.global.make_slug.participant')}}", // Replace this with your actual route
-                    type: 'GET',
-                    data: {
-                        location: location,
-                        keyword: keyword,
-                        category: category,
-                        sub_category: sub_category,
-                    },
-                    success: function(response) {
-                        if(response.status==200){
-                            window.location.href = response.route;
-                        }
-                        
-                    },
-                    error: function(xhr, status, error) {
-                        console.error(error);
-                        // Handle errors if any
+        // }
+    }
+    // Assuming you have a button or some trigger to call this function
+    document.getElementById('checkModal').addEventListener('click', checkModal);
+});
+    document.addEventListener('DOMContentLoaded', function() {
+        $('#partisipants_location').on('keyup', function() {
+            var keyword = $('#partisipants_location').val().toLowerCase();
+            var location = $('#location_input').val();
+            if (!keyword) {
+                $('.search_bar ').css('border', '1px solid red');
+                $('#append_website_partisipant').html("");
+                return false;
+            }
+                    // Reset border to default
+            $('.location_bar').css('border', '1px solid #ced4da');
+            $('.search_bar ').css('border', '1px solid #ced4da');
+            
+            // Check if location is empty
+            if(location.trim().length === 0){
+                $('.location_bar').css('border', '1px solid red');
+                return; // Stop further execution  
+            }
+            $.ajax({
+                url: "{{route('user.filter_partisipants_from_website')}}", // Replace this with your actual route
+                type: 'GET',
+                data: {
+                    location: location,
+                    keyword: keyword
+                },
+                success: function(response) {
+                    if(response.status=='success'){
+                        var result_data = response.master_date.data;
+                        var html= "";
+                        result_data.forEach(function(element, index) {
+                            let imageSrc = element.image ? "{{asset("+element.image+")}}" : "{{asset('frontend/assets/images/building.png')}}";
+                            let add_img = "{{asset('frontend/assets/images/add.png')}}";
+                            let mobile = element.mobile ? element.mobile : "xxx";
+                            let maskedNumber = mobile.replace(/.(?=.{3,}$)/g, 'x');
+                            html += `<div class="bidder-box">
+                                <div class="dots-cta">
+                                    <div class="dropdown add_btn" data-id="${element.id}" onclick="add_partisipants(${element.id}, '${element.business_name}')">
+                                        <img src="${add_img}" alt="" class="participant-img"">
+                                    </div>
+                                </div>
+                                <div class="img-holder img-new-holder">
+                                    <img src="${imageSrc}" alt="">
+                                </div>
+                                <div class="content-holder">
+                                    <div class="approvals">
+                                        <ul>`;
+                                            if(element.verified_badge==true){
+                                            html += `<li>
+                                                <img src="${element.verified_badge_logo}" alt="">
+                                                <div class="infotip"><span>${element.verified_badge_short_desc}</span></div>
+                                            </li>`;
+                                            }
+                                            if(element.trusted_badge_logo){
+                                            html += `<li>
+                                                <img src="${element.trusted_badge_logo}" alt="">
+                                                <div class="infotip"><span>${element.trusted_badge_short_desc}</span></div>
+                                            </li>`;
+                                            }
+                                            var paid_badge_list = element.paid_badge_list;
+                                            paid_badge_list.forEach(function(badge, key) {
+                                            html += `<li>
+                                                <img src="${badge.logo}" alt="">
+                                                <div class="infotip"><span>${badge.desc}</span></div>
+                                            </li>`;
+                                            });
+                                        html += `</ul>
+                                    </div>
+                                    <div class="name">${element.business_name}</div>
+                                    <div class="rating-value mb-2">
+                                        <div class="rating-star-values">
+                                            <span class="badge badge-rating bg-theme">${element.seller_over_all_rating}</span>`;
+                                        if(element.seller_over_all_rating>0){
+                                            html+=`<ul class="rating-stars solid-stars" data-rating="${element.seller_over_all_rating}">
+                                                <li>
+                                                    <svg xmlns="http://www.w3.org/2000/svg" version="1.1" xmlns:xlink="http://www.w3.org/1999/xlink" width="512" height="512" x="0" y="0" viewBox="0 0 32 32" style="enable-background:new 0 0 512 512" xml:space="preserve" class=""><g><path d="m29.911 13.75-6.229 6.072 1.471 8.576a1 1 0 0 1-1.451 1.054L16 25.403l-7.701 4.048a1 1 0 0 1-1.451-1.054l1.471-8.576-6.23-6.071a1 1 0 0 1 .555-1.706l8.609-1.25 3.85-7.802c.337-.683 1.457-.683 1.794 0l3.85 7.802 8.609 1.25a1.002 1.002 0 0 1 .555 1.706z" fill="#000000" opacity="1" data-original="#000000" class="" style="
+                                                        "></path></g></svg>
+                                                </li>
+                                                <li>
+                                                    <svg xmlns="http://www.w3.org/2000/svg" version="1.1" xmlns:xlink="http://www.w3.org/1999/xlink" width="512" height="512" x="0" y="0" viewBox="0 0 32 32" style="enable-background:new 0 0 512 512" xml:space="preserve" class=""><g><path d="m29.911 13.75-6.229 6.072 1.471 8.576a1 1 0 0 1-1.451 1.054L16 25.403l-7.701 4.048a1 1 0 0 1-1.451-1.054l1.471-8.576-6.23-6.071a1 1 0 0 1 .555-1.706l8.609-1.25 3.85-7.802c.337-.683 1.457-.683 1.794 0l3.85 7.802 8.609 1.25a1.002 1.002 0 0 1 .555 1.706z" fill="#000000" opacity="1" data-original="#000000" class="" style="
+                                                        "></path></g></svg>
+                                                </li>
+                                                <li>
+                                                    <svg xmlns="http://www.w3.org/2000/svg" version="1.1" xmlns:xlink="http://www.w3.org/1999/xlink" width="512" height="512" x="0" y="0" viewBox="0 0 32 32" style="enable-background:new 0 0 512 512" xml:space="preserve" class=""><g><path d="m29.911 13.75-6.229 6.072 1.471 8.576a1 1 0 0 1-1.451 1.054L16 25.403l-7.701 4.048a1 1 0 0 1-1.451-1.054l1.471-8.576-6.23-6.071a1 1 0 0 1 .555-1.706l8.609-1.25 3.85-7.802c.337-.683 1.457-.683 1.794 0l3.85 7.802 8.609 1.25a1.002 1.002 0 0 1 .555 1.706z" fill="#000000" opacity="1" data-original="#000000" class="" style="
+                                                        "></path></g></svg>
+                                                </li>
+                                                <li>
+                                                    <svg xmlns="http://www.w3.org/2000/svg" version="1.1" xmlns:xlink="http://www.w3.org/1999/xlink" width="512" height="512" x="0" y="0" viewBox="0 0 32 32" style="enable-background:new 0 0 512 512" xml:space="preserve" class=""><g><path d="m29.911 13.75-6.229 6.072 1.471 8.576a1 1 0 0 1-1.451 1.054L16 25.403l-7.701 4.048a1 1 0 0 1-1.451-1.054l1.471-8.576-6.23-6.071a1 1 0 0 1 .555-1.706l8.609-1.25 3.85-7.802c.337-.683 1.457-.683 1.794 0l3.85 7.802 8.609 1.25a1.002 1.002 0 0 1 .555 1.706z" fill="#000000" opacity="1" data-original="#000000" class="" style="
+                                                        "></path></g></svg>
+                                                </li>
+                                                <li>
+                                                    <svg xmlns="http://www.w3.org/2000/svg" version="1.1" xmlns:xlink="http://www.w3.org/1999/xlink" width="512" height="512" x="0" y="0" viewBox="0 0 32 32" style="enable-background:new 0 0 512 512" xml:space="preserve" class=""><g><path d="m29.911 13.75-6.229 6.072 1.471 8.576a1 1 0 0 1-1.451 1.054L16 25.403l-7.701 4.048a1 1 0 0 1-1.451-1.054l1.471-8.576-6.23-6.071a1 1 0 0 1 .555-1.706l8.609-1.25 3.85-7.802c.337-.683 1.457-.683 1.794 0l3.85 7.802 8.609 1.25a1.002 1.002 0 0 1 .555 1.706z" fill="#000000" opacity="1" data-original="#000000" class="" style="
+                                                        "></path></g></svg>
+                                                </li>
+                                            </ul>`;
+                                        }else{
+                                            html+=`<ul class="rating-stars blank-stars">
+                                                <li>
+                                                    <svg xmlns="http://www.w3.org/2000/svg" version="1.1" xmlns:xlink="http://www.w3.org/1999/xlink" width="512" height="512" x="0" y="0" viewBox="0 0 32 32" style="enable-background:new 0 0 512 512" xml:space="preserve" class=""><g><path d="m29.911 13.75-6.229 6.072 1.471 8.576a1 1 0 0 1-1.451 1.054L16 25.403l-7.701 4.048a1 1 0 0 1-1.451-1.054l1.471-8.576-6.23-6.071a1 1 0 0 1 .555-1.706l8.609-1.25 3.85-7.802c.337-.683 1.457-.683 1.794 0l3.85 7.802 8.609 1.25a1.002 1.002 0 0 1 .555 1.706z" fill="#000000" opacity="1" data-original="#000000" class="" style="
+                                                        "></path></g></svg>
+                                                </li>
+                                                <li>
+                                                    <svg xmlns="http://www.w3.org/2000/svg" version="1.1" xmlns:xlink="http://www.w3.org/1999/xlink" width="512" height="512" x="0" y="0" viewBox="0 0 32 32" style="enable-background:new 0 0 512 512" xml:space="preserve" class=""><g><path d="m29.911 13.75-6.229 6.072 1.471 8.576a1 1 0 0 1-1.451 1.054L16 25.403l-7.701 4.048a1 1 0 0 1-1.451-1.054l1.471-8.576-6.23-6.071a1 1 0 0 1 .555-1.706l8.609-1.25 3.85-7.802c.337-.683 1.457-.683 1.794 0l3.85 7.802 8.609 1.25a1.002 1.002 0 0 1 .555 1.706z" fill="#000000" opacity="1" data-original="#000000" class="" style="
+                                                        "></path></g></svg>
+                                                </li>
+                                                <li>
+                                                    <svg xmlns="http://www.w3.org/2000/svg" version="1.1" xmlns:xlink="http://www.w3.org/1999/xlink" width="512" height="512" x="0" y="0" viewBox="0 0 32 32" style="enable-background:new 0 0 512 512" xml:space="preserve" class=""><g><path d="m29.911 13.75-6.229 6.072 1.471 8.576a1 1 0 0 1-1.451 1.054L16 25.403l-7.701 4.048a1 1 0 0 1-1.451-1.054l1.471-8.576-6.23-6.071a1 1 0 0 1 .555-1.706l8.609-1.25 3.85-7.802c.337-.683 1.457-.683 1.794 0l3.85 7.802 8.609 1.25a1.002 1.002 0 0 1 .555 1.706z" fill="#000000" opacity="1" data-original="#000000" class="" style="
+                                                        "></path></g></svg>
+                                                </li>
+                                                <li>
+                                                    <svg xmlns="http://www.w3.org/2000/svg" version="1.1" xmlns:xlink="http://www.w3.org/1999/xlink" width="512" height="512" x="0" y="0" viewBox="0 0 32 32" style="enable-background:new 0 0 512 512" xml:space="preserve" class=""><g><path d="m29.911 13.75-6.229 6.072 1.471 8.576a1 1 0 0 1-1.451 1.054L16 25.403l-7.701 4.048a1 1 0 0 1-1.451-1.054l1.471-8.576-6.23-6.071a1 1 0 0 1 .555-1.706l8.609-1.25 3.85-7.802c.337-.683 1.457-.683 1.794 0l3.85 7.802 8.609 1.25a1.002 1.002 0 0 1 .555 1.706z" fill="#000000" opacity="1" data-original="#000000" class="" style="
+                                                        "></path></g></svg>
+                                                </li>
+                                                <li>
+                                                    <svg xmlns="http://www.w3.org/2000/svg" version="1.1" xmlns:xlink="http://www.w3.org/1999/xlink" width="512" height="512" x="0" y="0" viewBox="0 0 32 32" style="enable-background:new 0 0 512 512" xml:space="preserve" class=""><g><path d="m29.911 13.75-6.229 6.072 1.471 8.576a1 1 0 0 1-1.451 1.054L16 25.403l-7.701 4.048a1 1 0 0 1-1.451-1.054l1.471-8.576-6.23-6.071a1 1 0 0 1 .555-1.706l8.609-1.25 3.85-7.802c.337-.683 1.457-.683 1.794 0l3.85 7.802 8.609 1.25a1.002 1.002 0 0 1 .555 1.706z" fill="#000000" opacity="1" data-original="#000000" class="" style="
+                                                        "></path></g></svg>
+                                                </li>
+                                            </ul>`;
+                                        }
+                                        html +=`</div>
+                                        
+                                    </div>
+                                    <div class="info">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
+                                            <path d="M21 10C21 17 12 23 12 23C12 23 3 17 3 10C3 7.61305 3.94821 5.32387 5.63604 3.63604C7.32387 1.94821 9.61305 1 12 1C14.3869 1 16.6761 1.94821 18.364 3.63604C20.0518 5.32387 21 7.61305 21 10Z" stroke="#ee2737" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                            <path d="M12 13C13.6569 13 15 11.6569 15 10C15 8.34315 13.6569 7 12 7C10.3431 7 9 8.34315 9 10C9 11.6569 10.3431 13 12 13Z" stroke="#ee2737" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                        </svg>
+                                        ${element.address}, ${element.city_data.name}, ${element.state_data.name}
+                                    </div>
+                                    <div class="info">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
+                                            <path d="M15.0499 5C16.0267 5.19057 16.9243 5.66826 17.628 6.37194C18.3317 7.07561 18.8094 7.97326 18.9999 8.95M15.0499 1C17.0792 1.22544 18.9715 2.13417 20.4162 3.57701C21.8608 5.01984 22.7719 6.91101 22.9999 8.94M21.9999 16.92V19.92C22.0011 20.1985 21.944 20.4742 21.8324 20.7293C21.7209 20.9845 21.5572 21.2136 21.352 21.4019C21.1468 21.5901 20.9045 21.7335 20.6407 21.8227C20.3769 21.9119 20.0973 21.9451 19.8199 21.92C16.7428 21.5856 13.7869 20.5341 11.1899 18.85C8.77376 17.3147 6.72527 15.2662 5.18993 12.85C3.49991 10.2412 2.44818 7.27099 2.11993 4.18C2.09494 3.90347 2.12781 3.62476 2.21643 3.36162C2.30506 3.09849 2.4475 2.85669 2.6347 2.65162C2.82189 2.44655 3.04974 2.28271 3.30372 2.17052C3.55771 2.05833 3.83227 2.00026 4.10993 2H7.10993C7.59524 1.99522 8.06572 2.16708 8.43369 2.48353C8.80166 2.79999 9.04201 3.23945 9.10993 3.72C9.23656 4.68007 9.47138 5.62273 9.80993 6.53C9.94448 6.88792 9.9736 7.27691 9.89384 7.65088C9.81408 8.02485 9.6288 8.36811 9.35993 8.64L8.08993 9.91C9.51349 12.4135 11.5864 14.4864 14.0899 15.91L15.3599 14.64C15.6318 14.3711 15.9751 14.1858 16.3491 14.1061C16.723 14.0263 17.112 14.0555 17.4699 14.19C18.3772 14.5286 19.3199 14.7634 20.2799 14.89C20.7657 14.9585 21.2093 15.2032 21.5265 15.5775C21.8436 15.9518 22.0121 16.4296 21.9999 16.92Z" stroke="#ee2737" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                        </svg>
+                                        +91-${maskedNumber}
+                                    </div> 
+                                </div>
+                            </div>`;
+                        });
+                        $('#append_website_partisipant').html(html);
                     }
-                });
+                },
+                
+                error: function(xhr, status, error) {
+                    console.error(error);
+                    // Handle errors if any
+                }
             });
-    
-        }
-     }
+        });
+    });
 
+    function add_partisipants(id, business_name) {
+        const $element = $(`[data-id="${id}"]`);
+        const $img = $element.find('.participant-img');
+        const currentSrc = $img.attr('src');
+
+        const addImg = "{{asset('frontend/assets/images/add.png')}}";
+        const checklistImg = "{{asset('frontend/assets/images/checklist.png')}}";
+
+        if (currentSrc === addImg) {
+            $.ajax({
+                type: 'GET',
+                url: '{{ route("user.single_watchlist.add") }}',
+                data: {
+                    seller_id:id
+                },
+                success: function(response) {
+                    if(response.status==200){
+                        var html= "";
+                        html+=`<label class="participant" id="participant${response.item_id}">
+                            <input type="hidden" name="participant[]" value="${id}">
+                            <input type="hidden" id="watchlist${id}" value="${response.item_id}">
+                                ${business_name}
+                                <span class="remove Exist_remove2" data-id="${response.item_id}">
+                                    <svg width="18" height="16" viewBox="0 0 18 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                        <path d="M13.3636 3.7738L4.66797 11.2932" stroke="#ee2737" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+                                        <path d="M4.66797 3.7738L13.3636 11.2932" stroke="#ee2737" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+                                    </svg>
+                                </span>
+                            </label>`;
+                            $('#append_new_partisipants').append(html);
+                            $img.attr('src', checklistImg);
+                            $element.addClass('selected');
+                            toastr.success('Participant has been successfully added!');
+                    }
+                    if(response.status==400){
+                        toastr.warning('this seller already exists');
+                    }
+                },
+                error: function(xhr, status, error) {
+                    console.error(xhr.responseText);
+                }
+            });
+        } else {
+            var watchlist_id = $('#watchlist'+id).val();
+            $.ajax({
+                type: 'GET',
+                url: '{{ route("user.single_watchlist.delete") }}',
+                data: {
+                    id:watchlist_id
+                },
+                success: function(response) {
+                    if(response.status==200){
+                        $('#participant' + watchlist_id).empty();
+                        $('#participant' + watchlist_id).removeClass('participant');
+                        toastr.success('Participant has been successfully deleted!');
+                        $img.attr('src', addImg);
+                        $element.removeClass('selected');
+                    }
+                },
+                error: function(xhr, status, error) {
+                    console.error(xhr.responseText);
+                }
+            });
+            
+        }
+        
+        
+    }
    
 </script>
+<script type="text/javascript" src="{{ asset('frontend/ckeditor/ckeditor.js') }}"></script>
+<script type="text/javascript" src="{{ asset('frontend/ckeditor/adapters/jquery.js') }}"></script>
 @endsection
