@@ -12,12 +12,12 @@
                                 <div class="swiper home-banner-slider">
                                     <div class="swiper-wrapper">
                                         @foreach ($data->banners as $bannerKey => $banner)
-                                        {{-- <div class="swiper-slide">
+                                       <div class="swiper-slide">
                                             @if($banner->file_path)
                                             <div class="slider-img">
-                                                <!-- <a href="#"> -->
+                                                <a href="{{$banner->image_link}}"> 
                                                     <img src="{{ $banner->file_path}}" alt="">
-                                                <!-- </a> -->
+                                                 </a> 
                                             </div>
                                             @else
                                             <div class="slider-video">
@@ -27,17 +27,12 @@
                                                 </video>
                                             </div>
                                             @endif
-                                        </div> --}}
+                                        </div>
+                                        
                                         @endforeach
                                         
-                                        <div class="swiper-slide">
-                                            <div class="slider-img">
-                                                <a href="#">
-                                                    <img src="{{asset('frontend/assets/images/home-banner-1.jpg')}}" alt="">
-                                                </a>
-                                            </div>
-                                        </div>
-                                        <div class="swiper-slide">
+                                      
+                                        {{-- <div class="swiper-slide">
                                             <div class="slider-img">
                                                 <a href="#">
                                                     <img src="{{asset('frontend/assets/images/home-banner-2.jpg')}}" alt="">
@@ -50,7 +45,7 @@
                                                     <img src="{{asset('frontend/assets/images/home-banner-3.jpg')}}" alt="">
                                                 </a>
                                             </div>
-                                        </div>
+                                        </div> --}}
                                        
                                     </div>
                                     <div class="swiper-pagination banner-swiper-pagination"></div>
