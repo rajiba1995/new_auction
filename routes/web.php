@@ -84,6 +84,7 @@ Route::get('/clear-cache', function() {
             Route::get('/seller-package-history', [UserController::class, 'seller_package_history'])->name('user.seller_package_history');
             Route::get('/buyer-package-history', [UserController::class, 'buyer_package_history'])->name('user.buyer_package_history');
             Route::post('/transaction/purchase', [UserController::class, 'purchase'])->name('user.purchase.transaction');
+            Route::get('/verify-badge-price', [UserController::class, 'verify_badge_price'])->name('user.verify.badge_price');
             Route::get('/profile', [UserController::class, 'profile'])->name('user.profile');
             // Route::get('/profile/edit', [UserController::class, 'ProfileEdit'])->name('user.profile.edit');
             Route::get('/state_wise_city', [UserController::class, 'StateWiseCity'])->name('user.state_wise_city');

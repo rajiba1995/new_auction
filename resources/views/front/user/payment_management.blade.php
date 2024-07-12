@@ -489,7 +489,6 @@
         
         var badge_id = $(this).data('badge_id');             // console.log(id); 
         var badge_amount = $(this).data('amount');             // console.log(id); 
-        var final_amount = parseInt(badge_amount*100);             // console.log(id); 
         var badge_duration = $(this).data('duration');   
         var csrfToken = "{{csrf_token()}}";          // console.log(id); 
         Swal.fire({
@@ -502,63 +501,86 @@
         confirmButtonText: 'Yes, Purchase'
         }).then((result) => {
             if (result.isConfirmed) {
-                    var paymentOptions = {
-                    "key": "{{env('RAZORPAY_KEY')}}",
-                    "amount": final_amount,
-                    "currency": "INR",
-                    "name": "MILAAPP",
-                    "description": "Online payment",
-                    "image": "{{asset('frontend/assets/images/logo.png')}}",
-                    "handler": function (response){
-                        $('.page-loader').fadeIn('fast');
-                        $('input[name="payment_method"]').val('online_payment');
-                        var payment_method = 'Razorpay Payment';
-                        var razorpay_payment_id = response.razorpay_payment_id;
-                        $.ajax({
-                            type: 'POST',
-                            url: '{{ route("user.purchase.transaction") }}',
-                            data: {
-                                '_token' : csrfToken ,
-                                'id' : badge_id,
-                                'payment_method' : payment_method,
-                                'razorpay_payment_id' : razorpay_payment_id,
-                                'amount' : badge_amount,
-                                'duration' : badge_duration,
-                            },
-                            success: function(response) {
-                                if(response.status==200){
-                                    Swal.fire({
-                                        title: 'Success!',
-                                        text: 'Your Badge Successfully Purchased.',
-                                        icon: 'success',
+                $.ajax({
+                    type: 'GET',
+                    url: '{{ route("user.verify.badge_price") }}',
+                    data: {
+                        'id' : badge_id,
+                    },
+                    success: function(response) {
+                        if(response.status==200){
+                            var final_amount = parseInt(response.price*100); 
+                            var paymentOptions = {
+                                "key": "{{env('RAZORPAY_KEY')}}",
+                                "amount": final_amount,
+                                "currency": "INR",
+                                "name": "MILAAPP",
+                                "description": "Online payment",
+                                "image": "{{asset('frontend/assets/images/logo.png')}}",
+                                "handler": function (response){
+                                    $('.page-loader').fadeIn('fast');
+                                    $('input[name="payment_method"]').val('online_payment');
+                                    var payment_method = 'Razorpay Payment';
+                                    var razorpay_payment_id = response.razorpay_payment_id;
+                                    $.ajax({
+                                        type: 'POST',
+                                        url: '{{ route("user.purchase.transaction") }}',
+                                        data: {
+                                            '_token' : csrfToken ,
+                                            'id' : badge_id,
+                                            'payment_method' : payment_method,
+                                            'razorpay_payment_id' : razorpay_payment_id,
+                                            'amount' : badge_amount,
+                                            'duration' : badge_duration,
+                                        },
+                                        success: function(response) {
+                                            if(response.status==200){
+                                                Swal.fire({
+                                                    title: 'Success!',
+                                                    text: 'Your Badge Successfully Purchased.',
+                                                    icon: 'success',
+                                                });
+                                                location.reload();
+                                            }
+                                            location.reload();
+                                        },
+                                        error: function(xhr, status, error) {
+                                            console.error(xhr.responseText);
+                                            location.reload();
+                                        }
                                     });
-                                    location.reload();
+                                },
+                                "prefill": {
+                                    "email": "{{Auth::guard('web')->user()->email}}",
+                                    "contact": "{{Auth::guard('web')->user()->mobile}}"
+                                },
+                                "notes": {
+                                    "address": "Razorpay Corporate Office"
+                                },
+                                "theme": {
+                                    "color": "#0076D7"
                                 }
-                            },
-                            error: function(xhr, status, error) {
-                                console.error(xhr.responseText);
-                            }
-                        });
-                    },
-                    "prefill": {
-                        "email": "{{Auth::guard('web')->user()->email}}",
-                        "contact": "{{Auth::guard('web')->user()->mobile}}"
-                    },
-                    "notes": {
-                        "address": "Razorpay Corporate Office"
-                    },
-                    "theme": {
-                        "color": "#0076D7"
-                    }
-                };
-                var rzp1 = new Razorpay(paymentOptions);
+                            };
+                            var rzp1 = new Razorpay(paymentOptions);
 
-                rzp1.on('payment.failed', function (response){
-                    alert('OOPS ! something happened');;
-                     location.reload();
+                            rzp1.on('payment.failed', function (response){
+                                alert('OOPS ! something happened');;
+                                location.reload();
+                            });
+                            rzp1.open();  
+                        }else{
+                            Swal.fire({
+                                title: 'Error!',
+                                text: 'Sorry, something went wrong!',
+                                icon: 'error',
+                            });
+                            return false;
+                        }
+                    },
+                    error: function(xhr, status, error) {
+                        console.error(xhr.responseText);
+                    }
                 });
-                rzp1.open();  
-                
             }
         });
     });

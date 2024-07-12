@@ -388,6 +388,7 @@ if (!function_exists('sendSMS')) {
         ));
 
         $response = curl_exec($curl);
+        // dd($response);
         curl_close($curl);
         return true;
     }
