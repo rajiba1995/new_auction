@@ -206,27 +206,14 @@
                                                 </div>
                                                 <div class="col-lg-1 col-12">
                                                     <div class="form-group cta-form-group">
-                                                        <a href="javascript:void(0)" class="btn-add mb-0" id="btn_add_document">
+                                                        <a href="javascript:void(0)" class="btn-add" id="btn_add_document">
                                                             <i class="fa-solid fa-plus text-light"></i>
                                                         </a>
                                                     </div>
                                                 </div>
                                             </div> 
-                                            <div class="row additional-doc-output-row">
-                                                <div class="offset-lg-4 col-lg-8 col-12">
-                                                    <div class="form-group">
-                                                        <ul>
-                                                            <li>
-                                                                <img src="{{asset('frontend/assets/images/aadhaar_card.jpg')}}" alt="">
-                                                            </li>
-                                                            <li>
-                                                                <img src="{{asset('frontend/assets/images/pan_card.jpg')}}" alt="">
-                                                            </li>
-                                                        </ul>
-                                                    </div>
-                                                </div>
+                                            <div id="additional_document_append">
                                             </div>
-                                            <div id="additional_document_append"></div>
                                             <div class="form-submit-row">
                                                 <button type="submit" class="btn btn-animated btn-submit">Submit</button>
                                             </div>

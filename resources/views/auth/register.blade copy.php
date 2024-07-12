@@ -20,35 +20,27 @@
                         <img src="https://milaapp.in/frontend/assets/images/logo.png">
                     </div>
                     <h2>Sign Up your Account</h2>
-                    <form id="registerForm" class="register-form">
+                    <form id="registerForm">
                         @csrf
-                        <div class="form-group input-row">
+                        <div class="form-group">
                             <label class="form-label">Full Name*</label>
                             <input type="text" class="form-control border-red" placeholder="Ex, John Doe" name="full_name">
                         </div>
-                        <div class="form-group input-row">
+                        <div class="form-group">
                             <label class="form-label">Email Address*</label>
                             <input type="email" class="form-control border-red" placeholder="Ex, info@auction.com" name="email">
                         </div>
-                        <div class="form-group input-row">
+                        <div class="form-group">
                             <label class="form-label">Password*</label>
-                            <input type="password" class="form-control border-red" placeholder="" name="password"> 
-                            <span>
-                                <img src="{{asset('frontend/assets/images/view.png')}}" alt="" onclick="showPass(event)" class="showPass">
-                                <img src="{{asset('frontend/assets/images/hide.png')}}" alt="" onclick="hidePass(event)" class="hidePass">
-                            </span>
+                            <input type="password" class="form-control border-red" placeholder="............." name="password"> 
                         </div>
-                        <div class="form-group input-row">
+                        <div class="form-group">
                             <label class="form-label">Confirm Password*</label>
-                            <input type="password" class="form-control border-red" placeholder="" name="cpassword"> 
-                            <span>
-                                <img src="{{asset('frontend/assets/images/view.png')}}" alt="" onclick="showPass(event)" class="showPass">
-                                <img src="{{asset('frontend/assets/images/hide.png')}}" alt="" onclick="hidePass(event)" class="hidePass">
-                            </span>
+                            <input type="password" class="form-control border-red" placeholder="............." name="cpassword"> 
                         </div>
-                        <div class="form-group input-row">
+                        <div class="form-group">
                             <label class="form-label">Phone Number*</label>
-                            <input type="text" class="form-control border-red" placeholder="(XXX-XXX-XXXX)" name="phone">
+                            <input type="text" class="form-control border-red" placeholder="XXX-XXX-XXXX" name="phone">
                         </div>
                         <div id="alertContainer">
 
@@ -195,29 +187,6 @@
         // localStorage.clear();
 
         // Resend OTP
-        
-        
-        function showPass(event) {
-            var clickedElement = event.target;
-            var parentElement = clickedElement.parentNode;
-            var grandParentElement = parentElement.parentNode;
-            var inputElement = grandParentElement.querySelector('input');
-            var hidePassElement = grandParentElement.querySelector('.hidePass');
-            clickedElement.style.display = 'none';
-            hidePassElement.style.display = 'block';
-            inputElement.type = 'text'; 
-        }
-        
-        function hidePass(event) {
-            var clickedElement = event.target;
-            var parentElement = clickedElement.parentNode;
-            var grandParentElement = parentElement.parentNode;
-            var inputElement = grandParentElement.querySelector('input');
-            var showPassElement = grandParentElement.querySelector('.showPass');
-            clickedElement.style.display = 'none';
-            showPassElement.style.display = 'block';
-            inputElement.type = 'password'; 
-        }
     </script>
 </body>
 </html>

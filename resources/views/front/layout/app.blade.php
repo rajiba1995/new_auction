@@ -48,8 +48,9 @@
                     <div class="location-bar">
                         <img src="{{asset('frontend/assets/images/location.png')}}" alt="">
                         <input type="text" placeholder="Select Location" id="stateInput" name="global_state_name" autocomplete="off" value="@yield('location')">
+                        <div id="stateSuggestions"></div>
                     </div>
-                    <div id="stateSuggestions"></div>
+                    
                     
                     <div class="search-bar">
                         <form action="{{route('user.global.make_slug')}}" method="GET" id="Search_form">
@@ -70,20 +71,20 @@
                         </form>
                     </div>
                 
-                     <!-- <div id="filterSuggestions"></div> -->
+                    <!-- <div id="filterSuggestions"></div> -->
                     
                 </div>
 
                 {{-- <a herf="{{route('user.profile')}}" class="btn btn-cta btn-animated btn-dashboard">Dashboard</a> --}}
                 <div class="dropdown dashboard-dropdown">
                     <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                      Dashboard
+                    Dashboard
                     </button>
                     <ul class="dropdown-menu">
-                      <li><a class="dropdown-item" href="{{route('user_buyer_dashboard')}}">Buyer</a></li>
-                      <li><a class="dropdown-item" href="{{route('user_seller_dashboard')}}">Seller</a></li>
+                    <li><a class="dropdown-item" href="{{route('user_buyer_dashboard')}}">Buyer</a></li>
+                    <li><a class="dropdown-item" href="{{route('user_seller_dashboard')}}">Seller</a></li>
                     </ul>
-                  </div>
+                </div>
                 <a href="" class="menu-cta helpdesk">
                     <svg width="25" height="25" viewBox="0 0 25 25" fill="none" xmlns="http://www.w3.org/2000/svg">
                         <g clip-path="url(#clip0_726_1406)">
@@ -205,10 +206,10 @@
                         <li>
                             <a class="dropdown-item" href="{{route('user.profile')}}">
                                 <i class="fa-solid fa-user"></i>
-                               Profile
+                            Profile
                             </a>
                         </li>
-                       
+                    
                         <li>
                             <a class="dropdown-item" href="#" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 18 18" fill="none">
@@ -246,8 +247,9 @@
                     <div class="location-bar">
                         <img src="{{asset('frontend/assets/images/location.png')}}">
                         <input type="text" placeholder="Search Location..." id="stateInput" name="global_state_name" value="@yield('location')">
+                        <div id="stateSuggestions"></div>
                     </div>
-                    <div id="stateSuggestions"></div>
+                    
                     <div class="search-bar">
                         <form action="{{route('user.global.make_slug')}}" method="GET" id="Search_form">
                             <input type="hidden" name="location" id="hidden_location" value="@yield('location')">
@@ -303,8 +305,6 @@
         <p class="txt">Please Wait...</p>
     </div>
     @yield('section')
-
-    
     <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
         @csrf
     </form>
@@ -665,8 +665,6 @@
             });
  
      </script>
-    @yield('script')
-    
     <script>
          $(document).ready(function(){
              // Hide the success message after 5 seconds (5000 milliseconds)

@@ -22,42 +22,29 @@
                                         </a>
                                     </div>
                                     <div class="content-box">
-                                        <form method="POST" action="{{ route('user.change_password_update') }}" class="change-pass-form">
+                                        <form method="POST" action="{{ route('user.change_password_update') }}">
                                             @csrf
-                                            <div class="mb-3 input-row">
+                                            <div class="mb-3">
                                                 <label class="form-label">Old Password</label>
                                                 <input type="password" class="form-control" name="old_password" id="old_password" aria-describedby="emailHelp" placeholder="Enter old Password" value="{{old('old_password')}}">
-                                                <span>
-                                                    <img src="{{asset('frontend/assets/images/view.png')}}" alt="" onclick="showPass(event)" class="showPass">
-                                                    <img src="{{asset('frontend/assets/images/hide.png')}}" alt="" onclick="hidePass(event)" class="hidePass">
-                                                </span>
                                                 @error('old_password')<div class="text-danger">{{ $message }}</div>@enderror
-                                                
-                                            </div>
-                                            <div class="mb-3 input-row">
+                                              </div>
+                                            <div class="mb-3">
                                               <label class="form-label">New Password</label>
                                               <input type="password" class="form-control" name="password" id="password" aria-describedby="emailHelp" placeholder="Enter a new Password" value="{{old('password')}}">
-                                              <span>
-                                                    <img src="{{asset('frontend/assets/images/view.png')}}" alt="" onclick="showPass(event)" class="showPass">
-                                                    <img src="{{asset('frontend/assets/images/hide.png')}}" alt="" onclick="hidePass(event)" class="hidePass">
-                                              </span>
                                               <div id="emailHelp" class="form-text">We'll never share your password with anyone else.</div>
                                               @error('password')<div class="text-danger">{{ $message }}</div>@enderror
                                             </div>
                                             
-                                            <div class="mb-3 input-row">
+                                            <div class="mb-3">
                                               <label class="form-label">Confirm Password</label>
                                               <input type="password" class="form-control" id="confirm_password" name="confirm_password" value="{{old('confirm_password')}}">
-                                              <span>
-                                                <img src="{{asset('frontend/assets/images/view.png')}}" alt="" onclick="showPass(event)" class="showPass">
-                                                <img src="{{asset('frontend/assets/images/hide.png')}}" alt="" onclick="hidePass(event)" class="hidePass">
-                                              </span>
                                               @error('confirm_password')<div class="text-danger">{{ $message }}</div>@enderror
                                             </div>
-                                            <!--<div class="mb-3 form-check">-->
-                                            <!--  <input type="checkbox" class="form-check-input" id="check">-->
-                                            <!--  <label class="form-check-label" for="check">Show / Hide</label>-->
-                                            <!--</div>-->
+                                            <div class="mb-3 form-check">
+                                              <input type="checkbox" class="form-check-input" id="check">
+                                              <label class="form-check-label" for="check">Show / Hide</label>
+                                            </div>
                                             <button type="submit" class="btn btn-primary">Submit</button>
                                           </form>
                                 </div>
@@ -90,29 +77,6 @@
                 confirmPasswordField.type = "password";
             }
         });
-        
     });
-    
-    function showPass(event) {
-        var clickedElement = event.target;
-        var parentElement = clickedElement.parentNode;
-        var grandParentElement = parentElement.parentNode;
-        var inputElement = grandParentElement.querySelector('input');
-        var hidePassElement = grandParentElement.querySelector('.hidePass');
-        clickedElement.style.display = 'none';
-        hidePassElement.style.display = 'block';
-        inputElement.type = 'text'; 
-    }
-    
-    function hidePass(event) {
-        var clickedElement = event.target;
-        var parentElement = clickedElement.parentNode;
-        var grandParentElement = parentElement.parentNode;
-        var inputElement = grandParentElement.querySelector('input');
-        var showPassElement = grandParentElement.querySelector('.showPass');
-        clickedElement.style.display = 'none';
-        showPassElement.style.display = 'block';
-        inputElement.type = 'password'; 
-    }
 </script>   
 @endsection
