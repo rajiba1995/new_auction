@@ -21,7 +21,7 @@
                                 <div class="tab-pane {{ (request()->is('my/profile*')) ? 'active' : '' }}" id="productsServices" role="tabpanel" aria-labelledby="productsServices-tab" tabindex="0">
                                     <div class="tab-content-wrapper">
                                         <div class="top-content-bar">
-                                            <p>UPDATE<strong>->FILL YOUR BASIC INFORMATIONS</strong> </p>
+                                            <p class="text-light">UPDATE<strong>->FILL YOUR BASIC INFORMATIONS</strong> </p>
                                             <a href="{{route('user.profile')}}" class="btn btn-normal btn-cta"><i class="fa-solid fa-backward"></i>                                              
                                                Back
                                             </a>
@@ -52,7 +52,7 @@
                                                                 <label class="form-label">Profile Image*</label>
                                                                 <div class="profile-image-upload-box border-red">
                                                                     <div class="profile-img-box">
-                                                                        <img src="{{$data->image?asset($data->image):asset('frontend/assets/images/person-2.png')}}" alt="">
+                                                                        <img id="profileImagePreview" src="{{$data->image?asset($data->image):asset('frontend/assets/images/person-2.png')}}" alt="">
                                                                     </div>
                                                                     <div class="cta-box">
                                                                         <label for="profileImgUpload" class="custom-upload">
@@ -269,5 +269,16 @@ $(document).ready(function() {
     $(document).ready(function () {
         $(".all-cities").select2();
     });
+
+    document.getElementById('profileImgUpload').addEventListener('change', function(event) {
+    var file = event.target.files[0];
+    if (file) {
+        var reader = new FileReader();
+        reader.onload = function(e) {
+            document.getElementById('profileImagePreview').src = e.target.result;
+        };
+        reader.readAsDataURL(file);
+    }
+});
 </script>
 @endsection

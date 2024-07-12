@@ -17,7 +17,7 @@
                             <div class="tab-content">
                                 <div class="tab-content-wrapper">
                                     <div class="top-content-bar">
-                                        <p>UPLOAD<strong>->YOUR PHOTOS &amp; DOCUMENTS</strong> </p>
+                                        <p class="text-light">UPLOAD<strong>->YOUR PHOTOS &amp; DOCUMENTS</strong> </p>
                                         <a href="{{ route('user.photos_and_documents') }}" class="btn btn-normal btn-cta"><i class="fa-solid fa-backward"></i> Back</a>
                                     </div>
                                     <div class="inner">

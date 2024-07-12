@@ -124,7 +124,7 @@ class UserController extends Controller{
         }else{
             $params = $request->except('_token');
             $data = $this->userRepository->updateUser($request, $params);
-            return redirect()->route('user.profile')->with('success', 'Your profile data updated successfully');
+            return redirect()->route('user.profile')->with('success', 'Information added successfully');
         }
     }
     public function ProductAndService(){

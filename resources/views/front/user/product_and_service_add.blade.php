@@ -21,7 +21,7 @@
                                 <div class="tab-pane {{ (request()->is('my/product-and-service*')) ? 'active' : '' }}" id="productsServices" role="tabpanel" aria-labelledby="productsServices-tab" tabindex="0">
                                     <div class="tab-content-wrapper">
                                         <div class="top-content-bar">
-                                            <h2>UPLOAD YOUR PRODUCTS &amp; SERVICES INFORMATION</h2>
+                                            <h2 class="text-light">UPLOAD YOUR PRODUCTS &amp; SERVICES INFORMATION</h2>
                                             <a href="{{route('user.product_and_service')}}" class="btn btn-normal btn-cta"><i class="fa-solid fa-backward"></i>                                              
                                                Back
                                             </a>
@@ -65,7 +65,7 @@
                                                                     <label class="form-label">Product Image*</label>
                                                                     <div class="profile-image-upload-box border-red">
                                                                         <div class="profile-img-box">
-                                                                            <img src="{{asset('frontend/assets/images/person-2.png')}}" alt="">
+                                                                            <img id="product_image_preview" src="{{asset('frontend/assets/images/person-2.png')}}" alt="">
                                                                         </div>
                                                                         <div class="cta-box">
                                                                             <label for="profileImgUpload" class="custom-upload">
@@ -465,6 +465,16 @@
         });
     });
 
+    document.getElementById('profileImgUpload').addEventListener('change', function(event) {
+    var file = event.target.files[0];
+    if (file) {
+        var reader = new FileReader();
+        reader.onload = function(e) {
+            document.getElementById('product_image_preview').src = e.target.result;
+        };
+        reader.readAsDataURL(file);
+    }
+});
 
     </script>
     
