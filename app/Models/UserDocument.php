@@ -9,5 +9,8 @@ class UserDocument extends Model
 {
     use HasFactory;
     protected $table ="user_documents";
+  
+  
+
 
 }

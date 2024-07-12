@@ -3698,6 +3698,7 @@ textarea.review {
     font-size: 16px;
     font-weight: 500;
     line-height: 20px;
+    cursor: default !important;
     margin: 0 0 5px;
 }
 .doc-box .inner-wrap .right-col label span {
@@ -4641,8 +4642,8 @@ td.output-table-column{
 }
 .suppliers-td,
 .suppliers-th {
-    min-width: 187px;
-    max-width: 187px;
+    min-width: 167px;
+    max-width: 167px;
 }
 .suppliers-td .supplier p {
     margin: 0;
@@ -6086,23 +6087,6 @@ header.logged .search-bar {
     border: 1px solid #E0DFDF;
     padding: 7px 6px;  
 }
-.autocomplete-suggestions2:empty{
-    display: none;
-}
-
-.autocomplete-suggestions2 {
-    position: absolute;
-    top: 112%;
-    left: 0;
-    width: 100%;
-    height: 350px;
-    overflow: auto;
-    background: #fff;
-    z-index: 6;
-    border-radius: 9px;
-    border: 1px solid #E0DFDF;
-    padding: 7px 6px;  
-}
 
 .autocomplete-suggestion {
     display: flex;
@@ -6142,4 +6126,64 @@ header.logged .search-bar {
     font-size: 13px;
     color: #ada7a7;
 }
+.change-pass-form {
+    padding: 30px;   
+}
+.change-pass-form .input-row {
+    position: relative;
+}
+.change-pass-form .input-row span {
+    display: block;
+    position: absolute;
+    top: 44px;
+    right: 16px;
+    line-height: 16px;
+}
+.change-pass-form .input-row span img {
+    display: block;
+    max-width: 20px;
+    max-height: 20px;
+}
+.change-pass-form .input-row span .hidePass {
+    display: none;
+}
+.register-form .input-row {
+    position: relative;
+}
+.register-form .input-row span {
+    display: block;
+    position: absolute;
+    top: 44px;
+    right: 16px;
+    line-height: 16px;
+}
+.register-form .input-row span img {
+    display: block;
+    max-width: 20px;
+    max-height: 20px;
+}
+.register-form .input-row span .hidePass {
+    display: none;
+}
 
+.additional-doc-output-row ul {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 10px;
+    border-radius: 10px;
+    border: 1px dashed #E3E3E3;
+    background: #F9F7F7;
+    min-height: 140px;
+    list-style-type: none;
+    padding: 20px;
+    margin: 0;
+}
+.additional-doc-output-row ul li {
+    width: 160px;
+    height: auto;
+}
+.additional-doc-output-row ul li img {
+    max-width: 100%;
+    max-height: 100%;
+}

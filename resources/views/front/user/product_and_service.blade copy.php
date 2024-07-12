@@ -44,13 +44,6 @@
                                                 Add Products & Services
                                             </a>
                                             @endif
-                                            {{-- <a href="{{route('user.product_and_service.add')}}" class="btn btn-normal btn-cta ms-2">
-                                                <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                                    <rect width="20" height="20" fill="#0076D7"/>
-                                                    <path d="M4.16602 10H15.8327" stroke="white" stroke-linecap="round" stroke-linejoin="round"/>
-                                                </svg>                                                        
-                                                Remove Products & Services
-                                            </a> --}}
                                         </div>
                                         <div class="content-box">
                                             <div class="m-2">
