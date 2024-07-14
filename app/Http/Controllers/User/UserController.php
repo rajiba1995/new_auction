@@ -532,8 +532,10 @@ class UserController extends Controller{
     public function photos_and_documents(){
         $data = $this->AuthCheck();
         $AllImages = $this->userRepository->getUserAllImages($data->id);
-        $user_document = $this->userRepository->getUserAllData($data->id);
-        return view('front.user.photos_and_documents', compact('data', 'AllImages', 'user_document'));
+        $userData = $this->userRepository->getUserAllData($data->id);
+        $user_document = $userData['userDocument'];
+        $user_additional_document = $userData['userAdditionalDocument'];
+        return view('front.user.photos_and_documents', compact('data', 'AllImages', 'user_document','user_additional_document'));
     }
     public function payment_management(){
         $data = $this->AuthCheck();
@@ -1267,8 +1269,10 @@ class UserController extends Controller{
     public function photos_and_documents_edit(){
         $data = $this->AuthCheck();
         $AllImages = $this->userRepository->getUserAllImages($data->id);
-        $user_document = $this->userRepository->getUserAllData($data->id);
-        return view('front.user.photos_and_documents_edit', compact('data','user_document', 'AllImages'));
+        $userData = $this->userRepository->getUserAllData($data->id);
+        $user_document = $userData['userDocument'];
+        $user_additional_document = $userData['userAdditionalDocument'];
+        return view('front.user.photos_and_documents_edit', compact('data','user_document', 'AllImages','user_additional_document'));
     }
 
     public function photos_and_documents_update(Request $request){  

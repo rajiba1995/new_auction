@@ -186,7 +186,7 @@
                     },
                     'phone': {
                         required: "Please enter your phone number",
-                        minlength: "Phone number must be at least 10 characters long",
+                        minlength: "Enter a valid Phone Number",
                         maxlength: "Phone number must not exceed 12 characters"
                     }
                 }

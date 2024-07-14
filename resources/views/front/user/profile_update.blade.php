@@ -1,5 +1,17 @@
 @extends('front.layout.app')
 @section('section')
+
+<style>
+    .no-spinner::-webkit-outer-spin-button,
+    .no-spinner::-webkit-inner-spin-button {
+        -webkit-appearance: none;
+        margin: 0;
+    }
+
+.no-spinner {
+    -moz-appearance: textfield;
+}
+</style>
 <div class="main">
     <div class="inner-page">
 @php
@@ -49,7 +61,7 @@
                                                     <div class="row input-row">
                                                         <div class="col-lg-5 col-12">
                                                             <div class="form-group">
-                                                                <label class="form-label">Profile Image*</label>
+                                                                <label class="form-label">Profile Image</label>
                                                                 <div class="profile-image-upload-box border-red">
                                                                     <div class="profile-img-box">
                                                                         <img id="profileImagePreview" src="{{$data->image?asset($data->image):asset('frontend/assets/images/person-2.png')}}" alt="">
@@ -66,7 +78,7 @@
                                                         </div>
                                                         <div class="col-lg-7 col-12">
                                                             <div class="form-group">
-                                                                <label class="form-label">Short Bio</label>
+                                                                <label class="form-label">Short Bio*</label>
                                                                 <textarea class="form-control border-red short-bio" name="short_bio">{{ old('short_bio',$data->short_bio)  }}</textarea>
                                                                 @error('short_bio')<span class="text-danger" role="alert"><strong>{{ $message }}</strong></span>@enderror
                                                             </div>
@@ -118,7 +130,7 @@
                                                         <div class="col-lg-4 col-12">
                                                             <div class="form-group">
                                                                 <label class="form-label">Pincode*</label>
-                                                                <input type="number" class="form-control border-red" name="pincode" value="{{ old('pincode',$data->pincode) }}">
+                                                                <input type="number" class="form-control border-red no-spinner" name="pincode" value="{{ old('pincode',$data->pincode) }}" inputmode="numeric">
                                                                 @error('pincode')<span class="text-danger" role="alert"><strong>{{ $message }}</strong></span>@enderror
                                                             </div>
                                                         </div>
