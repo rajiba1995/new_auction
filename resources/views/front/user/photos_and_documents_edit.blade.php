@@ -17,7 +17,7 @@
                             <div class="tab-content">
                                 <div class="tab-content-wrapper">
                                     <div class="top-content-bar">
-                                        <p>UPLOAD<strong>->YOUR PHOTOS &amp; DOCUMENTS</strong> </p>
+                                        <p class="text-light">UPLOAD<strong>->YOUR PHOTOS &amp; DOCUMENTS</strong> </p>
                                         <a href="{{ route('user.photos_and_documents') }}" class="btn btn-normal btn-cta"><i class="fa-solid fa-backward"></i> Back</a>
                                     </div>
                                     <div class="inner">
@@ -58,8 +58,8 @@
                                                     @endforeach                                                    
                                                 </div>
                                             </div>
-                                            <div class="row input-row">
-                                                <div class="col-lg-6 col-12">
+                                            <div class="row input-row align-items-center">
+                                                <div class="col-lg-4 col-12">
                                                     <div class="form-group">
                                                         <label class="form-label">Upload GST</label>
                                                         <label for="gst_file" class="custom-upload">
@@ -73,7 +73,13 @@
                                                         @enderror
                                                     </div>
                                                 </div>
-                                                <div class="col-lg-6 col-12">
+                                                <div id="gstFilePreviewColumn" class="col-lg-4 col-12 text-center" style="display: none;">
+                                                    <div id="gstFilePreviewContainer">
+                                                        <img id="gstFilePreview" src="" alt="File Preview" class="img-fluid" style="display: none;" width="85px">
+                                                        <button id="viewFileButton" class="btn btn-primary" style="display: none;" onclick="window.open('', '_blank')">View File</button>
+                                                    </div>
+                                                </div>
+                                                <div class="col-lg-4 col-12">
                                                     <div class="form-group">
                                                         <label class="form-label">GST Number</label>
                                                         <input type="text" name="gst_number" class="form-control {{$user_document && $user_document->gst_number?"border-red":"border-danger"}}" value="{{$user_document?$user_document->gst_number:old('gst_number')}}">
@@ -82,8 +88,8 @@
                                                     </div>
                                                 </div>
                                             </div>
-                                            <div class="row input-row">
-                                                <div class="col-lg-6 col-12">
+                                            <div class="row input-row align-items-center">
+                                                <div class="col-lg-4 col-12">
                                                     <div class="form-group">
                                                         <label class="form-label">Upload PAN</label>
                                                         <label for="pan_file" class="custom-upload">
@@ -97,7 +103,13 @@
                                                         @enderror
                                                     </div>
                                                 </div>
-                                                <div class="col-lg-6 col-12">
+                                                <div id="panFilePreviewColumn" class="col-lg-4 col-12 text-center" style="display: none;">
+                                                    <div id="panFilePreviewContainer">
+                                                        <img id="panFilePreview" src="" alt="File Preview" class="img-fluid" style="display: none;" width="85px">
+                                                        <button id="panViewFileButton" class="btn btn-primary" style="display: none;" onclick="window.open('', '_blank')">View File</button>
+                                                    </div>
+                                                </div>
+                                                <div class="col-lg-4 col-12">
                                                     <div class="form-group">
                                                         <label class="form-label">PAN Number</label>
                                                         <input type="text" name="pan_number" class="form-control {{$user_document && $user_document->pan_number?"border-red":"border-danger"}}" value="{{$user_document?$user_document->pan_number:old('pan_number')}}">
@@ -106,8 +118,8 @@
                                                     </div>
                                                 </div>
                                             </div>
-                                            <div class="row input-row">
-                                                <div class="col-lg-6 col-12">
+                                            <div class="row input-row align-items-center">
+                                                <div class="col-lg-4 col-12">
                                                     <div class="form-group">
                                                         <label class="form-label">Upload AADHAR</label>
                                                         <label for="adhar_file" class="custom-upload">
@@ -121,7 +133,13 @@
                                                         @enderror
                                                     </div>
                                                 </div>
-                                                <div class="col-lg-6 col-12">
+                                                <div id="adharFilePreviewColumn" class="col-lg-4 col-12 text-center" style="display: none;">
+                                                    <div id="adharFilePreviewContainer">
+                                                        <img id="adharFilePreview" src="" alt="File Preview" class="img-fluid" style="display: none;" width="85px">
+                                                        <button id="adharViewFileButton" class="btn btn-primary" style="display: none;" onclick="window.open('', '_blank')">View File</button>
+                                                    </div>
+                                                </div>
+                                                <div class="col-lg-4 col-12">
                                                     <div class="form-group">
                                                         <label class="form-label">AADHAR Number</label>
                                                         <input type="text" name="adhar_number" class="form-control {{$user_document && $user_document->adhar_number?"border-red":"border-danger"}}" value="{{$user_document?$user_document->adhar_number:old('adhar_number')}}">
@@ -130,8 +148,8 @@
                                                     </div>
                                                 </div>
                                             </div>
-                                            <div class="row input-row">
-                                                <div class="col-lg-6 col-12">
+                                            <div class="row input-row align-items-center">
+                                                <div class="col-lg-4 col-12">
                                                     <div class="form-group">
                                                         <label class="form-label">Upload Trade License</label>
                                                         <label for="trade_license_file" class="custom-upload">
@@ -145,7 +163,13 @@
                                                         @enderror
                                                     </div>
                                                 </div>
-                                                <div class="col-lg-6 col-12">
+                                                <div id="tradeLicenseFilePreviewColumn" class="col-lg-4 col-12 text-center" style="display: none;">
+                                                    <div id="tradeLicenseFilePreviewContainer">
+                                                        <img id="tradeLicenseFilePreview" src="" alt="File Preview" class="img-fluid" style="display: none;" width="85px">
+                                                        <button id="tradeLicenseViewFileButton" class="btn btn-primary" style="display: none;" onclick="window.open('', '_blank')">View File</button>
+                                                    </div>
+                                                </div>
+                                                <div class="col-lg-4 col-12">
                                                     <div class="form-group">
                                                         <label class="form-label">Trade License Number</label>
                                                         <input type="text" name="trade_license_number" class="form-control {{$user_document && $user_document->trade_license_number?"border-red":"border-danger"}}" value="{{$user_document?$user_document->trade_license_number:old('trade_license_number')}}">
@@ -154,8 +178,8 @@
                                                     </div>
                                                 </div>
                                             </div>
-                                            <div class="row input-row">
-                                                <div class="col-lg-4 col-12">
+                                            <div class="row input-row align-items-center">
+                                                <div class="col-lg-3 col-12">
                                                     <div class="form-group">
                                                         <label class="form-label">Upload Cancelled Cheque</label>
                                                         <label for="cancelled_cheque_file" class="custom-upload">
@@ -169,7 +193,13 @@
                                                         @enderror
                                                     </div>
                                                 </div>
-                                                <div class="col-lg-4 col-12">
+                                                <div id="cancelledChequeFilePreviewColumn" class="col-lg-3 col-12 text-center" style="display: none;">
+                                                    <div id="cancelledChequeFilePreviewContainer">
+                                                        <img id="cancelledChequeFilePreview" src="" alt="File Preview" class="img-fluid" style="display: none;" width="85px">
+                                                        <button id="cancelledChequeViewFileButton" class="btn btn-primary" style="display: none;" onclick="window.open('', '_blank')">View File</button>
+                                                    </div>
+                                                </div>
+                                                <div class="col-lg-3 col-12">
                                                     <div class="form-group">
                                                         <label class="form-label">Account Number</label>
                                                         <input type="text" name="account_number" class="form-control {{$user_document && $user_document->account_number?"border-red":"border-danger"}}" value="{{$user_document?$user_document->account_number:old('account_number')}}">
@@ -177,7 +207,7 @@
                                                         @enderror
                                                     </div>
                                                 </div>
-                                                <div class="col-lg-4 col-12">
+                                                <div class="col-lg-3 col-12">
                                                     <div class="form-group">
                                                         <label class="form-label">IFSC Code</label>
                                                         <input type="text" name="ifsc_code" class="form-control {{$user_document && $user_document->ifsc_code?"border-red":"border-danger"}}" value="{{$user_document?$user_document->ifsc_code:old('ifsc_code')}}">
@@ -198,7 +228,13 @@
                                                         </label>
                                                     </div>
                                                 </div>
-                                                <div class="col-lg-7 col-12">
+                                                <div id="additionalDocumentFilePreviewColumn" class="col-lg-4 col-12 text-center" style="display: none;">
+                                                    <div id="additionalDocumentFilePreviewContainer">
+                                                        <img id="additionalDocumentFilePreview" src="" alt="File Preview" class="img-fluid" style="display: none;" width="85px">
+                                                        <button id="additionalDocumentViewFileButton" class="btn btn-primary" style="display: none;" onclick="window.open('', '_blank')">View File</button>
+                                                    </div>
+                                                </div>
+                                                <div class="col-lg-3 col-12">
                                                     <div class="form-group">
                                                         <label class="form-label">Additional Document</label>
                                                         <input type="text" class="form-control {{$user_document && $user_document->gst_number?"border-red":"border-danger"}}" name="additional_documents[]">
@@ -243,6 +279,135 @@
     </div>
 </div>
 @endsection
+
+@if($user_document && $user_document->gst_file)
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            var fileURL = '{{ asset($user_document->gst_file) }}';
+            var gstFilePreviewColumn = document.getElementById('gstFilePreviewColumn');
+            var gstFilePreview = document.getElementById('gstFilePreview');
+            var viewFileButton = document.getElementById('viewFileButton');
+
+            gstFilePreviewColumn.style.display = 'block';
+
+            if ('{{ $user_document->gst_file }}'.endsWith('.pdf')) {
+                gstFilePreview.style.display = 'none';
+                viewFileButton.style.display = 'block';
+                viewFileButton.onclick = function() {
+                    window.open(fileURL, '_blank');
+                };
+            } else {
+                gstFilePreview.style.display = 'block';
+                gstFilePreview.src = fileURL;
+                viewFileButton.style.display = 'none';
+            }
+        });
+    </script>
+@endif
+{{-- Fetch existing file from the database --}}
+@if($user_document && $user_document->pan_file)
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            var fileURL = '{{ asset($user_document->pan_file) }}';
+            var panFilePreviewColumn = document.getElementById('panFilePreviewColumn');
+            var panFilePreview = document.getElementById('panFilePreview');
+            var viewFileButton = document.getElementById('panViewFileButton');
+
+            panFilePreviewColumn.style.display = 'block';
+
+            if ('{{ $user_document->pan_file }}'.endsWith('.pdf')) {
+                panFilePreview.style.display = 'none';
+                viewFileButton.style.display = 'block';
+                viewFileButton.onclick = function() {
+                    window.open(fileURL, '_blank');
+                };
+            } else {
+                panFilePreview.style.display = 'block';
+                panFilePreview.src = fileURL;
+                viewFileButton.style.display = 'none';
+            }
+        });
+    </script>
+@endif
+
+{{-- Fetch existing file from the database --}}
+@if($user_document && $user_document->adhar_file)
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            var fileURL = '{{ asset($user_document->adhar_file) }}';
+            var adharFilePreviewColumn = document.getElementById('adharFilePreviewColumn');
+            var adharFilePreview = document.getElementById('adharFilePreview');
+            var viewFileButton = document.getElementById('adharViewFileButton');
+
+            adharFilePreviewColumn.style.display = 'block';
+
+            if ('{{ $user_document->adhar_file }}'.endsWith('.pdf')) {
+                adharFilePreview.style.display = 'none';
+                viewFileButton.style.display = 'block';
+                viewFileButton.onclick = function() {
+                    window.open(fileURL, '_blank');
+                };
+            } else {
+                adharFilePreview.style.display = 'block';
+                adharFilePreview.src = fileURL;
+                viewFileButton.style.display = 'none';
+            }
+        });
+    </script>
+@endif
+
+{{-- Fetch existing file from the database --}}
+@if($user_document && $user_document->trade_license_file)
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            var fileURL = '{{ asset($user_document->trade_license_file) }}';
+            var tradeLicenseFilePreviewColumn = document.getElementById('tradeLicenseFilePreviewColumn');
+            var tradeLicenseFilePreview = document.getElementById('tradeLicenseFilePreview');
+            var viewFileButton = document.getElementById('tradeLicenseViewFileButton');
+
+            tradeLicenseFilePreviewColumn.style.display = 'block';
+
+            if ('{{ $user_document->trade_license_file }}'.endsWith('.pdf')) {
+                tradeLicenseFilePreview.style.display = 'none';
+                viewFileButton.style.display = 'block';
+                viewFileButton.onclick = function() {
+                    window.open(fileURL, '_blank');
+                };
+            } else {
+                tradeLicenseFilePreview.style.display = 'block';
+                tradeLicenseFilePreview.src = fileURL;
+                viewFileButton.style.display = 'none';
+            }
+        });
+    </script>
+@endif
+
+{{-- Fetch existing file from the database --}}
+@if($user_document && $user_document->cancelled_cheque_file)
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            var fileURL = '{{ asset($user_document->cancelled_cheque_file) }}';
+            var cancelledChequeFilePreviewColumn = document.getElementById('cancelledChequeFilePreviewColumn');
+            var cancelledChequeFilePreview = document.getElementById('cancelledChequeFilePreview');
+            var viewFileButton = document.getElementById('cancelledChequeViewFileButton');
+
+            cancelledChequeFilePreviewColumn.style.display = 'block';
+
+            if ('{{ $user_document->cancelled_cheque_file }}'.endsWith('.pdf')) {
+                cancelledChequeFilePreview.style.display = 'none';
+                viewFileButton.style.display = 'block';
+                viewFileButton.onclick = function() {
+                    window.open(fileURL, '_blank');
+                };
+            } else {
+                cancelledChequeFilePreview.style.display = 'block';
+                cancelledChequeFilePreview.src = fileURL;
+                viewFileButton.style.display = 'none';
+            }
+        });
+    </script>
+@endif
+
 @section('script')
 {{-- <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script> --}}
 
@@ -295,10 +460,16 @@
                         </label>
                     </div>
                 </div>
-                <div class="col-lg-7 col-12">
+                <div class="col-lg-4 col-12">
                     <div class="form-group">
                         <label class="form-label">Additional Document</label>
                         <input type="text" class="form-control border-red" name="additional_documents[]" required>
+                    </div>
+                </div>
+                 <div id="additionalDocumentFilePreviewColumn" class="col-lg-3 col-12 text-center" style="display: none;">
+                    <div id="additionalDocumentFilePreviewContainer">
+                        <img id="additionalDocumentFilePreview" src="" alt="File Preview" class="img-fluid" style="display: none;" width="85px">
+                        <button id="additionalDocumentViewFileButton" class="btn btn-primary" style="display: none;" onclick="window.open('', '_blank')">View File</button>
                     </div>
                 </div>
                 <div class="col-lg-1 col-12">
@@ -328,6 +499,206 @@
 });
 
 
-    
+
+// gst file
+document.getElementById('gst_file').addEventListener('change', function(event) {
+    var file = event.target.files[0];
+    var previewImg = document.getElementById('gstFilePreview');
+    var viewFileButton = document.getElementById('viewFileButton');
+    var previewColumn = document.getElementById('gstFilePreviewColumn');
+    var fileUrl;
+
+    if (file) {
+        var fileType = file.type;
+
+        // Show the preview column
+        previewColumn.style.display = 'block';
+
+        // Clear previous previews
+        previewImg.style.display = 'none';
+        viewFileButton.style.display = 'none';
+
+        if (fileType.startsWith('image/')) {
+            var reader = new FileReader();
+            reader.onload = function(e) {
+                previewImg.src = e.target.result;
+                previewImg.style.display = 'block';  // Display the image
+            };
+            reader.readAsDataURL(file); // Read the file as a data URL
+        } else if (fileType === 'application/pdf') {
+            fileUrl = URL.createObjectURL(file);
+            viewFileButton.style.display = 'block';  // Display the View File button
+            viewFileButton.onclick = function() {
+                window.open(fileUrl, '_blank');  // Open the PDF in a new tab
+            };
+        } else {
+            alert('Please upload an image or PDF file.');
+        }
+    } else {
+        // Hide the preview column if no file is selected
+        previewColumn.style.display = 'none';
+    }
+});
+
+// pan card
+document.getElementById('pan_file').addEventListener('change', function(event) {
+        var file = event.target.files[0];
+        var previewImg = document.getElementById('panFilePreview');
+        var viewFileButton = document.getElementById('panViewFileButton');
+        var previewColumn = document.getElementById('panFilePreviewColumn');
+        var fileUrl;
+
+        if (file) {
+            var fileType = file.type;
+
+            // Show the preview column
+            previewColumn.style.display = 'block';
+
+            // Clear previous previews
+            previewImg.style.display = 'none';
+            viewFileButton.style.display = 'none';
+
+            if (fileType.startsWith('image/')) {
+                var reader = new FileReader();
+                reader.onload = function(e) {
+                    previewImg.src = e.target.result;
+                    previewImg.style.display = 'block';  // Display the image
+                };
+                reader.readAsDataURL(file); // Read the file as a data URL
+            } else if (fileType === 'application/pdf') {
+                fileUrl = URL.createObjectURL(file);
+                viewFileButton.style.display = 'block';  // Display the View File button
+                viewFileButton.onclick = function() {
+                    window.open(fileUrl, '_blank');  // Open the PDF in a new tab
+                };
+            } else {
+                alert('Please upload an image or PDF file.');
+            }
+        } else {
+            // Hide the preview column if no file is selected
+            previewColumn.style.display = 'none';
+        }
+    });
+
+// aadhar file
+document.getElementById('adhar_file').addEventListener('change', function(event) {
+    var file = event.target.files[0];
+    var previewImg = document.getElementById('adharFilePreview');
+    var viewFileButton = document.getElementById('adharViewFileButton');
+    var previewColumn = document.getElementById('adharFilePreviewColumn');
+    var fileUrl;
+
+    if (file) {
+        var fileType = file.type;
+
+        // Show the preview column
+        previewColumn.style.display = 'block';
+
+        // Clear previous previews
+        previewImg.style.display = 'none';
+        viewFileButton.style.display = 'none';
+
+        if (fileType.startsWith('image/')) {
+            var reader = new FileReader();
+            reader.onload = function(e) {
+                previewImg.src = e.target.result;
+                previewImg.style.display = 'block';  // Display the image
+            };
+            reader.readAsDataURL(file); // Read the file as a data URL
+        } else if (fileType === 'application/pdf') {
+            fileUrl = URL.createObjectURL(file);
+            viewFileButton.style.display = 'block';  // Display the View File button
+            viewFileButton.onclick = function() {
+                window.open(fileUrl, '_blank');  // Open the PDF in a new tab
+            };
+        } else {
+            alert('Please upload an image or PDF file.');
+        }
+    } else {
+        // Hide the preview column if no file is selected
+        previewColumn.style.display = 'none';
+    }
+});
+
+// trade license
+document.getElementById('trade_license_file').addEventListener('change', function(event) {
+    var file = event.target.files[0];
+    var previewImg = document.getElementById('tradeLicenseFilePreview');
+    var viewFileButton = document.getElementById('tradeLicenseViewFileButton');
+    var previewColumn = document.getElementById('tradeLicenseFilePreviewColumn');
+    var fileUrl;
+
+    if (file) {
+        var fileType = file.type;
+
+        // Show the preview column
+        previewColumn.style.display = 'block';
+
+        // Clear previous previews
+        previewImg.style.display = 'none';
+        viewFileButton.style.display = 'none';
+
+        if (fileType.startsWith('image/')) {
+            var reader = new FileReader();
+            reader.onload = function(e) {
+                previewImg.src = e.target.result;
+                previewImg.style.display = 'block';  // Display the image
+            };
+            reader.readAsDataURL(file); // Read the file as a data URL
+        } else if (fileType === 'application/pdf') {
+            fileUrl = URL.createObjectURL(file);
+            viewFileButton.style.display = 'block';  // Display the View File button
+            viewFileButton.onclick = function() {
+                window.open(fileUrl, '_blank');  // Open the PDF in a new tab
+            };
+        } else {
+            alert('Please upload an image or PDF file.');
+        }
+    } else {
+        // Hide the preview column if no file is selected
+        previewColumn.style.display = 'none';
+    }
+});   
+
+// cancelled_cheque_file
+document.getElementById('cancelled_cheque_file').addEventListener('change', function(event) {
+    var file = event.target.files[0];
+    var previewImg = document.getElementById('cancelledChequeFilePreview');
+    var viewFileButton = document.getElementById('cancelledChequeViewFileButton');
+    var previewColumn = document.getElementById('cancelledChequeFilePreviewColumn');
+    var fileUrl;
+
+    if (file) {
+        var fileType = file.type;
+
+        // Show the preview column
+        previewColumn.style.display = 'block';
+
+        // Clear previous previews
+        previewImg.style.display = 'none';
+        viewFileButton.style.display = 'none';
+
+        if (fileType.startsWith('image/')) {
+            var reader = new FileReader();
+            reader.onload = function(e) {
+                previewImg.src = e.target.result;
+                previewImg.style.display = 'block';  // Display the image
+            };
+            reader.readAsDataURL(file); // Read the file as a data URL
+        } else if (fileType === 'application/pdf') {
+            fileUrl = URL.createObjectURL(file);
+            viewFileButton.style.display = 'block';  // Display the View File button
+            viewFileButton.onclick = function() {
+                window.open(fileUrl, '_blank');  // Open the PDF in a new tab
+            };
+        } else {
+            alert('Please upload an image or PDF file.');
+        }
+    } else {
+        // Hide the preview column if no file is selected
+        previewColumn.style.display = 'none';
+    }
+});
+
 </script>
 @endsection
