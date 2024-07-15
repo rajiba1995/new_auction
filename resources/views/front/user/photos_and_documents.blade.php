@@ -168,6 +168,29 @@
                                                             </div>
                                                         </div>
                                                         @endif
+                                                        @if($user_additional_document->isNotEmpty())
+                                                        @foreach($user_additional_document as $additionalDocument)
+                                                            <div class="col-xxl-4 col-md-6 col-12 doc-box">
+                                                                <div class="inner-wrap">
+                                                                    <div class="left-col">
+                                                                        <div class="img-box">
+                                                                            <img src="{{asset('frontend/assets/images/card.png')}}" alt="">
+                                                                        </div>
+                                                                    </div>
+                                                                    <div class="right-col">
+                                                                        <label>
+                                                                            Additional Document
+                                                                           
+                                                                        </label>
+                                                                        <p>{{ $additionalDocument->additional_documents }}</p>
+                                                                        <!-- Add any additional fields you want to display -->
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        @endforeach
+                                                        @else
+                                                            <p>No additional documents found.</p>
+                                                        @endif
                                                     </div>
                                                 <!-- </div> -->
                                             </div>

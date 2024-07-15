@@ -1,17 +1,30 @@
 @extends('front.layout.app')
 @section('section')
+<<<<<<< HEAD
 <style>
     /* Hide spinner for Chrome, Safari, Edge, Opera */
     input[type="number"]::-webkit-outer-spin-button,
     input[type="number"]::-webkit-inner-spin-button {
+=======
+
+<style>
+    .no-spinner::-webkit-outer-spin-button,
+    .no-spinner::-webkit-inner-spin-button {
+>>>>>>> 3689ccdebea69cdb49eeeb68ddc8b29e2391d2e3
         -webkit-appearance: none;
         margin: 0;
     }
 
+<<<<<<< HEAD
     /* Hide spinner for Firefox */
     input[type="number"] {
         -moz-appearance: textfield;
     }
+=======
+.no-spinner {
+    -moz-appearance: textfield;
+}
+>>>>>>> 3689ccdebea69cdb49eeeb68ddc8b29e2391d2e3
 </style>
 <div class="main">
     <div class="inner-page">
@@ -131,7 +144,7 @@
                                                         <div class="col-lg-4 col-12">
                                                             <div class="form-group">
                                                                 <label class="form-label">Pincode*</label>
-                                                                <input type="number" class="form-control border-red" name="pincode" value="{{ old('pincode',$data->pincode) }}">
+                                                                <input type="number" class="form-control border-red no-spinner" name="pincode" value="{{ old('pincode',$data->pincode) }}" inputmode="numeric">
                                                                 @error('pincode')<span class="text-danger" role="alert"><strong>{{ $message }}</strong></span>@enderror
                                                             </div>
                                                         </div>

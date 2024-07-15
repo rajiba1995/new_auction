@@ -224,21 +224,21 @@
                                                     <div class="form-group">
                                                         <label class="form-label">Upload Additional Documents</label>
                                                         <label for="additional_document_file" class="custom-upload">
-                                                            <input type="file" name="additional_document_file[]" id="additional_document_file">
+                                                            <input type="file" name="additional_document_file[]" class="additional_document_file" id="additional_document_file" required>
                                                             <span class="btn btn-animated btn-upload">Upload</span>
                                                         </label>
                                                     </div>
                                                 </div>
-                                                <div id="additionalDocumentFilePreviewColumn" class="col-lg-4 col-12 text-center" style="display: none;">
-                                                    <div id="additionalDocumentFilePreviewContainer">
-                                                        <img id="additionalDocumentFilePreview" src="" alt="File Preview" class="img-fluid" style="display: none;" width="85px">
-                                                        <button id="additionalDocumentViewFileButton" class="btn btn-primary" style="display: none;" onclick="window.open('', '_blank')">View File</button>
+                                                <div class="col-lg-4 col-12 text-center additionalDocumentFilePreviewColumn" style="display: none;">
+                                                    <div class="additionalDocumentFilePreviewContainer">
+                                                        <img class="additionalDocumentFilePreview img-fluid" src="" alt="File Preview" style="display: none;" width="85px">
+                                                        <button class="btn btn-primary additionalDocumentViewFileButton" style="display: none;" onclick="window.open('', '_blank')">View File</button>
                                                     </div>
                                                 </div>
                                                 <div class="col-lg-3 col-12">
                                                     <div class="form-group">
                                                         <label class="form-label">Additional Document</label>
-                                                        <input type="text" class="form-control {{$user_document && $user_document->gst_number?"border-red":"border-danger"}}" name="additional_documents[]">
+                                                        <input type="text" class="form-control border-red" name="additional_documents[]" required>
                                                     </div>
                                                 </div>
                                                 <div class="col-lg-1 col-12">
@@ -262,8 +262,13 @@
                                                         </ul>
                                                     </div>
                                                 </div>
+<<<<<<< HEAD
                                             </div> --}}
                                             <div id="additional_document_append"></div>
+=======
+                                            </div>
+                                            <div id="additional_document_append"></div>                                            
+>>>>>>> 3689ccdebea69cdb49eeeb68ddc8b29e2391d2e3
                                             <div class="form-submit-row">
                                                 <button type="submit" class="btn btn-animated btn-submit">Submit</button>
                                             </div>
@@ -409,6 +414,28 @@
     </script>
 @endif
 
+{{-- additional --}}
+{{-- @if($user_additional_document && $user_additional_document->count())
+    @foreach($user_additional_document as $document)
+    <div class="row input-row additional-doc-input-row">
+        <div class="col-lg-4 col-12">
+            <div class="form-group">
+                <label class="form-label">Uploaded Document</label>
+            </div>
+        </div>
+        <div class="col-lg-4 col-12 text-center additionalDocumentFilePreviewColumn">
+            <div class="additionalDocumentFilePreviewContainer">
+                @if(pathinfo($document->additional_document_file, PATHINFO_EXTENSION) == 'pdf')
+                <button class="btn btn-primary additionalDocumentViewFileButton" onclick="window.open('{{ asset($document->additional_document_file) }}', '_blank')">View File</button>
+                @else
+                <img class="additionalDocumentFilePreview img-fluid" src="{{ asset($document->additional_document_file) }}" alt="File Preview" width="85px">
+                @endif
+            </div>
+        </div>
+    </div>
+    @endforeach
+@endif --}}
+
 @section('script')
 {{-- <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script> --}}
 
@@ -445,32 +472,124 @@
     });
 
 
+    // additional
+
     $(document).ready(function() {
-    // Click event for the add button
     var counter = 1;
+
+    // Function to handle file preview
+    function handleFilePreview(file, previewImg, viewFileButton, previewColumn) {
+        if (file) {
+            var fileType = file.type;
+
+            previewColumn.show();
+            previewImg.hide();
+            viewFileButton.hide();
+
+            if (fileType.startsWith('image/')) {
+                var reader = new FileReader();
+                reader.onload = function(e) {
+                    previewImg.attr('src', e.target.result).show();
+                    savePreviewToLocalStorage(counter, 'image', e.target.result);
+                };
+                reader.readAsDataURL(file);
+            } else if (fileType === 'application/pdf') {
+                var fileUrl = URL.createObjectURL(file);
+                viewFileButton.show().attr('onclick', `window.open('${fileUrl}', '_blank')`);
+                savePreviewToLocalStorage(counter, 'pdf', fileUrl);
+            } else {
+                alert('Please upload an image or PDF file.');
+            }
+        } else {
+            previewColumn.hide();
+        }
+    }
+
+    // Function to save preview information to local storage
+    function savePreviewToLocalStorage(index, type, data) {
+        var previews = JSON.parse(localStorage.getItem('documentPreviews')) || {};
+        previews[index] = { type: type, data: data };
+        localStorage.setItem('documentPreviews', JSON.stringify(previews));
+    }
+
+    // Function to load previews from local storage
+    function loadPreviewsFromLocalStorage() {
+        var previews = JSON.parse(localStorage.getItem('documentPreviews')) || {};
+        $.each(previews, function(index, preview) {
+            var template = `
+                <div class="row input-row additional-doc-input-row">
+                    <div class="col-lg-4 col-12">
+                        <div class="form-group">
+                            <label class="form-label">Upload Additional Documents</label>
+                            <label for="additional_document_file${index}" class="custom-upload">
+                                <input type="file" name="additional_document_file[]" class="additional_document_file" id="additional_document_file${index}" required>
+                                <span class="btn btn-animated btn-upload">Upload</span>
+                            </label>
+                        </div>
+                    </div>
+                    <div class="col-lg-4 col-12 text-center additionalDocumentFilePreviewColumn" id="additionalDocumentFilePreviewColumn${index}">
+                        <div class="additionalDocumentFilePreviewContainer" id="additionalDocumentFilePreviewContainer${index}">
+                            <img class="additionalDocumentFilePreview img-fluid" id="additionalDocumentFilePreview${index}" src="" alt="File Preview" style="display: none;" width="85px">
+                            <button class="btn btn-primary additionalDocumentViewFileButton" id="additionalDocumentViewFileButton${index}" style="display: none;" onclick="window.open('', '_blank')">View File</button>
+                        </div>
+                    </div>
+                    <div class="col-lg-3 col-12">
+                        <div class="form-group">
+                            <label class="form-label">Additional Document</label>
+                            <input type="text" class="form-control border-red" name="additional_documents[]" required>
+                        </div>
+                    </div>
+                    <div class="col-lg-1 col-12">
+                        <div class="form-group cta-form-group">
+                            <button type="button" class="btn-remove">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
+                                    <path d="M3 6H5H21" stroke="white" stroke-linecap="round" stroke-linejoin="round"></path>
+                                    <path d="M19 6V20C19 20.5304 18.7893 21.0391 18.4142 21.4142C18.0391 21.7893 17.5304 22 17 22H7C6.46957 22 5.96086 21.7893 5.58579 21.4142C5.21071 21.0391 5 20.5304 5 20V6M8 6V4C8 3.46957 8.21071 2.96086 8.58579 2.58579C8.96086 2.21071 9.46957 2 10 2H14C14.5304 2 15.0391 2.21071 15.4142 2.58579C15.7893 2.96086 16 3.46957 16 4V6" stroke="white" stroke-linecap="round" stroke-linejoin="round"></path>
+                                    <path d="M10 11V17" stroke="white" stroke-linecap="round" stroke-linejoin="round"></path>
+                                    <path d="M14 11V17" stroke="white" stroke-linecap="round" stroke-linejoin="round"></path>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                </div>`;
+            $('#additional_document_append').append(template);
+
+            var previewImg = $('#additionalDocumentFilePreview' + index);
+            var viewFileButton = $('#additionalDocumentViewFileButton' + index);
+            var previewColumn = $('#additionalDocumentFilePreviewColumn' + index);
+
+            if (preview.type === 'image') {
+                previewImg.attr('src', preview.data).show();
+            } else if (preview.type === 'pdf') {
+                viewFileButton.show().attr('onclick', `window.open('${preview.data}', '_blank')`);
+            }
+            previewColumn.show();
+        });
+    }
+  
+    // Click event for the add button
     $('#btn_add_document').click(function() {
-        // Clone the additional-doc-input-row template and append it to the container
         var template = `
             <div class="row input-row additional-doc-input-row">
                 <div class="col-lg-4 col-12">
                     <div class="form-group">
                         <label class="form-label">Upload Additional Documents</label>
                         <label for="additional_document_file${counter}" class="custom-upload">
-                            <input type="file" name="additional_document_file[]" id="additional_document_file${counter}" required>
+                            <input type="file" name="additional_document_file[]" class="additional_document_file" id="additional_document_file${counter}" required>
                             <span class="btn btn-animated btn-upload">Upload</span>
                         </label>
                     </div>
                 </div>
-                <div class="col-lg-4 col-12">
+                <div class="col-lg-4 col-12 text-center additionalDocumentFilePreviewColumn" id="additionalDocumentFilePreviewColumn${counter}" style="display: none;">
+                    <div class="additionalDocumentFilePreviewContainer" id="additionalDocumentFilePreviewContainer${counter}">
+                        <img class="additionalDocumentFilePreview img-fluid" id="additionalDocumentFilePreview${counter}" src="" alt="File Preview" style="display: none;" width="85px">
+                        <button class="btn btn-primary additionalDocumentViewFileButton" id="additionalDocumentViewFileButton${counter}" style="display: none;" onclick="window.open('', '_blank')">View File</button>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-12">
                     <div class="form-group">
                         <label class="form-label">Additional Document</label>
                         <input type="text" class="form-control border-red" name="additional_documents[]" required>
-                    </div>
-                </div>
-                 <div id="additionalDocumentFilePreviewColumn" class="col-lg-3 col-12 text-center" style="display: none;">
-                    <div id="additionalDocumentFilePreviewContainer">
-                        <img id="additionalDocumentFilePreview" src="" alt="File Preview" class="img-fluid" style="display: none;" width="85px">
-                        <button id="additionalDocumentViewFileButton" class="btn btn-primary" style="display: none;" onclick="window.open('', '_blank')">View File</button>
                     </div>
                 </div>
                 <div class="col-lg-1 col-12">
@@ -487,17 +606,29 @@
                 </div>
             </div>`;
         $('#additional_document_append').append(template);
-
-        // Increment counter for the next row
         counter++;
     });
 
     // Click event for the delete button
     $(document).on('click', '.btn-remove', function() {
-        // Remove the corresponding input row
         $(this).closest('.additional-doc-input-row').remove();
     });
+
+    // File input change event for previewing
+    $(document).on('change', '.additional_document_file', function() {
+        var file = this.files[0];
+        var previewImg = $(this).closest('.additional-doc-input-row').find('.additionalDocumentFilePreview');
+        var viewFileButton = $(this).closest('.additional-doc-input-row').find('.additionalDocumentViewFileButton');
+        var previewColumn = $(this).closest('.additional-doc-input-row').find('.additionalDocumentFilePreviewColumn');
+        var index = $(this).attr('id').replace('additional_document_file', '');
+        handleFilePreview(file, previewImg, viewFileButton, previewColumn);
+    });
+
+    // Load previews from local storage when the page loads
+    loadPreviewsFromLocalStorage();
 });
+
+
 
 
 
