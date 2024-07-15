@@ -131,38 +131,44 @@
                             </ul>
                         </div>
                     </div>
+                <form method="GET" id="filterForm">
                     <div class="row filter-row" id="group_list">
                         <div class="col-md-2">
                             <label for="start_date" class="form-label">Start Date</label>
-                            <input type="date" class="form-control" id="start_date" placeholder="Select start date" name="start_date">
+                            <input type="date" class="form-control" id="start_date" placeholder="Select start date" name="start_date" value="{{request()->input('start_date')}}">
                         </div>
                         <div class="col-md-2">
                             <label for="end_date" class="form-label">End Date</label>
-                            <input type="date" class="form-control" id="end_date" placeholder="Select end date" name="end_date">
+                            <input type="date" class="form-control" id="end_date" placeholder="Select end date" name="end_date" value="{{request()->input('end_date')}}">
                         </div>
                         <div class="col-md-3">
                             <label for="seller" class="form-label">Suppliers</label>
                             <select class="form-select seller" name="seller">
-                                <option>1</option>
-                                <option>2</option>
+                                <option value="" selected hidden>supplier</option>
+                                @foreach ($suppliers_data as $item)
+                                    <option value="{{$item['id']}}" {{request()->input('seller') == $item['id'] ? 'selected':''}}>{{$item['name']}}</option>
+                                @endforeach
+                                {{-- <option>2</option>
                                 <option>3</option>
-                                <option>4</option>
+                                <option>4</option> --}}
                             </select>
                         </div>
-                        <div class="col-lg-5 col-12">
-                            <div class="search-bar">
-                                <form>
-                                    <input type="search" name="" placeholder="Search by inquiry title..." id="group_wies_search">
-                                    <button type="submit" class="btn-search btn-animated">
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
-                                            <path d="M11 19C15.4183 19 19 15.4183 19 11C19 6.58172 15.4183 3 11 3C6.58172 3 3 6.58172 3 11C3 15.4183 6.58172 19 11 19Z" stroke="white" stroke-linecap="round" stroke-linejoin="round"/>
-                                            <path d="M20.9999 21.0004L16.6499 16.6504" stroke="white" stroke-linecap="round" stroke-linejoin="round"/>
-                                        </svg>
-                                    </button>
-                                </form>
+                        <div class="col-lg-3 col-12">
+                            <div class="search-bar">                            
+                                <input type="search" name="keyword" placeholder="Search by inquiry title..." id="group_wies_search" value="{{request()->input('keyword')}}">
+                                <button type="submit" class="btn-search btn-animated">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
+                                        <path d="M11 19C15.4183 19 19 15.4183 19 11C19 6.58172 15.4183 3 11 3C6.58172 3 3 6.58172 3 11C3 15.4183 6.58172 19 11 19Z" stroke="white" stroke-linecap="round" stroke-linejoin="round"/>
+                                        <path d="M20.9999 21.0004L16.6499 16.6504" stroke="white" stroke-linecap="round" stroke-linejoin="round"/>
+                                    </svg>
+                                </button>
                             </div>
                         </div>
+                        <div class="col-lg-2 col-12">
+                            <button type="button" class="btn btn-sm btn-danger" id="clearButton">Clear</button>
+                        </div>
                     </div>
+                </form>
                 </div>
             </div>
 
@@ -218,7 +224,7 @@
                                                                                     </li>
                                                                                     <li>
                                                                                         <label>Description of the Service</label>
-                                                                                        <p class="hidden">{{ucfirst($item['description'])}}</p>
+                                                                                        <p class="hidden">{!!ucfirst($item['description'])!!}</p>
                                                                                         <div class="read-more"><span>read more</span></div>
                                                                                     </li>
                                                                                     <li>
@@ -599,6 +605,11 @@
 <script>
      $(document).ready(function () {
         $(".seller").select2();
+    });
+
+    document.getElementById('clearButton').addEventListener('click', function() {
+        document.getElementById('filterForm').reset();
+        window.location.href = window.location.pathname;
     });
 </script>
 @endsection

@@ -81,7 +81,14 @@ class BuyerDashboardController extends Controller
         return view('front.user_dashboard.live_inquireis', compact('live_inquiries','saved_inquiries','group_wise_list','confirmed_inquiry_data','pending_inquiries_data','cancelled_inquiry_data'));
     }
     public function pending_inquiries(Request $request){
-        $pending_inquiries_data =  $this->BuyerDashboardRepository->pending_inquiries_by_user($this->getAuthenticatedUserId());
+      
+        $start_date = $request->input('start_date');
+        $end_date = $request->input('end_date');
+        $seller_id = $request->input('seller');
+        $keyword = $request->input('keyword');
+
+        $pending_inquiries_data =  $this->BuyerDashboardRepository->pending_inquiries_by_user($start_date,$end_date,$seller_id,$keyword);
+       
         $group_wise_list =  $this->BuyerDashboardRepository->group_wise_inquiries_by_user($this->getAuthenticatedUserId());
         $confirmed_inquiry_data =  $this->BuyerDashboardRepository->confirmed_inquiries_by_user($this->getAuthenticatedUserId());
         $cancelled_inquiry_data =  $this->BuyerDashboardRepository->cancelled_inquiries_by_user($this->getAuthenticatedUserId());
@@ -90,6 +97,7 @@ class BuyerDashboardController extends Controller
 
         $pending_inquiries = [];
         $suppliers = [];
+        $suppliers_data = [];
         
         if(count($pending_inquiries_data)>0){
             foreach ($pending_inquiries_data as $key => $value) {
@@ -118,14 +126,17 @@ class BuyerDashboardController extends Controller
                 $sub_suppliers = [];
                 if($value->ParticipantsData){
                     foreach($value->ParticipantsData as $k =>$item){
-                        $all_inquiries['participants'][]= $item->SellerData->business_name;
-                        $Suppliers_data['id']= $item->SellerData->id;
-                        $Suppliers_data['name']= $item->SellerData->business_name;
+                        if($item->SellerData){
+                            $all_inquiries['participants'][]= $item->SellerData->business_name;
+                            $Suppliers_data['id']= $item->SellerData->id;
+                            $Suppliers_data['name']= $item->SellerData->business_name;
+                           
+                            // if($item->status==1){
+                                $all_inquiries['invted_participants'][]= $item->SellerData->business_name;
+                            // }
+                            $sub_suppliers[] = $Suppliers_data;
+                        }
                        
-                        // if($item->status==1){
-                            $all_inquiries['invted_participants'][]= $item->SellerData->business_name;
-                        // }
-                        $sub_suppliers[] = $Suppliers_data;
                     }
                 }
                 $all_inquiries['invted_participants_count'] = 0;
@@ -190,15 +201,32 @@ class BuyerDashboardController extends Controller
         return view('front.user_dashboard.pending_inquireis', compact('pending_inquiries','live_inquiries','saved_inquiries','group_wise_list','confirmed_inquiry_data','pending_inquiries_data','cancelled_inquiry_data', 'suppliers_data'));
     }
     public function confirmed_inquiries(Request $request){
-        $confirmed_inquiry_data =  $this->BuyerDashboardRepository->confirmed_inquiries_by_user($this->getAuthenticatedUserId());
-        $group_wise_list =  $this->BuyerDashboardRepository->group_wise_inquiries_by_user($this->getAuthenticatedUserId());
-        $pending_inquiries_data =  $this->BuyerDashboardRepository->pending_inquiries_by_user($this->getAuthenticatedUserId());
-        $cancelled_inquiry_data =  $this->BuyerDashboardRepository->cancelled_inquiries_by_user($this->getAuthenticatedUserId());
-        $live_inquiries =  $this->BuyerDashboardRepository->live_inquiries_by_user($this->getAuthenticatedUserId());
-        $saved_inquiries =  $this->BuyerDashboardRepository->saved_inquiries_by_user($this->getAuthenticatedUserId());
+        $user_id = $this->getAuthenticatedUserId();
+    
+    // Check if any search parameters are provided
+    $isSearch = $request->has('start_date') || $request->has('end_date') || $request->has('seller') || $request->has('keyword');
+    
+    if ($isSearch) {
+        $confirmed_inquiry_data = $this->BuyerDashboardRepository->confirmed_inquiries_by_search(
+            $user_id,
+            $request->input('start_date'),
+            $request->input('end_date'),
+            $request->input('seller'),
+            $request->input('keyword')
+        );
+    } else {
+        $confirmed_inquiry_data = $this->BuyerDashboardRepository->confirmed_inquiries_by_user($user_id);
+    }
+        // $confirmed_inquiry_data =  $this->BuyerDashboardRepository->confirmed_inquiries_by_user($user_id);
+        $group_wise_list =  $this->BuyerDashboardRepository->group_wise_inquiries_by_user($user_id);
+        $pending_inquiries_data =  $this->BuyerDashboardRepository->pending_inquiries_by_user($user_id);
+        $cancelled_inquiry_data =  $this->BuyerDashboardRepository->cancelled_inquiries_by_user($user_id);
+        $live_inquiries =  $this->BuyerDashboardRepository->live_inquiries_by_user($user_id);
+        $saved_inquiries =  $this->BuyerDashboardRepository->saved_inquiries_by_user($user_id);
 
 
         $confirmed_inquiries = [];
+        $suppliers_data = [];
         if(count($confirmed_inquiry_data)>0){
             foreach ($confirmed_inquiry_data as $key => $value) {
                 $seller_data = [];
@@ -225,13 +253,17 @@ class BuyerDashboardController extends Controller
                 $all_inquiries['inquiry_amount'] = $value->inquiry_amount;
                 $all_inquiries['location'] = $value->location;
                 $all_inquiries['status'] = $value->status;
-
+                $sub_suppliers = [];
                 if($value->ParticipantsData){
                     foreach($value->ParticipantsData as $k =>$item){
                         $all_inquiries['participants'][]= $item->SellerData->business_name;
+                        $Suppliers_data['id']= $item->SellerData->id;
+                        $Suppliers_data['name']= $item->SellerData->business_name;
+                       
                         // if($item->status==1){
                             $all_inquiries['invted_participants'][]= $item->SellerData->business_name;
                         // }
+                        $sub_suppliers[] = $Suppliers_data;
                     }
                 }
                 $all_inquiries['invted_participants_count'] = 0;
@@ -270,19 +302,55 @@ class BuyerDashboardController extends Controller
                     $all_inquiries['seller_data'] = $seller_data;
                 
                 $confirmed_inquiries[] = $all_inquiries;
+                $suppliers[] = $sub_suppliers;
             }
+             // For Suppliers data filter
+             $main_suppliers = [];
+             if(count($suppliers)>0){
+                 foreach($suppliers as $k=>$item){
+                     foreach($item as $index=>$value){
+                         $semi_suppliers['name'] = $value['name'];
+                         $semi_suppliers['id'] = $value['id'];
+                         $main_suppliers[]=$semi_suppliers;
+                     }
+                 }
+             }
+              // Extract unique IDs
+            $uniqueIds = array_unique(array_column($main_suppliers, 'id'));
+             // Filter the original array to include only unique items
+            $suppliers_data = array_intersect_key($main_suppliers, $uniqueIds);
+           
         }
-        return view('front.user_dashboard.confirmed_inquireis', compact('confirmed_inquiries','live_inquiries','saved_inquiries','group_wise_list','confirmed_inquiry_data','pending_inquiries_data','cancelled_inquiry_data'));
+        return view('front.user_dashboard.confirmed_inquireis', compact('confirmed_inquiries','live_inquiries','saved_inquiries','group_wise_list','confirmed_inquiry_data','pending_inquiries_data','cancelled_inquiry_data','suppliers_data'));
     }
     public function cancelled_inquiries(Request $request){
-        $cancelled_inquiry_data =  $this->BuyerDashboardRepository->cancelled_inquiries_by_user($this->getAuthenticatedUserId());
-        $group_wise_list =  $this->BuyerDashboardRepository->group_wise_inquiries_by_user($this->getAuthenticatedUserId());
-        $saved_inquiries =  $this->BuyerDashboardRepository->saved_inquiries_by_user($this->getAuthenticatedUserId());
-        $live_inquiries =  $this->BuyerDashboardRepository->live_inquiries_by_user($this->getAuthenticatedUserId());
-        $confirmed_inquiry_data =  $this->BuyerDashboardRepository->confirmed_inquiries_by_user($this->getAuthenticatedUserId());
-        $pending_inquiries_data =  $this->BuyerDashboardRepository->pending_inquiries_by_user($this->getAuthenticatedUserId());
+        $user_id = $this->getAuthenticatedUserId();
+
+        // Check if any search parameters are provided
+        $isSearch = $request->has('start_date') || $request->has('end_date') || $request->has('seller') || $request->has('keyword');
+    
+        if ($isSearch) {
+            $cancelled_inquiry_data = $this->BuyerDashboardRepository->cancelled_inquiries_by_search(
+                $user_id,
+                $request->input('start_date'),
+                $request->input('end_date'),
+                $request->input('seller'),
+                $request->input('keyword')
+            );
+        } else {
+            $cancelled_inquiry_data = $this->BuyerDashboardRepository->cancelled_inquiries_by_user($user_id);
+        }
+
+        // $cancelled_inquiry_data =  $this->BuyerDashboardRepository->cancelled_inquiries_by_user($this->getAuthenticatedUserId());
+        $group_wise_list =  $this->BuyerDashboardRepository->group_wise_inquiries_by_user($user_id);
+        $saved_inquiries =  $this->BuyerDashboardRepository->saved_inquiries_by_user($user_id);
+        $live_inquiries =  $this->BuyerDashboardRepository->live_inquiries_by_user($user_id);
+        $confirmed_inquiry_data =  $this->BuyerDashboardRepository->confirmed_inquiries_by_user($user_id);
+        $pending_inquiries_data =  $this->BuyerDashboardRepository->pending_inquiries_by_user($user_id);
 
         $cancelled_inquiries = [];
+        $suppliers_data = [];
+
         if(count($cancelled_inquiry_data)>0){
             foreach ($cancelled_inquiry_data as $key => $value) {
                 $seller_data = [];
@@ -307,13 +375,16 @@ class BuyerDashboardController extends Controller
                 $all_inquiries['inquiry_amount'] = $value->inquiry_amount;
                 $all_inquiries['location'] = $value->location;
                 $all_inquiries['status'] = $value->status;
-
+                $sub_suppliers = [];
                 if($value->ParticipantsData){
                     foreach($value->ParticipantsData as $k =>$item){
                         $all_inquiries['participants'][]= $item->SellerData->business_name;
+                        $Suppliers_data['id']= $item->SellerData->id;
+                        $Suppliers_data['name']= $item->SellerData->business_name;
                         // if($item->status==1){
                             $all_inquiries['invted_participants'][]= $item->SellerData->business_name;
                         // }
+                        $sub_suppliers[] = $Suppliers_data;
                     }
                 }
                 $all_inquiries['invted_participants_count'] = 0;
@@ -351,9 +422,26 @@ class BuyerDashboardController extends Controller
                     $all_inquiries['seller_data'] = $seller_data;
                 
                 $cancelled_inquiries[] = $all_inquiries;
+                $suppliers[] = $sub_suppliers;
             }
+             // For Suppliers data filter
+             $main_suppliers = [];
+             if(count($suppliers)>0){
+                 foreach($suppliers as $k=>$item){
+                     foreach($item as $index=>$value){
+                         $semi_suppliers['name'] = $value['name'];
+                         $semi_suppliers['id'] = $value['id'];
+                         $main_suppliers[]=$semi_suppliers;
+                     }
+                 }
+             }
+              // Extract unique IDs
+            $uniqueIds = array_unique(array_column($main_suppliers, 'id'));
+            // Filter the original array to include only unique items
+           $suppliers_data = array_intersect_key($main_suppliers, $uniqueIds);
+          
         }
-        return view('front.user_dashboard.cancelled_inquireis', compact('cancelled_inquiries','group_wise_list','saved_inquiries','live_inquiries','confirmed_inquiry_data','pending_inquiries_data','cancelled_inquiry_data'));
+        return view('front.user_dashboard.cancelled_inquireis', compact('cancelled_inquiries','group_wise_list','saved_inquiries','live_inquiries','confirmed_inquiry_data','pending_inquiries_data','cancelled_inquiry_data','suppliers_data'));
     }
 
     public function live_inquiries_fetch_ajax(){
@@ -492,6 +580,7 @@ class BuyerDashboardController extends Controller
     }
 
     public function live_inquiry_seller_allot(Request $request){
+        // dd($request->all());
         if (!is_numeric($request->allot_amount)) {
             return redirect()->back()->with('warning', 'Please enter a numeric value.');
         }
@@ -602,7 +691,7 @@ class BuyerDashboardController extends Controller
         } catch (\Exception $e) {
             // Rollback the transaction on error
             DB::rollBack();
-            // dd($e->getMessage());
+            dd($e->getMessage());
             // Log the error for debugging
             // Log::error('Error allotting seller: ' . $e->getMessage());
     

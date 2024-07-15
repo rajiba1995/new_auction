@@ -82,6 +82,7 @@ class UserController extends Controller{
         $rules = [
             'first_name' => 'required',
             'last_name' => 'required',
+            'short_bio'=>'required',
             'business_name' => 'required',
             'address' => 'required',
             'state' => 'required',
@@ -102,6 +103,7 @@ class UserController extends Controller{
         $customMessages = [
             'first_name.required' => 'The first name field is required.',
             'last_name.required' => 'The last name field is required.',
+            'short_bio.required' => 'The short bio field is required.',
             'business_name.required' => 'The business name field is required.',
             'business_type.required' => 'Please select a business type.',
             'address.required' => 'The address field is required.',

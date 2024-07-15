@@ -1,5 +1,18 @@
 @extends('front.layout.app')
 @section('section')
+<style>
+    /* Hide spinner for Chrome, Safari, Edge, Opera */
+    input[type="number"]::-webkit-outer-spin-button,
+    input[type="number"]::-webkit-inner-spin-button {
+        -webkit-appearance: none;
+        margin: 0;
+    }
+
+    /* Hide spinner for Firefox */
+    input[type="number"] {
+        -moz-appearance: textfield;
+    }
+</style>
 <div class="main">
     <div class="inner-page">
 @php
@@ -49,7 +62,7 @@
                                                     <div class="row input-row">
                                                         <div class="col-lg-5 col-12">
                                                             <div class="form-group">
-                                                                <label class="form-label">Profile Image*</label>
+                                                                <label class="form-label">Profile Image</label>
                                                                 <div class="profile-image-upload-box border-red">
                                                                     <div class="profile-img-box">
                                                                         <img id="profileImagePreview" src="{{$data->image?asset($data->image):asset('frontend/assets/images/person-2.png')}}" alt="">
@@ -66,7 +79,7 @@
                                                         </div>
                                                         <div class="col-lg-7 col-12">
                                                             <div class="form-group">
-                                                                <label class="form-label">Short Bio</label>
+                                                                <label class="form-label">Short Bio*</label>
                                                                 <textarea class="form-control border-red short-bio" name="short_bio">{{ old('short_bio',$data->short_bio)  }}</textarea>
                                                                 @error('short_bio')<span class="text-danger" role="alert"><strong>{{ $message }}</strong></span>@enderror
                                                             </div>
