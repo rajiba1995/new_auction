@@ -45,6 +45,7 @@
                                                     @endunless
                                                 </div>
                                                 <div class="photos-block">
+                                                    <div id="image-preview-container"></div>
                                                     @foreach ($AllImages as  $item)
                                                     <div class="photo-wrap" id="RemoveLI{{$item->id}}">
                                                         <img src="{{asset($item->image)}}" alt="No-Image">
@@ -248,7 +249,7 @@
                                                     </div>
                                                 </div>
                                             </div> 
-                                            <div class="row additional-doc-output-row">
+                                            {{-- <div class="row additional-doc-output-row">
                                                 <div class="offset-lg-4 col-lg-8 col-12">
                                                     <div class="form-group">
                                                         <ul>
@@ -261,8 +262,13 @@
                                                         </ul>
                                                     </div>
                                                 </div>
+<<<<<<< HEAD
+                                            </div> --}}
+                                            <div id="additional_document_append"></div>
+=======
                                             </div>
                                             <div id="additional_document_append"></div>                                            
+>>>>>>> 3689ccdebea69cdb49eeeb68ddc8b29e2391d2e3
                                             <div class="form-submit-row">
                                                 <button type="submit" class="btn btn-animated btn-submit">Submit</button>
                                             </div>
@@ -825,6 +831,36 @@ document.getElementById('cancelled_cheque_file').addEventListener('change', func
         previewColumn.style.display = 'none';
     }
 });
+
+// Upload image preview
+document.getElementById('user_images').addEventListener('change', function(event) {
+            var imagePreviewContainer = document.getElementById('image-preview-container');
+            imagePreviewContainer.innerHTML = ''; // Clear any existing previews
+
+            var files = event.target.files;
+
+            for (var i = 0; i < files.length; i++) {
+                var file = files[i];
+
+                if (file.type.match('image.*')) {
+                    var reader = new FileReader();
+
+                    reader.onload = (function(f) {
+                        return function(e) {
+                            var img = document.createElement('img');
+                            img.src = e.target.result;
+                            img.classList.add('preview-image');
+                            img.style.width = '100px'; // Set preview image width
+                            img.style.height = '100px'; // Set preview image height
+                            img.style.margin = '10px'; // Add some margin
+                            imagePreviewContainer.appendChild(img);
+                        };
+                    })(file);
+
+                    reader.readAsDataURL(file);
+                }
+            }
+        });
 
 </script>
 @endsection

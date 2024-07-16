@@ -19,7 +19,7 @@
                             <div class="inner-wrap">
                                 <ul>
                                     <li><a href="{{asset('')}}">Home</a></li>
-                                    <li>&nbsp;>&nbsp;<a href="{{route('user_seller_dashboard')}}">Supplier Dashboard</a></span></li>
+                                    <li>&nbsp;>&nbsp;<a href="{{route('user_seller_dashboard')}}">Seller Dashboard</a></span></li>
                                 </ul>
                             </div>
                         </div>
@@ -33,7 +33,7 @@
                         <div class="row">
                             <div class="col-12">
                                 <div class="heading-row">
-                                    <h2 class="page-heading bg-theme">Supplier Dashboard</h2>
+                                    <h2 class="page-heading bg-theme">Seller Dashboard</h2>
                                 </div>
 
                                 <ul class="nav nav-tabs dashboard-tabs" id="dashboardTabs" role="tablist">

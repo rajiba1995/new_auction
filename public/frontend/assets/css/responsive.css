@@ -366,7 +366,7 @@
     }
     .user-dashboard-top-section .filter-row .search-bar {
         max-width: 100%;
-        margin-bottom: 24px;
+        /*margin-bottom: 24px;*/
     }
     .groups-td img {
         max-width: 24px;

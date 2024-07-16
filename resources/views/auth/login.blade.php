@@ -4,7 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{env('APP_NAME')}}</title>
-
+    <style>
+        .hand_sign{
+            cursor: pointer!important;
+        }
+    </style>
     <link rel="stylesheet" href="{{asset('frontend/assets/css/fontawesome.min.css')}}">
     <link rel="stylesheet" href="{{asset('frontend/assets/css/bootstrap.min.css')}}">
     <link rel="stylesheet" href="{{asset('frontend/assets/css/swiper-bundle.min.css')}}">
@@ -44,8 +48,8 @@
                         <button type="submit" class="btn btn-animated">Login</button>
                         <div class="resend-block mt-4">
                             {{-- <label>If you haven't registered yet,</label> --}}
-                            <a href="{{route('forgot-password')}}">Forgot your password?</a>
-                            <a href="{{route('register')}}">Register Here</a>
+                            <a href="{{route('forgot-password')}}" class="hand_sign">Forgot your password?</a>
+                            <a href="{{route('register')}}" class="hand_sign">Register Here</a>
                         </div>
                     </form>
                 </div>

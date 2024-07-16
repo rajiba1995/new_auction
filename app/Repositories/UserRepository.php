@@ -369,7 +369,7 @@ class UserRepository implements UserContract
     //transaction
     
     public function getAllTransactionByUserId($id){
-       return Transaction::where('user_id',$id)->paginate(20);
+       return Transaction::latest()->where('user_id',$id)->paginate(20);
        
     }
     public function getSearchTransactionByUserId($id, $purpose, $mode, $startDate, $endDate){
@@ -390,7 +390,7 @@ class UserRepository implements UserContract
         }
 
         // Get the raw SQL query
-        return $query->paginate(25);
+        return $query->orderBy('id', 'DESC')->paginate(25);
        
     }
     public function getSellerAllWalletTransactionByUserId($id){

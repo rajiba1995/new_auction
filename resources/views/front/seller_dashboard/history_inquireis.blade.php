@@ -19,7 +19,7 @@
                             <div class="inner-wrap">
                                 <ul>
                                     <li>Home</li>
-                                    <li>&nbsp;>&nbsp;Supplier Dashboard</span></li>
+                                    <li>&nbsp;>&nbsp;Seller Dashboard</span></li>
                                 </ul>
                             </div>
                         </div>
@@ -33,7 +33,7 @@
                         <div class="row">
                             <div class="col-12">
                                 <div class="heading-row">
-                                    <h2 class="page-heading bg-theme">Supplier Dashboard</h2>
+                                    <h2 class="page-heading bg-theme">Seller Dashboard</h2>
                                 </div>
 
                                 <ul class="nav nav-tabs dashboard-tabs" id="dashboardTabs" role="tablist">
@@ -126,7 +126,15 @@
                             </div>
                         </div>
                         <div class="row filter-row">
-                            <div class="col-lg-12 col-12" id="group_list">
+                            <div class="col-xl-2 col-md-3 col-12 mb-md-0 mb-3">
+                                <label for="start_date" class="form-label">Start Date</label>
+                                <input type="date" class="form-control" id="start_date" placeholder="Select start date" name="start_date" value="">
+                            </div>
+                            <div class="col-xl-2 col-md-3 col-12 mb-md-0 mb-3">
+                                <label for="end_date" class="form-label">End Date</label>
+                                <input type="date" class="form-control" id="end_date" placeholder="Select end date" name="end_date" value="">
+                            </div>
+                            <div class="offset-xl-3 col-xl-5 col-md-6 col-12" id="group_list">
                                 <div class="search-bar">
                                     <form>
                                         <input type="search" name="" placeholder="Search for Service, Category, Location, etc" id="group_wies_search">
@@ -151,6 +159,26 @@
                                 </div>
                             </div> --}}
                         </div>
+                        <div class="row filter-cta-fow">
+                            <div class="col-12 text-end">
+                                <button type="button" class="btn btn-cta btn-animated">
+                                    <svg xmlns="http://www.w3.org/2000/svg" version="1.1" xmlns:xlink="http://www.w3.org/1999/xlink" width="16" height="16" x="0" y="0" viewBox="0 0 24 24" style="enable-background:new 0 0 512 512" xml:space="preserve" class="">
+                                        <g>
+                                            <path d="M17 5a3 3 0 1 1 3 3 3 3 0 0 1-3-3zM2 6h12a1 1 0 0 0 0-2H2a1 1 0 0 0 0 2zm6 3a3 3 0 0 0-2.82 2H2a1 1 0 0 0 0 2h3.18A3 3 0 1 0 8 9zm14 2h-8a1 1 0 0 0 0 2h8a1 1 0 0 0 0-2zm-12 7H2a1 1 0 0 0 0 2h8a1 1 0 0 0 0-2zm12 0h-3.18a3 3 0 1 0 0 2H22a1 1 0 0 0 0-2z" fill="#ffffff" opacity="1" data-original="#000000" class=""></path>
+                                        </g>
+                                    </svg>
+                                    Filter
+                                </button>
+                                <button type="button" class="btn btn-cta btn-animated">
+                                    <svg xmlns="http://www.w3.org/2000/svg" version="1.1" xmlns:xlink="http://www.w3.org/1999/xlink" width="16" height="16" x="0" y="0" viewBox="0 0 512.449 512.449" style="enable-background:new 0 0 512 512" xml:space="preserve" class="">
+                                        <g>
+                                            <path d="M152.083 286.805c7.109-8.155 1.318-20.888-9.501-20.888H110.19a147.458 147.458 0 0 1-.329-9.692c0-80.706 65.658-146.364 146.363-146.364 38.784 0 74.087 15.168 100.304 39.877l45.676-53.435c-39.984-36.577-91.44-56.612-145.98-56.612-57.838 0-112.214 22.524-153.112 63.421-40.897 40.898-63.421 95.274-63.421 153.112 0 3.243.081 6.473.222 9.692H12.629c-10.819 0-16.611 12.733-9.501 20.888l61.549 70.6 12.928 14.829 46.416-53.242zM509.321 245.614l-45.907-52.658-28.57-32.771-40.791 46.789-33.686 38.64c-7.109 8.155-1.318 20.888 9.501 20.888h32.354c-5.293 75.928-68.748 136.086-145.997 136.086-33.721 0-64.811-11.469-89.586-30.703l-45.679 53.439c38.267 30.731 85.479 47.434 135.266 47.434 57.838 0 112.214-22.523 153.112-63.421 38.466-38.466 60.672-88.856 63.177-142.834h27.306c10.818-.001 16.609-12.734 9.5-20.889z" fill="#ffffff" opacity="1" data-original="#000000" class=""></path>
+                                        </g>
+                                    </svg>
+                                    Refresh
+                                </button>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
@@ -166,12 +194,12 @@
                                                     <th class="input-th input-id-th">Id</th>
                                                     <th class="input-th input-title-th">Title</th>
                                                     <th class="input-th input-details-th">Details</th>
-                                                    <th class="input-th input-buyer-th">Buyer</th>
-                                                    <th class="input-th input-location-th">Location</th>
-                                                    <th class="input-th input-start-date-th"><span>Start date &amp; time</span></th>
-                                                    <th class="input-th input-end-date-th"><span>End date &amp; time</span></th>
-                                                    <th class="input-th min-quote-th">Min Quote</th>
-                                                    <th class="input-th max-quote-th">Max Quote</th>
+                                                    <th class="input-th input-buyer-th">Buyer &amp; <br> Location</th>
+                                                    {{-- <th class="input-th input-location-th">Location</th> --}}
+                                                    <th class="input-th input-start-date-th"><span>Start date &amp; <br> End date</span></th>
+                                                    {{-- <th class="input-th input-end-date-th"><span>End date &amp; time</span></th> --}}
+                                                    {{-- <th class="input-th min-quote-th">Min Quote &amp; <br> Max Quote</th> --}}
+                                                    {{-- <th class="input-th max-quote-th">Max Quote</th> --}}
                                                     <th class="output-th quotes-supplier-th">Quotes</th>
                                                     <th class="output-th comments-th">Comments &amp; Files</th>
                                                     <th class="output-th other-actions-th">Action</th>
@@ -182,7 +210,7 @@
                                                 @forelse ($rejected_inquiries as $key=>$item)
                                                     @if($item->my_id==Auth::guard('web')->user()->id)
                                                         <tr class="item">
-                                                            <td class="input-table-column" colspan="9">
+                                                            <td class="input-table-column" colspan="5">
                                                                 <table class="table input-table">
                                                                     <tbody>
                                                                         <tr>
@@ -202,11 +230,11 @@
                                                                                         <label>Sub-Category</label>
                                                                                         <p>{{ucfirst($item->sub_category)}}</p>
                                                                                     </li>
-                                                                                    <li>
+                                                                                    {{-- <li>
                                                                                         <label>Description of the Service</label>
                                                                                         <p class="hidden">{{ucfirst($item->description)}}</p>
                                                                                         <div class="read-more"><span>read more</span></div>
-                                                                                    </li>
+                                                                                    </li> --}}
                                                                                     <li>
                                                                                         <label>Date of execution of the task</label>
                                                                                         <p>25 jan, 2024</p>
@@ -218,22 +246,48 @@
                                                                                 </ul>
                                                                             </td>
                                                                             <td class="input-buyer-td">
-                                                                                {{ ucfirst($item->BuyerData->name) }} <br> <strong>{{ $item->BuyerData->country_code}}-{{ $item->BuyerData->mobile}}</strong>
+                                                                                {{ ucfirst($item->BuyerData->name) }} <br> 
+                                                                                <strong>{{ $item->BuyerData->country_code}}-{{ $item->BuyerData->mobile}}</strong> <br> 
+                                                                                {{$item->location}}
                                                                             </td>
-                                                                            <td class="input-location-td">{{$item->location}}</td>
-                                                                            <td class="input-start-date-td">{{ date('d M, Y', strtotime($item->start_date)) }} {{ date('g:i A', strtotime($item->start_time)) }}</td>
-                                                                            <td class="input-end-date-td">{{ date('d M, Y', strtotime($item->end_date)) }} {{ date('g:i A', strtotime($item->end_time)) }}</td>
-                                                                            <td class="min-quote-td">{{$item->minimum_quote_amount?number_format($item->minimum_quote_amount,2, '.', ','):"----"}}</td>
-                                                                            <td class="max-quote-td">{{$item->maximum_quote_amount?number_format($item->maximum_quote_amount,2, '.', ','):"----"}}</td>
+                                                                            {{-- <td class="input-location-td">{{$item->location}}</td> --}}
+                                                                            <td class="input-start-date-td">
+                                                                                {{ date('d M, Y', strtotime($item->start_date)) }} {{ date('g:i A', strtotime($item->start_time)) }} <br>
+                                                                                <img src="{{asset('frontend/assets/images/chevron-down.png')}}" alt=""><br>
+                                                                                {{ date('d M, Y', strtotime($item->end_date)) }} {{ date('g:i A', strtotime($item->end_time)) }}
+                                                                            </td>
+                                                                            {{-- <td class="input-end-date-td">{{ date('d M, Y', strtotime($item->end_date)) }} {{ date('g:i A', strtotime($item->end_time)) }}</td> --}}
+                                                                            {{-- <td class="min-quote-td">
+                                                                                {{$item->minimum_quote_amount?number_format($item->minimum_quote_amount,2, '.', ','):"----"}} <br>
+                                                                                <img src="{{asset('frontend/assets/images/chevron-down.png')}}" alt=""><br>
+                                                                                {{$item->maximum_quote_amount?number_format($item->maximum_quote_amount,2, '.', ','):"----"}}
+                                                                            </td> --}}
+                                                                            {{-- <td class="max-quote-td">{{$item->maximum_quote_amount?number_format($item->maximum_quote_amount,2, '.', ','):"----"}}</td> --}}
                                                                         </tr>
                                                                         <tr>
-                                                                            <!-- <td colspan="7" class="note-td">
-                                                                                <div class="note-wrap">
+                                                                            <td colspan="5" class="note-td">
+                                                                                <div class="description-wrap">
+                                                                                    <ul class="input-data-list">
+                                                                                        <li>
+                                                                                            <label>Min Quote &amp; Max Quote</label>
+                                                                                            <p>
+                                                                                                {{$item->minimum_quote_amount?number_format($item->minimum_quote_amount,2, '.', ','):"----"}}
+                                                                                                &amp;
+                                                                                                {{$item->maximum_quote_amount?number_format($item->maximum_quote_amount,2, '.', ','):"----"}}
+                                                                                            </p>
+                                                                                        </li>
+                                                                                        <li>
+                                                                                            <label>Description of the Service</label>
+                                                                                            <p class="hidden">{{ucfirst($item->description)}}</p>
+                                                                                        </li>
+                                                                                    </ul>
+                                                                                </div>
+                                                                                {{-- <div class="note-wrap">
                                                                                     <h3>Notepad</h3>
                                                                                     <textarea class="form-control note-textarea">It is a long established fact that a reader will be distracted by the readable content of a page when looking at its layout. The point of using Lorem Ipsum is that it has a more-or-less normal distribution of letters, as opposed</textarea>
-                                                                                    {{-- <button type="button" class="btn btn-animated bg-green">Save</button> --}}
-                                                                                </div>
-                                                                            </td> -->
+                                                                                    <button type="button" class="btn btn-animated bg-green">Save</button>
+                                                                                </div> --}}
+                                                                            </td>
                                                                         </tr>
                                                                     </tbody>
                                                                 </table>

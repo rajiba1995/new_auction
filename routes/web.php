@@ -48,6 +48,8 @@ Route::get('/clear-cache', function() {
         Route::get('/buyer-expiry-package-check',[CornController::class,'BuyerExpiryPackageCheckCron'])->name('buyer_expiry_package_chcek_cron');
         Route::get('/before-start-auction',[CornController::class,'BeforeStartAuction'])->name('before_start_auction_chcek_cron');
         Route::get('/send-to-seller-mail',[CornController::class,'SendToSellerMail'])->name('send_to_seller_mail');
+        Route::get('/remove-website-logs',[CornController::class,'RemoveWebsiteLogs'])->name('remove_website_logs');
+        Route::get('/remove-cron-logs',[CornController::class,'RemoveCronLogs'])->name('remove_cron_logs');
     });   
 
     Route::group(['middleware' => ['auth', 'check.user.profile']], function () {

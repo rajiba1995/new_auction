@@ -540,13 +540,22 @@
                                                     text: 'Your Badge Successfully Purchased.',
                                                     icon: 'success',
                                                 });
-                                                location.reload();
+                                               
                                             }
-                                            location.reload();
+                                            if(response.status==400){
+                                                Swal.fire({
+                                                    title: 'Error!',
+                                                    text: response.error,
+                                                    icon: 'error',
+                                                });
+                                            }
+                                            setTimeout(function() {
+                                                location.reload();
+                                            }, 3000);
                                         },
                                         error: function(xhr, status, error) {
                                             console.error(xhr.responseText);
-                                            location.reload();
+                                            // location.reload();
                                         }
                                     });
                                 },
@@ -571,7 +580,7 @@
                         }else{
                             Swal.fire({
                                 title: 'Error!',
-                                text: 'Sorry, something went wrong!',
+                                text: 'Sorry, somethint went wrong!',
                                 icon: 'error',
                             });
                             return false;
