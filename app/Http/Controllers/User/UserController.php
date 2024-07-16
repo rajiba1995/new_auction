@@ -1278,6 +1278,7 @@ class UserController extends Controller{
     }
 
     public function photos_and_documents_update(Request $request){  
+      
         $user = $this->AuthCheck();
         if ($request->hasFile('user_images')) {
             $request->validate([
@@ -1402,7 +1403,7 @@ class UserController extends Controller{
                 
             }
         }
-        return back()->with('success', 'Documents uploaded successfully.');
+        return response()->json(['status'=>'success']);
     }
 
     public function photos_and_documents_delete(Request $request){

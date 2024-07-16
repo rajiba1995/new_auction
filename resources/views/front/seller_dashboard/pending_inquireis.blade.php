@@ -19,7 +19,7 @@
                             <div class="inner-wrap">
                                 <ul>
                                     <li>Home</li>
-                                    <li>&nbsp;>&nbsp;Supplier Dashboard</span></li>
+                                    <li>&nbsp;>&nbsp;Seller Dashboard</span></li>
                                 </ul>
                             </div>
                         </div>
@@ -33,7 +33,7 @@
                         <div class="row">
                             <div class="col-12">
                                 <div class="heading-row">
-                                    <h2 class="page-heading bg-theme">Supplier Dashboard</h2>
+                                    <h2 class="page-heading bg-theme">Seller Dashboard</h2>
                                 </div>
 
                                 <ul class="nav nav-tabs dashboard-tabs" id="dashboardTabs" role="tablist">
@@ -178,7 +178,7 @@
                                                 </tr>
                                             </thead>
                                             <tbody class="dashboard_groups">
-                                            @if ($inquiries)
+                                            @if ($inquiries)                                           
                                                 @foreach($inquiries as $item)
                                                     <tr class="item">
                                                         <td class="input-table-column" colspan="9">

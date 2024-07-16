@@ -241,6 +241,7 @@ class SellerDashboardController extends Controller
                 $all_inquery_count+=1;
             }
         }
+        
         $rejected_inquiries_count = 0;
         foreach ($rejected_inquiries as  $item){
             if($item->my_id==$this->getAuthenticatedUserId()){
@@ -346,6 +347,7 @@ class SellerDashboardController extends Controller
 
                     $all_inquiries['left_quotes'] = $value->quotes_per_participants - get_my_all_quotes($value->id,$value->my_id);
                     $inquiries[] = $all_inquiries;
+                  
                 }
             }
         }
