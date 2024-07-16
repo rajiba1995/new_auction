@@ -532,8 +532,10 @@ class UserController extends Controller{
     public function photos_and_documents(){
         $data = $this->AuthCheck();
         $AllImages = $this->userRepository->getUserAllImages($data->id);
-        $user_document = $this->userRepository->getUserAllData($data->id);
-        return view('front.user.photos_and_documents', compact('data', 'AllImages', 'user_document'));
+        $userData = $this->userRepository->getUserAllData($data->id);
+        $user_document = $userData['userDocument'];
+        $user_additional_document = $userData['userAdditionalDocument'];
+        return view('front.user.photos_and_documents', compact('data', 'AllImages', 'user_document','user_additional_document'));
     }
     public function payment_management(){
         $data = $this->AuthCheck();
@@ -722,7 +724,7 @@ class UserController extends Controller{
             if($checkPhoneNumberValid){
                 sendSMS($sender, $customer_mobile_no, $myMessage);
             }
-            sendMail($data_array, $data->email, 'Confirmation of Payment Transaction on Milaap');
+            sendMail($data_array, $data->email, 'Confirmation of Payment Transaction on Milaapp');
            
             if (Session::has('url.intended')) {
                 $intendedUrl = Session::get('url.intended');
@@ -919,7 +921,7 @@ class UserController extends Controller{
                     'type'=>'PAYMENT_TRANSACTION',
                 ];
                 DB::commit();
-                sendMail($data_array, $data->email, 'Confirmation of Payment Transaction on Milaap');
+                sendMail($data_array, $data->email, 'Confirmation of Payment Transaction on Milaapp');
             }
              // For Amount Transaction
             
@@ -1268,8 +1270,10 @@ class UserController extends Controller{
     public function photos_and_documents_edit(){
         $data = $this->AuthCheck();
         $AllImages = $this->userRepository->getUserAllImages($data->id);
-        $user_document = $this->userRepository->getUserAllData($data->id);
-        return view('front.user.photos_and_documents_edit', compact('data','user_document', 'AllImages'));
+        $userData = $this->userRepository->getUserAllData($data->id);
+        $user_document = $userData['userDocument'];
+        $user_additional_document = $userData['userAdditionalDocument'];
+        return view('front.user.photos_and_documents_edit', compact('data','user_document', 'AllImages','user_additional_document'));
     }
 
     public function photos_and_documents_update(Request $request){  
@@ -1525,7 +1529,7 @@ class UserController extends Controller{
             if($checkPhoneNumberValid){
                 sendSMS($sender, $customer_mobile_no, $myMessage);
             }
-            sendMail($data_array, $data->email, 'Confirmation of Payment Transaction on Milaap');
+            sendMail($data_array, $data->email, 'Confirmation of Payment Transaction on Milaapp');
             return response()->json(['status' => 200]);
        }else{
         return response()->json(['status' => 400]);

@@ -19,6 +19,7 @@ use App\Models\MyBuyerPackage;
 use App\Models\MyBuyerWallet;
 use App\Models\MySellerPackage;
 use App\Models\UserDocument;
+use App\Models\UserAdditionalDocument;
 use Illuminate\Http\UploadedFile;
 use App\Contracts\UserContract;
 use Illuminate\Http\Request;
@@ -310,9 +311,14 @@ class UserRepository implements UserContract
     public function getUserAllImages($userId){
         return UserImage::where('user_id',$userId)->get();
        }
-    public function getUserAllData($userId){
-        return UserDocument::where('user_id',$userId)->first();
-       }
+       public function getUserAllData($userId) {
+        $userDocument = UserDocument::where('user_id', $userId)->first();
+        $userAdditionalDocument = UserAdditionalDocument::where('user_id', $userId)->get();
+        return [
+            'userDocument' => $userDocument,
+            'userAdditionalDocument' => $userAdditionalDocument
+        ];
+    }
     //business
     public function getAllBusiness(){
         return Business::where('status',1)->where('deleted_at',1)->get();

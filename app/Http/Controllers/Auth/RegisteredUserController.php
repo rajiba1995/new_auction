@@ -241,7 +241,7 @@ class RegisteredUserController extends Controller
         }
         Session::put('otp', $otp);
         Session::put('email', $request->email);
-        return response()->json(['message' => 'OTP sent to your email', 'status'=>200]);
+        return response()->json(['message' => 'OTP sent successfully', 'status'=>200]);
     }
 
     public function verifyOtp(Request $request)
