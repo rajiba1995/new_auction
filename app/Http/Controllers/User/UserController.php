@@ -568,7 +568,7 @@ class UserController extends Controller{
         // dd($request->all());
         $data = $this->AuthCheck();
         if($data){
-            // try {
+            try {
                 $negotiable_amount = 0;
                 $my_current_package = MySellerPackage::with('getPackageDetails')->where('user_id', $data->id)->first();
                 if($request->form_type=='upgrade'){
@@ -650,91 +650,92 @@ class UserController extends Controller{
                     $websiteLog->response =json_encode($transaction);
                     $websiteLog->save();
                 }
-                
-                //OrderID Generate
-                $razorpayKey = env('RAZORPAY_KEY');
-                $razorpaySecret = env('RAZORPAY_SECRET');
+                DB::commit();
+            } catch (\Exception $e) {
+                // Rollback the transaction and handle the exception
+                DB::rollBack();
+                return redirect()->back()->with('error', 'An error occurred: ' . $e->getMessage());
+            }
+            //OrderID Generate
+            $razorpayKey = env('RAZORPAY_KEY');
+            $razorpaySecret = env('RAZORPAY_SECRET');
 
-                // Prepare the data for the order
-                $orderData = [
-                    'receipt'         => $transaction->unique_id,
-                    'amount'          => $transaction->amount * 100, // amount in the smallest currency unit
-                    'currency'        => 'INR',
-                    'payment_capture' => 1 // auto capture
-                ];
-                // Encode the order data
-                $jsonData = json_encode($orderData);
-                
-                // Initialize cURL
-                $ch = curl_init();
+            // Prepare the data for the order
+            $orderData = [
+                'receipt'         => $transaction->unique_id,
+                'amount'          => $transaction->amount * 100, // amount in the smallest currency unit
+                'currency'        => 'INR',
+                'payment_capture' => 1 // auto capture
+            ];
+            // Encode the order data
+            $jsonData = json_encode($orderData);
+            
+            // Initialize cURL
+            $ch = curl_init();
 
-                // Set cURL options
-                curl_setopt($ch, CURLOPT_URL, 'https://api.razorpay.com/v1/orders');
-                curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-                curl_setopt($ch, CURLOPT_POST, true);
-                curl_setopt($ch, CURLOPT_POSTFIELDS, $jsonData);
-                curl_setopt($ch, CURLOPT_HTTPHEADER, [
-                    'Content-Type: application/json',
-                    'Authorization: Basic ' . base64_encode("$razorpayKey:$razorpaySecret")
-                ]);
+            // Set cURL options
+            curl_setopt($ch, CURLOPT_URL, 'https://api.razorpay.com/v1/orders');
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+            curl_setopt($ch, CURLOPT_POST, true);
+            curl_setopt($ch, CURLOPT_POSTFIELDS, $jsonData);
+            curl_setopt($ch, CURLOPT_HTTPHEADER, [
+                'Content-Type: application/json',
+                'Authorization: Basic ' . base64_encode("$razorpayKey:$razorpaySecret")
+            ]);
 
-                // Execute the cURL request
-                $response = curl_exec($ch);
-                // Check for errors
-                if ($response === false) {
-                    $errorMessage = curl_error($ch);
-                    // $order_id = "";
-                }
+            // Execute the cURL request
+            $response = curl_exec($ch);
+            // Check for errors
+            if ($response === false) {
+                $errorMessage = curl_error($ch);
+                // $order_id = "";
+            }
 
-                $data_pdf=[
-                    'user'=>$data,
-                    'package'=>$package_name,
-                    'transaction'=>$transaction,
-                ];
-                
-                // Generate the PDF
-                $PDFOptions = ['enable_remote' => true];
-                $pdf = PDF::setOptions($PDFOptions)->loadView('mail.pdf', $data_pdf);
-                // Save the PDF to a file on the local server
-                $pdfPath = storage_path('app/public/transaction.pdf');
-                $pdf->save($pdfPath);
+            $data_pdf=[
+                'user'=>$data,
+                'package'=>$package_name,
+                'transaction'=>$transaction,
+            ];
+            
+            // Generate the PDF
+            $PDFOptions = ['enable_remote' => true];
+            $pdf = PDF::setOptions($PDFOptions)->loadView('mail.pdf', $data_pdf);
+            // Save the PDF to a file on the local server
+            $pdfPath = storage_path('app/public/' . date('His') . '_invoice.pdf');
 
-                $data_array=[
-                    'cc'=>[],
-                    'user'=>$data,
-                    'attachment'=>$pdfPath,
-                    'transaction_type'=>'Seller: '.$package_name,
-                    'start_date'=>date('d-m-Y', strtotime($my_current_package->created_at)),
-                    'end_date'=>date('d-m-Y', strtotime($my_current_package->expiry_date)),
-                    'transaction'=>$transaction,
-                    'type'=>'PAYMENT_TRANSACTION',
-                ];
-                
-                $sender = env('SMS_SENDER');
-                $amount = $transaction->amount?$transaction->amount:"";
-                $expiry_date = strtotime($my_current_package->expiry_date);
-                $url = 'https://milaapp.in/';
-                $myMessage = urlencode("Payment of ".$amount." for the subscription of ".$package_name." is confirmed. Valid till ".$expiry_date." For details: ".$url." Sarv Megh Technology OPC Private Limited");
-                $customer_mobile_no = $data->mobile?$data->mobile:null;
-                $checkPhoneNumberValid = checkPhoneNumberValid($customer_mobile_no);
-                if($checkPhoneNumberValid){
-                    sendSMS($sender, $customer_mobile_no, $myMessage);
-                }
-                sendMail($data_array, $data->email, 'Confirmation of Payment Transaction on Milaap');
-                // DB::commit();
-                if (Session::has('url.intended')) {
-                    $intendedUrl = Session::get('url.intended');
-                    // Forget the intended URL from the session after using it
-                    Session::forget('url.intended');
-                    return redirect($intendedUrl);
-                }else{
-                    return redirect()->route('user.payment_management')->with('success', 'Package has been successfully purchased');  
-                }
-            // } catch (\Exception $e) {
-            //     // Rollback the transaction and handle the exception
-            //     DB::rollBack();
-            //     return redirect()->back()->with('error', 'An error occurred: ' . $e->getMessage());
-            // }
+            $pdf->save($pdfPath);
+
+            $data_array=[
+                'cc'=>[],
+                'user'=>$data,
+                'attachment'=>$pdfPath,
+                'transaction_type'=>'Seller: '.$package_name,
+                'start_date'=>date('d-m-Y', strtotime($my_current_package->created_at)),
+                'end_date'=>date('d-m-Y', strtotime($my_current_package->expiry_date)),
+                'transaction'=>$transaction,
+                'type'=>'PAYMENT_TRANSACTION',
+            ];
+            
+            $sender = env('SMS_SENDER');
+            $amount = $transaction->amount?$transaction->amount:"";
+            $expiry_date = date('d-m-Y',strtotime($my_current_package->expiry_date));
+            $url = 'https://milaapp.in';
+            $myMessage = urlencode("Payment of ".$amount." for the subscription of ".$package_name." is confirmed. Valid till ".$expiry_date." For details: www.milaapp.in Sarv Megh Technology OPC Private Limited");
+            $customer_mobile_no = $data->mobile?$data->mobile:null;
+            $checkPhoneNumberValid = checkPhoneNumberValid($customer_mobile_no);
+            if($checkPhoneNumberValid){
+                sendSMS($sender, $customer_mobile_no, $myMessage);
+            }
+            sendMail($data_array, $data->email, 'Confirmation of Payment Transaction on Milaapp');
+           
+            if (Session::has('url.intended')) {
+                $intendedUrl = Session::get('url.intended');
+                // Forget the intended URL from the session after using it
+                Session::forget('url.intended');
+                return redirect($intendedUrl);
+            }else{
+                return redirect()->route('user.payment_management')->with('success', 'Package has been successfully purchased');  
+            }
         }else{
             return redirect()->route('login');
         }
@@ -759,190 +760,274 @@ class UserController extends Controller{
     public function buyer_package_store(Request $request){
         // dd($request->all());
         $data = $this->AuthCheck();
-        try {
-            DB::beginTransaction();
-            $negotiable_amount = 0;
-            $duration = 30*$request->package_duration;
-            $expiryDate = Carbon::now()->addDays($duration);
-            $my_basic_checking = MyBuyerOpeningPackage::where('user_id', $data->id)->first();
-            if($my_basic_checking && $request->package_type=="premium" || $my_basic_checking && $request->package_type=="basic"){
-                $my_current_package = MyBuyerPackage::with('package_data')->where('user_id', $data->id)->first();
-                    if(!$my_current_package){
-                        $my_current_package = new MyBuyerPackage();
-                    }else{
-                        $old_package = DB::table('old_buyer_packages')->insert([
-                            'package_id' => $my_current_package->package_id,
-                            'user_id' => $my_current_package->user_id,
-                            'package_duration' => $my_current_package->package_duration, 
-                            'package_amount' => $my_current_package->package_amount,
-                            'package_credit' => $my_current_package->package_credit,
-                            'purchase_date' => $my_current_package->created_at,
-                            'expiry_date' => $my_current_package->expiry_date,
-                            'created_at' => now(),
-                            'updated_at' => now(),
-                        ]);
-                    }
-                    $my_current_package->package_id = $request->package_id;
-                    $my_current_package->user_id = $data->id;
-                    $my_current_package->package_type = $request->package_type;
-                    $my_current_package->package_amount =$request->package_amount;
-                    $my_current_package->package_duration =$request->package_duration;
-                    $my_current_package->package_credit =$request->package_credit;
-                    $my_current_package->expiry_date =$expiryDate;
-                    $my_current_package->save();
+        $razorpayKey = env('RAZORPAY_KEY');
+        $razorpaySecret = env('RAZORPAY_SECRET');
+        $payment_id = $request->buyer_razorpay_payment_id;
+        // Log the exception to the web_logs table
+        $ch = curl_init();
 
-            }else{
-                if($request->package_type=="basic"){
-                    $basic_package = new MyBuyerOpeningPackage;
-                    $basic_package->package_id = $request->package_id;
-                    $basic_package->user_id = $data->id;
-                    $basic_package->package_type = $request->package_type;
-                    $basic_package->package_amount =$request->package_amount;
-                    $basic_package->package_duration =$request->package_duration;
-                    $basic_package->package_credit =$request->package_credit;
-                    $basic_package->expiry_date =$expiryDate;
-                    $basic_package->save();
-                    if($basic_package){
-                        $my_current_package = new MyBuyerPackage;
-                        $my_current_package->package_id = $request->package_id;
-                        $my_current_package->user_id = $data->id;
-                        $my_current_package->package_type = $request->package_type;
-                        $my_current_package->package_amount =$request->package_amount;
-                        $my_current_package->package_duration =$request->package_duration;
-                        $my_current_package->package_credit =$request->package_credit;
-                        $my_current_package->expiry_date =$expiryDate;
-                        $my_current_package->save();
+        // Set cURL options
+        curl_setopt($ch, CURLOPT_URL, "https://api.razorpay.com/v1/payments/$payment_id");
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_HTTPGET, true); // Use GET method to fetch payment details
+        curl_setopt($ch, CURLOPT_HTTPHEADER, [
+            'Content-Type: application/json',
+            'Authorization: Basic ' . base64_encode("$razorpayKey:$razorpaySecret")
+        ]);
+
+        // Execute the cURL request
+        $response = curl_exec($ch);
+        // Check for errors
+        if ($response === false) {
+            $errorMessage = curl_error($ch);
+            return redirect()->route('user.payment_management')->with('error', $errorMessage);
+        } else {
+            $responseData = json_decode($response, true);
+            // Check if response is valid
+            if (isset($responseData['id'])) {
+                // Payment details fetched successfully
+                $Package = Package::findOrFail($request->package_id);
+                $paymentAmount = $responseData['amount']/100;
+                if($paymentAmount == $Package->package_price){
+                    try {
+                        DB::beginTransaction();
+                        $negotiable_amount = 0;
+                        $duration = 30*$request->package_duration;
+                        $expiryDate = Carbon::now()->addDays($duration);
+                        $my_basic_checking = MyBuyerOpeningPackage::where('user_id', $data->id)->first();
+                        if($my_basic_checking && $request->package_type=="premium" || $my_basic_checking && $request->package_type=="basic"){
+                            $my_current_package = MyBuyerPackage::with('package_data')->where('user_id', $data->id)->first();
+                                if(!$my_current_package){
+                                    $my_current_package = new MyBuyerPackage();
+                                }else{
+                                    $old_package = DB::table('old_buyer_packages')->insert([
+                                        'package_id' => $my_current_package->package_id,
+                                        'user_id' => $my_current_package->user_id,
+                                        'package_duration' => $my_current_package->package_duration, 
+                                        'package_amount' => $my_current_package->package_amount,
+                                        'package_credit' => $my_current_package->package_credit,
+                                        'purchase_date' => $my_current_package->created_at,
+                                        'expiry_date' => $my_current_package->expiry_date,
+                                        'created_at' => now(),
+                                        'updated_at' => now(),
+                                    ]);
+                                }
+                                $my_current_package->package_id = $request->package_id;
+                                $my_current_package->user_id = $data->id;
+                                $my_current_package->package_type = $request->package_type;
+                                $my_current_package->package_amount =$request->package_amount;
+                                $my_current_package->package_duration =$request->package_duration;
+                                $my_current_package->package_credit =$request->package_credit;
+                                $my_current_package->expiry_date =$expiryDate;
+                                $my_current_package->save();
+            
+                        }else{
+                            if($request->package_type=="basic"){
+                                $basic_package = new MyBuyerOpeningPackage;
+                                $basic_package->package_id = $request->package_id;
+                                $basic_package->user_id = $data->id;
+                                $basic_package->package_type = $request->package_type;
+                                $basic_package->package_amount =$request->package_amount;
+                                $basic_package->package_duration =$request->package_duration;
+                                $basic_package->package_credit =$request->package_credit;
+                                $basic_package->expiry_date =$expiryDate;
+                                $basic_package->save();
+                                if($basic_package){
+                                    $my_current_package = new MyBuyerPackage;
+                                    $my_current_package->package_id = $request->package_id;
+                                    $my_current_package->user_id = $data->id;
+                                    $my_current_package->package_type = $request->package_type;
+                                    $my_current_package->package_amount =$request->package_amount;
+                                    $my_current_package->package_duration =$request->package_duration;
+                                    $my_current_package->package_credit =$request->package_credit;
+                                    $my_current_package->expiry_date =$expiryDate;
+                                    $my_current_package->save();
+                                }
+                            }else{
+                                DB::commit();
+                                return redirect()->back()->with('warning', 'Please purchase the basic package first, one time only.');
+                            }
+                        }
+            
+                        // Retrieve the latest wallet record for the user
+                        $latest_wallet = MyBuyerWallet::where('user_id', $data->id)->latest()->first();
+                        // Calculate the current balance based on the latest wallet record
+                        $current_balance = $latest_wallet ? $latest_wallet->current_unit : 0;
+                        // Update Wallet
+                        $package_credit = $request->package_credit;
+                        $my_wallet = new MyBuyerWallet();
+                        $my_wallet->user_id = $data->id;
+                        $my_wallet->type = 1; //Credit
+                        // $my_wallet->inquiry_id = null;
+                        $my_wallet->purpose = "For purchase package";
+                        $my_wallet->credit_unit = $request->package_credit;
+                        $my_wallet->current_unit = $current_balance + $package_credit;
+                        $my_wallet->save();
+            
+                        $transaction = new Transaction();
+                        $transaction->user_id = $data->id;
+                        $transaction->unique_id = GenerateYearWiseTransaction(8, 'transactions', date('Y')); // Adjusted range for 8-digit number
+                        $transaction->transaction_type = 1; //Online
+                        $transaction->status = 1; //Paid
+                        $transaction->user_type = 2; //Buyer
+                        $transaction->transaction_id = $request->buyer_razorpay_payment_id; // Adjusted range for 8-digit number
+                        $transaction->purpose = $request->form_type=='upgrade'?'Upgrade buyer package':'New buyer package';
+                        $transaction->actual_amount = $request->package_amount;
+                        $transaction->negotiable_amount = $negotiable_amount;
+                        $transaction->amount = $request->package_amount-$negotiable_amount;
+                        $transaction->buyer_package_id = $request->package_id;
+                        $transaction->transaction_source = $request->buyer_payment_method;
+                        $transaction->remarks = NULL;
+                        $transaction->save();
+                        
+                        if($transaction){
+                            $json_data = [
+                                'transaction' => $transaction,
+                                'my_wallet' => $my_wallet,
+                                'my_current_package' => $my_current_package,
+                            ];
+                          
+                            $websiteLog =new WebsiteLogs();
+                            $websiteLog->logs_type ="INSERTED";
+                            $websiteLog->table_name ="transactions, my_buyer_wallets, my_buyer_packages";
+                            $websiteLog->response =json_encode($json_data);
+                            $websiteLog->save();
+                            $package_name = $my_current_package->package_data?$my_current_package->package_data->package_name:"Package";
+                        }
+                        DB::commit();
+                    } catch (\Exception $e) {
+                        // Rollback the transaction and handle the exception
+                        DB::rollBack();
+                        // dd($e->getMessage());
+                        // return redirect()->back()->with('error', 'An error occurred: ' . $e->getMessage());
+                        return redirect()->back()->with('error', 'Something went wrong, please try again later!');
+                    }
+                    if($transaction){
+                        //OrderID Generate
+                        $razorpayKey = env('RAZORPAY_KEY');
+                        $razorpaySecret = env('RAZORPAY_SECRET');
+            
+                        // Prepare the data for the order
+                        $orderData = [
+                            'receipt'         => $transaction->unique_id,
+                            'amount'          => $transaction->amount * 100, // amount in the smallest currency unit
+                            'currency'        => 'INR',
+                            'payment_capture' => 1 // auto capture
+                        ];
+                        // Encode the order data
+                        $jsonData = json_encode($orderData);
+            
+                        // Initialize cURL
+                        $ch = curl_init();
+            
+                        // Set cURL options
+                        curl_setopt($ch, CURLOPT_URL, 'https://api.razorpay.com/v1/orders');
+                        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+                        curl_setopt($ch, CURLOPT_POST, true);
+                        curl_setopt($ch, CURLOPT_POSTFIELDS, $jsonData);
+                        curl_setopt($ch, CURLOPT_HTTPHEADER, [
+                            'Content-Type: application/json',
+                            'Authorization: Basic ' . base64_encode("$razorpayKey:$razorpaySecret")
+                        ]);
+            
+                        // Execute the cURL request
+                        $response = curl_exec($ch);
+                        // Check for errors
+                        if ($response === false) {
+                            $errorMessage = curl_error($ch);
+                            // $order_id = "";
+                        }
+                        if($request->buyer_razorpay_payment_id){
+                            $paymentId = $request->buyer_razorpay_payment_id; // Example payment ID, replace with actual payment ID
+                            $amount = $paymentAmount * 100; // Amount in paise (for INR)
+
+                            // Prepare the data for the capture
+                            $captureData = [
+                                'amount'   => $amount,
+                                'currency' => 'INR'
+                            ];
+
+                            // Encode the capture data to JSON
+                            $jsonData = json_encode($captureData);
+
+                            // Initialize cURL
+                            $ch = curl_init();
+
+                            // Set cURL options
+                            curl_setopt($ch, CURLOPT_URL, "https://api.razorpay.com/v1/payments/$paymentId/capture");
+                            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+                            curl_setopt($ch, CURLOPT_POST, true);
+                            curl_setopt($ch, CURLOPT_POSTFIELDS, $jsonData);
+                            curl_setopt($ch, CURLOPT_HTTPHEADER, [
+                                'Content-Type: application/json',
+                                'Authorization: Basic ' . base64_encode("$razorpayKey:$razorpaySecret")
+                            ]);
+
+                            // Execute the cURL request
+                            $response = curl_exec($ch);
+                            // Decode the response
+                            $responseData = json_decode($response, true);
+                            // Close cURL
+                            curl_close($ch);
+                        }
+                        $data_pdf=[
+                            'user'=>$data,
+                            'package'=>$package_name,
+                            'transaction'=>$transaction,
+                        ];
+            
+                        // Generate the PDF
+                        $PDFOptions = ['enable_remote' => true];
+                        $pdf = PDF::setOptions($PDFOptions)->loadView('mail.pdf', $data_pdf);
+                        // Save the PDF to a file on the local server
+                        $pdfPath = storage_path('app/public/' . date('His') . '_invoice.pdf');
+                        $pdf->save($pdfPath);
+            
+                        $data_array=[
+                            'cc'=>[],
+                            'user'=>$data,
+                            'attachment'=>$pdfPath,
+                            'transaction_type'=>'Buyer: '.$package_name,
+                            'start_date'=>date('d-m-Y', strtotime($my_current_package->created_at)),
+                            'end_date'=>date('d-m-Y', strtotime($my_current_package->expiry_date)),
+                            'transaction'=>$transaction,
+                            'type'=>'PAYMENT_TRANSACTION',
+                        ];
+                        // FOR MESSAGE
+                        $sender = env('SMS_SENDER');
+                        $amount = $transaction->amount?$transaction->amount:"";
+                        $expiry_date = date('d-m-Y', strtotime($my_current_package->expiry_date));
+                        $url = 'https://milaapp.in';
+                        $package_name = $package_name.' package';
+                        $myMessage = urlencode("Payment of ".$amount." for the subscription of ".$package_name." is confirmed. Valid till ".$expiry_date." For details: www.milaapp.in Sarv Megh Technology OPC Private Limited");
+                        $customer_mobile_no = $data->mobile?$data->mobile:null;
+                        $checkPhoneNumberValid = checkPhoneNumberValid($customer_mobile_no);
+                        if($checkPhoneNumberValid){
+                            sendSMS($sender, $customer_mobile_no, $myMessage);
+                        }
+                        // FOR MAIL
+                        sendMail($data_array, $data->email, 'Confirmation of Payment Transaction on Milaapp');
+                        // For Amount Transaction
+                        if (Session::has('url.intended')) {
+                            $intendedUrl = Session::get('url.intended');
+                            // Forget the intended URL from the session after using it
+                            Session::forget('url.intended');
+                            return redirect($intendedUrl);
+                        }else{
+                            return redirect()->route('user.payment_management')->with('success', 'Package has been successfully purchased');  
+                        }
+                    }else{
+                        return redirect()->route('user.payment_management')->with('success', 'Package has been successfully purchased'); 
                     }
                 }else{
-                    DB::commit();
-                    return redirect()->back()->with('warning', 'Please purchase the basic package first, one time only.');
+                    return redirect()->back()->with('error', 'Transaction amount does not match the package amount!');
                 }
-            }
-
-            // Retrieve the latest wallet record for the user
-            $latest_wallet = MyBuyerWallet::where('user_id', $data->id)->latest()->first();
-            // Calculate the current balance based on the latest wallet record
-            $current_balance = $latest_wallet ? $latest_wallet->current_unit : 0;
-            // Update Wallet
-            $package_credit = $request->package_credit;
-            $my_wallet = new MyBuyerWallet();
-            $my_wallet->user_id = $data->id;
-            $my_wallet->type = 1; //Credit
-            // $my_wallet->inquiry_id = null;
-            $my_wallet->purpose = "For purchase package";
-            $my_wallet->credit_unit = $request->package_credit;
-            $my_wallet->current_unit = $current_balance + $package_credit;
-            $my_wallet->save();
-
-            $transaction = new Transaction();
-            $transaction->user_id = $data->id;
-            $transaction->unique_id = GenerateYearWiseTransaction(8, 'transactions', date('Y')); // Adjusted range for 8-digit number
-            $transaction->transaction_type = 1; //Online
-            $transaction->status = 1; //Paid
-            $transaction->user_type = 2; //Buyer
-            $transaction->transaction_id = $request->buyer_razorpay_payment_id; // Adjusted range for 8-digit number
-            $transaction->purpose = $request->form_type=='upgrade'?'Upgrade buyer package':'New buyer package';
-            $transaction->actual_amount = $request->package_amount;
-            $transaction->negotiable_amount = $negotiable_amount;
-            $transaction->amount = $request->package_amount-$negotiable_amount;
-            $transaction->buyer_package_id = $request->package_id;
-            $transaction->transaction_source = $request->buyer_payment_method;
-            $transaction->remarks = NULL;
-            $transaction->save();
-            
-            if($transaction){
-                $json_data = [
-                    'transaction' => $transaction,
-                    'my_wallet' => $my_wallet,
-                    'my_current_package' => $my_current_package,
-                ];
-              
-                $websiteLog =new WebsiteLogs();
-                $websiteLog->logs_type ="INSERTED";
-                $websiteLog->table_name ="transactions, my_buyer_wallets, my_buyer_packages";
-                $websiteLog->response =json_encode($json_data);
-                $websiteLog->save();
-                $package_name = $my_current_package->package_data?$my_current_package->package_data->package_name:"Package";
-
-                //OrderID Generate
-                $razorpayKey = env('RAZORPAY_KEY');
-                $razorpaySecret = env('RAZORPAY_SECRET');
-
-                // Prepare the data for the order
-                $orderData = [
-                    'receipt'         => $transaction->unique_id,
-                    'amount'          => $transaction->amount * 100, // amount in the smallest currency unit
-                    'currency'        => 'INR',
-                    'payment_capture' => 1 // auto capture
-                ];
-                // Encode the order data
-                $jsonData = json_encode($orderData);
-                
-                // Initialize cURL
-                $ch = curl_init();
-
-                // Set cURL options
-                curl_setopt($ch, CURLOPT_URL, 'https://api.razorpay.com/v1/orders');
-                curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-                curl_setopt($ch, CURLOPT_POST, true);
-                curl_setopt($ch, CURLOPT_POSTFIELDS, $jsonData);
-                curl_setopt($ch, CURLOPT_HTTPHEADER, [
-                    'Content-Type: application/json',
-                    'Authorization: Basic ' . base64_encode("$razorpayKey:$razorpaySecret")
-                ]);
-
-                // Execute the cURL request
-                $response = curl_exec($ch);
-                // Check for errors
-                if ($response === false) {
-                    $errorMessage = curl_error($ch);
-                    // $order_id = "";
-                }
-                $data_pdf=[
-                    'user'=>$data,
-                    'package'=>$package_name,
-                    'transaction'=>$transaction,
-                ];
-                
-                // Generate the PDF
-                $PDFOptions = ['enable_remote' => true];
-                $pdf = PDF::setOptions($PDFOptions)->loadView('mail.pdf', $data_pdf);
-                // Save the PDF to a file on the local server
-                $pdfPath = storage_path('app/public/transaction.pdf');
-                $pdf->save($pdfPath);
-
-                $data_array=[
-                    'cc'=>[],
-                    'user'=>$data,
-                    'attachment'=>$pdfPath,
-                    'transaction_type'=>'Buyer: '.$package_name,
-                    'start_date'=>date('d-m-Y', strtotime($my_current_package->created_at)),
-                    'end_date'=>date('d-m-Y', strtotime($my_current_package->expiry_date)),
-                    'transaction'=>$transaction,
-                    'type'=>'PAYMENT_TRANSACTION',
-                ];
-                DB::commit();
-                sendMail($data_array, $data->email, 'Confirmation of Payment Transaction on Milaap');
-            }
-             // For Amount Transaction
-            
-            if (Session::has('url.intended')) {
-                $intendedUrl = Session::get('url.intended');
-                // Forget the intended URL from the session after using it
-                Session::forget('url.intended');
-                return redirect($intendedUrl);
             }else{
-                return redirect()->route('user.payment_management')->with('success', 'Package has been successfully purchased');  
+                 return redirect()->back()->with('error', 'Something went wrong, please contact with admin!');
             }
-            // Start a database transaction
-           
-        } catch (\Exception $e) {
-            // Rollback the transaction and handle the exception
-            DB::rollBack();
-            // dd($e->getMessage());
-            // return redirect()->back()->with('error', 'An error occurred: ' . $e->getMessage());
-            return redirect()->back()->with('error', 'Something went wrong, please try again later!');
         }
+       
+        
     }
     public function buyer_package_check(Request $request){
         $my_basic_checking = MyBuyerOpeningPackage::where('user_id', $request->id)->first();
@@ -1430,70 +1515,17 @@ class UserController extends Controller{
         }
     }
     public function purchase(Request $request){
-        // dd($request->all());
-       if($request->razorpay_payment_id){
-            $duration =isset($request->duration)?$request->duration:12;
-            $data = $this->AuthCheck();
-            // Create a new transaction
-            $Badge = Badge::findOrFail($request->id);
-            $package = $Badge?$Badge->title:"";
-            $transaction = new Transaction();
-            $transaction->user_id = $data->id;
-            $transaction->unique_id = GenerateYearWiseTransaction(8, 'transactions', date('Y'));
-            $transaction->transaction_type = 1;
-            $transaction->status = 1;
-            $transaction->transaction_id = $request->razorpay_payment_id;
-            $transaction->purpose = 'Badge: '.$package;
-            $transaction->amount = $request->amount;
-            $transaction->transaction_source = $request->payment_method;
-            $transaction->save();
-            
-            // PDF Generate
-            $data_pdf=[
-                'user'=>$data,
-                'package'=>$package,
-                'transaction'=>$transaction,
-            ];
-            
-            // Generate the PDF
-            $PDFOptions = ['enable_remote' => true];
-            $pdf = PDF::setOptions($PDFOptions)->loadView('mail.pdf', $data_pdf);
-            // Save the PDF to a file on the local server
-            $pdfPath = storage_path('app/public/transaction.pdf');
-            $pdf->save($pdfPath);
-            // Create a new MyBadge
-
-            $myBadge = new MyBadge();
-            $myBadge->user_id = $data->id;
-            $myBadge->badge_id = $request->id;
-            $myBadge->duration = $duration;
-            $myBadge->expiry_date = Carbon::now()->addDays($duration * 30);
-            $myBadge->save();
-            
-            // Return success response
-
-            //OrderID Generate
+        if($request->razorpay_payment_id){
+            // Log the exception to the web_logs table
+            $payment_id = $request->razorpay_payment_id;
             $razorpayKey = env('RAZORPAY_KEY');
             $razorpaySecret = env('RAZORPAY_SECRET');
-
-            // Prepare the data for the order
-            $orderData = [
-                'receipt'         => $transaction->unique_id,
-                'amount'          => $transaction->amount * 100, // amount in the smallest currency unit
-                'currency'        => 'INR',
-                'payment_capture' => 1 // auto capture
-            ];
-            // Encode the order data
-            $jsonData = json_encode($orderData);
-            
-            // Initialize cURL
             $ch = curl_init();
 
             // Set cURL options
-            curl_setopt($ch, CURLOPT_URL, 'https://api.razorpay.com/v1/orders');
+            curl_setopt($ch, CURLOPT_URL, "https://api.razorpay.com/v1/payments/$payment_id");
             curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-            curl_setopt($ch, CURLOPT_POST, true);
-            curl_setopt($ch, CURLOPT_POSTFIELDS, $jsonData);
+            curl_setopt($ch, CURLOPT_HTTPGET, true); // Use GET method to fetch payment details
             curl_setopt($ch, CURLOPT_HTTPHEADER, [
                 'Content-Type: application/json',
                 'Authorization: Basic ' . base64_encode("$razorpayKey:$razorpaySecret")
@@ -1504,36 +1536,173 @@ class UserController extends Controller{
             // Check for errors
             if ($response === false) {
                 $errorMessage = curl_error($ch);
-                // $order_id = "";
-            }
+                return response()->json(['status' => 400, 'error'=>'Sorry, something went wrong!']);
+            } else {
+                $responseData = json_decode($response, true);
+                // Check if response is valid
+                if (isset($responseData['id'])) {
+                    // Payment details fetched successfully
+                    $Badge = Badge::findOrFail($request->id);
+                    $paymentAmount = $responseData['amount']/100;
+                    if($paymentAmount == $Badge->price){
+                        try{
+                            DB::beginTransaction();
+                            $duration =isset($request->duration)?$request->duration:12;
+                            $data = $this->AuthCheck();
+                            // Create a new transaction
+                            
+                            $package = $Badge?$Badge->title:"";
+                            $transaction = new Transaction();
+                            $transaction->user_id = $data->id;
+                            $transaction->unique_id = GenerateYearWiseTransaction(8, 'transactions', date('Y'));
+                            $transaction->transaction_type = 1;
+                            $transaction->status = 1;
+                            $transaction->transaction_id = $request->razorpay_payment_id;
+                            $transaction->purpose = 'Badge: '.$package;
+                            $transaction->amount = $request->amount;
+                            $transaction->transaction_source = $request->payment_method;
+                            $transaction->save();
+                            
+                            // Create a new MyBadge
+            
+                            $myBadge = new MyBadge();
+                            $myBadge->user_id = $data->id;
+                            $myBadge->badge_id = $request->id;
+                            $myBadge->duration = $duration;
+                            $myBadge->expiry_date = Carbon::now()->addDays($duration * 30);
+                            $myBadge->save();
+                            DB::commit();
+                        } catch (\Exception $e) {
+                            DB::rollBack();
+                            return response()->json(['status' => 400, 'error'=>'Sorry, something went wrong!']);
+                        }
+                        // PDF Generate
+                        $data_pdf=[
+                            'user'=>$data,
+                            'package'=>$package,
+                            'transaction'=>$transaction,
+                        ];
+                        
+                        // Generate the PDF
+                        $PDFOptions = ['enable_remote' => true];
+                        $pdf = PDF::setOptions($PDFOptions)->loadView('mail.pdf', $data_pdf);
+                        // Save the PDF to a file on the local server
+                        $pdfPath = storage_path('app/public/' . date('His') . '_invoice.pdf');
+                        $pdf->save($pdfPath);
+                        
+                        // Return success response
+            
+                        //OrderID Generate
+                        $razorpayKey = env('RAZORPAY_KEY');
+                        $razorpaySecret = env('RAZORPAY_SECRET');
+            
+                        // Prepare the data for the order
+                        $orderData = [
+                            'receipt'         => $transaction->unique_id,
+                            'amount'          => $transaction->amount * 100, // amount in the smallest currency unit
+                            'currency'        => 'INR',
+                            'payment_capture' => 1 // auto capture
+                        ];
+                        // Encode the order data
+                        $jsonData = json_encode($orderData);
+                        
+                        // Initialize cURL
+                        $ch = curl_init();
+            
+                        // Set cURL options
+                        curl_setopt($ch, CURLOPT_URL, 'https://api.razorpay.com/v1/orders');
+                        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+                        curl_setopt($ch, CURLOPT_POST, true);
+                        curl_setopt($ch, CURLOPT_POSTFIELDS, $jsonData);
+                        curl_setopt($ch, CURLOPT_HTTPHEADER, [
+                            'Content-Type: application/json',
+                            'Authorization: Basic ' . base64_encode("$razorpayKey:$razorpaySecret")
+                        ]);
+            
+                        // Execute the cURL request
+                        $response = curl_exec($ch);
+                        // Check for errors
+                        if ($response === false) {
+                            $errorMessage = curl_error($ch);
+                            // $order_id = "";
+                        }
+                        if($request->razorpay_payment_id){// Example payment ID, replace with actual payment ID
+                            $amount = $paymentAmount * 100; // Amount in paise (for INR)
 
-            // Decode the response
-            // $responseData = json_decode($response, true);
-            $data_array=[
-                'cc'=>[],
-                'user'=>$data,
-                'attachment'=>$pdfPath,
-                'transaction_type'=>'Badge: '.$package,
-                'start_date'=>date('d-m-Y', strtotime($myBadge->created_at)),
-                'end_date'=>date('d-m-Y', strtotime($myBadge->expiry_date)),
-                'transaction'=>$transaction,
-                'type'=>'PAYMENT_TRANSACTION',
-            ];
-            $sender = env('SMS_SENDER');
-            $amount = $transaction->amount?$transaction->amount:"";
-            $expiry_date = strtotime($myBadge->expiry_date);
-            $url = 'https://milaapp.in';
-            $myMessage = urlencode("Payment of ".$amount." for the subscription of ".$package." is confirmed. Valid till ".$expiry_date." For details: ".$url." Sarv Megh Technology OPC Private Limited");
-            $customer_mobile_no = $data->mobile?$data->mobile:null;
-            $checkPhoneNumberValid = checkPhoneNumberValid($customer_mobile_no);
-            if($checkPhoneNumberValid){
-                sendSMS($sender, $customer_mobile_no, $myMessage);
+                            // Prepare the data for the capture
+                            $captureData = [
+                                'amount'   => $amount,
+                                'currency' => 'INR'
+                            ];
+
+                            // Encode the capture data to JSON
+                            $jsonData = json_encode($captureData);
+
+                            // Initialize cURL
+                            $ch = curl_init();
+
+                            // Set cURL options
+                            curl_setopt($ch, CURLOPT_URL, "https://api.razorpay.com/v1/payments/$payment_id/capture");
+                            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+                            curl_setopt($ch, CURLOPT_POST, true);
+                            curl_setopt($ch, CURLOPT_POSTFIELDS, $jsonData);
+                            curl_setopt($ch, CURLOPT_HTTPHEADER, [
+                                'Content-Type: application/json',
+                                'Authorization: Basic ' . base64_encode("$razorpayKey:$razorpaySecret")
+                            ]);
+
+                            // Execute the cURL request
+                            $response = curl_exec($ch);
+                            // Decode the response
+                            $responseData = json_decode($response, true);
+                            // Close cURL
+                            curl_close($ch);
+                        }
+            
+                        // Decode the response
+                        // $responseData = json_decode($response, true);
+                        $package = 'Badge: '.$package;
+                        $data_array=[
+                            'cc'=>[],
+                            'user'=>$data,
+                            'attachment'=>$pdfPath,
+                            'transaction_type'=>$package,
+                            'start_date'=>date('d-m-Y', strtotime($myBadge->created_at)),
+                            'end_date'=>date('d-m-Y', strtotime($myBadge->expiry_date)),
+                            'transaction'=>$transaction,
+                            'type'=>'PAYMENT_TRANSACTION',
+                        ];
+                        $sender = env('SMS_SENDER');
+                        
+                        $amount = $transaction->amount?$transaction->amount:"";
+                        $expiry_date = date('d-m-Y',strtotime($myBadge->expiry_date));
+                        $url = 'https://milaapp.in';
+                        $myMessage = urlencode("Payment of ".$amount." for the subscription of ".$package." is confirmed. Valid till ".$expiry_date." For details: www.milaapp.in Sarv Megh Technology OPC Private Limited");
+                        $customer_mobile_no = $data->mobile?$data->mobile:null;
+                        $checkPhoneNumberValid = checkPhoneNumberValid($customer_mobile_no);
+                        if($checkPhoneNumberValid){
+                            sendSMS($sender, $customer_mobile_no, $myMessage);
+                        }
+                        sendMail($data_array, $data->email, 'Confirmation of Payment Transaction on Milaapp');
+                        return response()->json(['status' => 200]);
+                    }else{
+                        return response()->json(['status' => 400, 'error'=>'Transaction amount does not match the package amount!']);
+                    }
+                }else{
+                    return response()->json(['status' => 400, 'error'=>'Sorry, something went wrong!']);
+                }
             }
-            sendMail($data_array, $data->email, 'Confirmation of Payment Transaction on Milaap');
-            return response()->json(['status' => 200]);
-       }else{
-        return response()->json(['status' => 400]);
-       }
+        }else{
+            return response()->json(['status' => 400, 'error'=>'Sorry, something went wrong!']);
+        }
+    }
+    public function verify_badge_price(Request $request){
+        $Badge = Badge::where('id', $request->id)->first();
+        if($Badge){
+            return response()->json(['status' => 200, 'price'=>$Badge->price]);
+        }else{
+            return response()->json(['status' => 400]);
+        }
         
     }
 

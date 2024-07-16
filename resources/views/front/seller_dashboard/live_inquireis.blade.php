@@ -184,12 +184,12 @@
                                                     <th class="input-th input-id-th">Id</th>
                                                     <th class="input-th input-title-th">Title</th>
                                                     <th class="input-th input-details-th">Details</th>
-                                                    <th class="input-th input-buyer-th">Buyer</th>
-                                                    <th class="input-th input-location-th">Location</th>
-                                                    <th class="input-th input-start-date-th"><span>Start date &amp; time</span></th>
-                                                    <th class="input-th input-end-date-th"><span>End date &amp; time</span></th>
-                                                    <th class="input-th min-quote-th">Min Quote</th>
-                                                    <th class="input-th max-quote-th">Max Quote</th>
+                                                    <th class="input-th input-buyer-th">Buyer &amp; <br> Location</th>
+                                                    <!--<th class="input-th input-location-th">Location</th>-->
+                                                    <th class="input-th input-start-date-th"><span>Start date &amp; <br> End date</span></th>
+                                                    <!--<th class="input-th input-end-date-th"><span>End date &amp; time</span></th>-->
+                                                    <th class="input-th min-quote-th">Min Quote &amp; <br> Max Quote</th>
+                                                    <!--<th class="input-th max-quote-th">Max Quote</th>-->
                                                     <th class="output-th quotes-supplier-th">Quotes</th>
                                                     <th class="output-th comments-th">Comments &amp; Files</th>
                                                     <th class="output-th timer-th">Timer</th>
@@ -284,7 +284,7 @@
                         $.each(response.data, function(index, item) {
                             // console.log(item);
                             var html = `<tr>
-                                <td class="input-table-column" colspan="9">
+                                <td class="input-table-column" colspan="6">
                                     <table class="table input-table">
                                         <tbody>
                                             <tr>
@@ -321,13 +321,13 @@
                                                 </td>
                                                 
                                                 <td class="input-buyer-td">
-                                                    ${item.buyer_name}, ${item.country_code}${item.buyer_mobile}
+                                                    ${item.buyer_name}, ${item.country_code}${item.buyer_mobile}, ${item.location}
                                                 </td>
-                                                <td class="input-location-td">${item.location}</td>
-                                                <td class="input-start-date-td">${item.start_date_time}</td>
-                                                <td class="input-end-date-td">${item.end_date_time}</td>
-                                                <td class="max-quote-td"> ${item.minimum_quote_amount}</td>
-                                                <td class="min-quote-td">${item.maximum_quote_amount}</td>
+                                                // <td class="input-location-td">${item.location}</td>
+                                                <td class="input-start-date-td">${item.start_date_time}<br> <img src="{{asset('frontend/assets/images/chevron-down.png')}}" alt=""><br>${item.end_date_time}</td>
+                                                // <td class="input-end-date-td">${item.end_date_time}</td>
+                                                <td class="max-quote-td"> ${item.minimum_quote_amount}<br> <img src="{{asset('frontend/assets/images/chevron-down.png')}}" alt=""><br> ${item.maximum_quote_amount}</td>
+                                                // <td class="min-quote-td">${item.maximum_quote_amount}</td>
                                             </tr>
                                        
                                         </tbody>

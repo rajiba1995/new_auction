@@ -6,6 +6,7 @@ use Closure;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Models\MySellerPackage;
+use App\Models\MySellerWallet;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Session;
 
@@ -23,7 +24,12 @@ class CheckActiveSellerPackage
         $user = Auth::user();
         $currentDateTime = Carbon::now();
         $MySellerPackage =MySellerPackage::latest()->where('user_id', $user->id)->where('expiry_date','>', $currentDateTime)->first();
-        if (!$MySellerPackage) {
+        $latestWallet = MyBuyerWallet::latest()
+        ->where('status', 1)
+        ->where('user_id', $user->id)
+        ->where('current_unit', '<=', 0)
+        ->first();
+        if (!$latestWallet || !$MySellerPackage) {
             Session::put('url.intended', $request->fullUrl());
             return redirect()->route('user.payment_management', ['package'=>'seller'])->with('error', 'You do not have an active seller package.');
         }

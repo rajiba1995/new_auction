@@ -21,11 +21,10 @@ use function GuzzleHttp\json_encode;
 class CornController extends Controller
 {
     public function SellerMothlyPackageCheckCron(){
-        $today = Carbon::today()->toDateString(); 
-        // $today = '2024-07-19';
-         // Get today's date in 'Y-m-d' format
-        $data = MySellerPackage::where('package_duration','!=','usage_months')->whereDate('next_credit_date',$today)->whereDate('expiry_date','>=',$today)->latest()->get()->toArray();
-        // dd($data);
+        // Everyday at a single time
+        $today = Carbon::today()->toDateString();
+        // Get today's date in 'Y-m-d' format
+        $data = MySellerPackage::whereColumn('package_duration','!=','usage_months')->whereDate('next_credit_date',$today)->whereDate('expiry_date','>=',$today)->latest()->get()->toArray();
         try{
             DB::beginTransaction();
 
@@ -95,19 +94,15 @@ class CornController extends Controller
         }
             catch (QueryException $exception) {
             throw new InvalidArgumentException($exception->getMessage());
-                // $websiteLog =new WebsiteLogs();
-                // $websiteLog->emp_id = NULL;
-                // $websiteLog->logs_type ="Seller package mothly debit & credit";
-                // $websiteLog->table_name ="mysellerpackage && mysellerwallet";
-                // $websiteLog->response =json_encode($exception->getMessage());
-                // $websiteLog->save();
         }
-
+        DB::table('cron_logs')->insert([
+            'type' => 'seller-monthly-package-check',
+            'response' => json_encode($data),
+        ]);
     }
-
-
     public function SellerExpiryPackageCheckCron()
     {
+        // Every single time
         // Get the current datetime in 'Y-m-d H:i:00' format (excluding seconds)
         $currentDateTime = Carbon::now()->format('Y-m-d H:i:00');
         
@@ -117,9 +112,8 @@ class CornController extends Controller
         
         // Query MySellerPackage where expiry_date is within the 1-minute range
         $data = MySellerPackage::whereBetween('expiry_date', [$oneMinuteBefore, $oneMinuteAfter])->get()->toArray();
-        // dd($data);
+
         $myBadge = MyBadge::whereBetween('expiry_date', [$oneMinuteBefore, $oneMinuteAfter])->get()->toArray();
-        // dd($myBadge);
 
         try{
             DB::beginTransaction();
@@ -127,68 +121,57 @@ class CornController extends Controller
                 if (!empty($data)) { // Check if the collection is not empty
                     foreach($data as $item){
                     $purchaseDate = Carbon::parse($item['created_at'])->format('Y-m-d H:i:s');
-                // Insert into my_old_seller_package
-                DB::table('old_seller_packages')->insert([
-                    'package_id' => $item['package_id'],
-                    'user_id' => $item['user_id'],
-                    'package_duration' => $item['package_duration'],
-                    'monthly_package_price' => $item['monthly_package_price'],
-                    'monthly_credit' => $item['monthly_credit'],
-                    'purchase_amount' => $item['purchase_amount'],
-                    'next_credit_date' => $item['next_credit_date'],
-                    'usage_months' => $item['usage_months'],
-                    'purchase_date' => $purchaseDate,
-                    'expiry_date' => $item['expiry_date'],
+                    // Insert into my_old_seller_package
+                    DB::table('old_seller_packages')->insert([
+                        'package_id' => $item['package_id'],
+                        'user_id' => $item['user_id'],
+                        'package_duration' => $item['package_duration'],
+                        'monthly_package_price' => $item['monthly_package_price'],
+                        'monthly_credit' => $item['monthly_credit'],
+                        'purchase_amount' => $item['purchase_amount'],
+                        'next_credit_date' => $item['next_credit_date'],
+                        'usage_months' => $item['usage_months'],
+                        'purchase_date' => $purchaseDate,
+                        'expiry_date' => $item['expiry_date'],
 
-                    ]);
-
-                // Delete from MySellerPackage
-                MySellerPackage::where('id', $item['id'])->delete();
+                        ]);
+                    // Delete from MySellerPackage
+                    MySellerPackage::where('id', $item['id'])->delete();
+                        }
                     }
-                }
 
                 DB::commit();
-
                 // Log the operation  
-            
                 if (!empty($data)){
-                $websiteLog =new WebsiteLogs();
-                $websiteLog->emp_id = NULL;
-                $websiteLog->logs_type ="Seller package expiry";
-                $websiteLog->table_name ="my_seller_package && old_seller_package";
-                $websiteLog->response =json_encode($data);
-                // dd('json');
-                $websiteLog->save();
+                    $websiteLog =new WebsiteLogs();
+                    $websiteLog->emp_id = NULL;
+                    $websiteLog->logs_type ="Seller package expiry";
+                    $websiteLog->table_name ="my_seller_package && old_seller_package";
+                    $websiteLog->response =json_encode($data);
+                    $websiteLog->save();
                 }
             }
             catch (QueryException $exception) {
             throw new InvalidArgumentException($exception->getMessage());
-                // $websiteLog =new WebsiteLogs();
-                // $websiteLog->emp_id = NULL;
-                // $websiteLog->logs_type ="Seller package mothly debit & credit";
-                // $websiteLog->table_name ="mysellerpackage && mysellerwallet";
-                // $websiteLog->response =json_encode($exception->getMessage());
-                // $websiteLog->save();
         }
-
 
         try{
             DB::beginTransaction();
 
                 if (!empty($myBadge)) { // Check if the collection is not empty
                     foreach($myBadge as $item){
-                    $purchaseDate = Carbon::parse($item['created_at'])->format('Y-m-d H:i:s');
-                // Insert into my_old_seller_package
-                DB::table('my_old_badges')->insert([
-                    'user_id' => $item['user_id'],
-                    'badge_id' => $item['badge_id'],
-                    'duration' => $item['duration'],
-                    'expiry_date' => $item['expiry_date'],
-                    'purchase_date' => $purchaseDate,
-                    ]);
+                        $purchaseDate = Carbon::parse($item['created_at'])->format('Y-m-d H:i:s');
+                        // Insert into my_old_seller_package
+                        DB::table('my_old_badges')->insert([
+                        'user_id' => $item['user_id'],
+                        'badge_id' => $item['badge_id'],
+                        'duration' => $item['duration'],
+                        'expiry_date' => $item['expiry_date'],
+                        'purchase_date' => $purchaseDate,
+                        ]);
 
-                // Delete from MyBadge
-                MyBadge::where('id', $item['id'])->delete();
+                        // Delete from MyBadge
+                        MyBadge::where('id', $item['id'])->delete();
                     }
                 }
 
@@ -197,28 +180,27 @@ class CornController extends Controller
                 // Log the operation  
             
                 if (!empty($myBadge)){
-                $websiteLog =new WebsiteLogs();
-                $websiteLog->emp_id = NULL;
-                $websiteLog->logs_type ="Badge expiry";
-                $websiteLog->table_name ="my_badges && my_old_badges";
-                $websiteLog->response =json_encode($myBadge);
-                // dd('json');
-                $websiteLog->save();
+                    $websiteLog =new WebsiteLogs();
+                    $websiteLog->emp_id = NULL;
+                    $websiteLog->logs_type ="Badge expiry";
+                    $websiteLog->table_name ="my_badges && my_old_badges";
+                    $websiteLog->response =json_encode($myBadge);
+                    // dd('json');
+                    $websiteLog->save();
                 }
             }
             catch (QueryException $exception) {
             throw new InvalidArgumentException($exception->getMessage());
-                // $websiteLog =new WebsiteLogs();
-                // $websiteLog->emp_id = NULL;
-                // $websiteLog->logs_type ="Seller package mothly debit & credit";
-                // $websiteLog->table_name ="mysellerpackage && mysellerwallet";
-                // $websiteLog->response =json_encode($exception->getMessage());
-                // $websiteLog->save();
         }
+        DB::table('cron_logs')->insert([
+            'type' => 'seller-expiry-package-check',
+            'response' => json_encode($data),
+        ]);
 
     }
     public function BuyerPackageCurrentUnitCheckCron()
     {
+        // Every single time
         $latestRecords = MyBuyerWallet::select('user_id', DB::raw('MAX(id) as latest_id'))
         ->where('current_unit', 0)
         ->groupBy('user_id');
@@ -230,24 +212,23 @@ class CornController extends Controller
         ->orderByDesc('created_at')
         ->get()
         ->toArray();
-        // dd($data);
         try{
             DB::beginTransaction();
 
                 if(!empty($data)){
                     foreach($data as $item){
-                    $myCurrentBuyerPackage = MyBuyerPackage::where('user_id',$item['user_id'])->latest()->first();
-                    // dd($myCurrentBuyerPackage);
-                    $old_buyer_package = DB::table('old_buyer_packages')->insert([
-                        'package_id' => $myCurrentBuyerPackage->package_id,
-                        'package_type' => $myCurrentBuyerPackage->package_type,
-                        'user_id' => $myCurrentBuyerPackage->user_id,
-                        'package_duration' => $myCurrentBuyerPackage->package_duration,
-                        'package_amount' => $myCurrentBuyerPackage->package_amount,
-                        'package_credit' => $myCurrentBuyerPackage->package_credit,
-                        'purchase_date' => $myCurrentBuyerPackage->created_at,
-                        'expiry_date' => $myCurrentBuyerPackage->expiry_date,
-                    ]);
+                        $myCurrentBuyerPackage = MyBuyerPackage::where('user_id',$item['user_id'])->latest()->first();
+                        // dd($myCurrentBuyerPackage);
+                        $old_buyer_package = DB::table('old_buyer_packages')->insert([
+                            'package_id' => $myCurrentBuyerPackage->package_id,
+                            'package_type' => $myCurrentBuyerPackage->package_type,
+                            'user_id' => $myCurrentBuyerPackage->user_id,
+                            'package_duration' => $myCurrentBuyerPackage->package_duration,
+                            'package_amount' => $myCurrentBuyerPackage->package_amount,
+                            'package_credit' => $myCurrentBuyerPackage->package_credit,
+                            'purchase_date' => $myCurrentBuyerPackage->created_at,
+                            'expiry_date' => $myCurrentBuyerPackage->expiry_date,
+                        ]);
 
                         // Delete from MyBuyerPackage
                         MyBuyerPackage::where('id', $myCurrentBuyerPackage->id)->delete();
@@ -258,29 +239,25 @@ class CornController extends Controller
                 // Log the operation  
             
                 if (!empty($data)){
-                $websiteLog =new WebsiteLogs();
-                $websiteLog->emp_id = NULL;
-                $websiteLog->logs_type ="Seller package expiry for current unit 0";
-                $websiteLog->table_name ="my_buyer_package && old_buyer_package";
-                $websiteLog->response =json_encode($data);
-                // dd('json');
-                $websiteLog->save();
+                    $websiteLog =new WebsiteLogs();
+                    $websiteLog->emp_id = NULL;
+                    $websiteLog->logs_type ="Seller package expiry for current unit 0";
+                    $websiteLog->table_name ="my_buyer_package && old_buyer_package";
+                    $websiteLog->response =json_encode($data);
+                    // dd('json');
+                    $websiteLog->save();
                 }
-            }
-            catch (QueryException $exception) {
+        }catch (QueryException $exception) {
             throw new InvalidArgumentException($exception->getMessage());
-                // $websiteLog =new WebsiteLogs();
-                // $websiteLog->emp_id = NULL;
-                // $websiteLog->logs_type ="Seller package mothly debit & credit";
-                // $websiteLog->table_name ="mysellerpackage && mysellerwallet";
-                // $websiteLog->response =json_encode($exception->getMessage());
-                // $websiteLog->save();
-            }
-
+        }
+        DB::table('cron_logs')->insert([
+            'type' => 'buyer-package-current-unit-check',
+            'response' => json_encode($data),
+        ]);
 
     }
-    public function BuyerExpiryPackageCheckCron()
-    {
+    public function BuyerExpiryPackageCheckCron(){
+        // Every single time
         // Get the current datetime in 'Y-m-d H:i:00' format (excluding seconds)
         $currentDateTime = Carbon::now()->format('Y-m-d H:i:00');
         
@@ -290,28 +267,23 @@ class CornController extends Controller
         
         // Query MySellerPackage where expiry_date is within the 1-minute range
         $data = MyBuyerPackage::whereBetween('expiry_date', [$oneMinuteBefore, $oneMinuteAfter])->get()->toArray();
-        // dd($data);
 
-        
         try{
             DB::beginTransaction();
-
-
                 if (!empty($data)) { // Check if the collection is not empty
                     foreach($data as $item){
-                    $purchaseDate = Carbon::parse($item['created_at'])->format('Y-m-d H:i:s');
-                // Insert into my_old_seller_package
-                DB::table('old_buyer_packages')->insert([
-                    'package_id' => $item['package_id'],
-                    'package_type' => $item['package_type'],
-                    'user_id' => $item['user_id'],
-                    'package_duration' => $item['package_duration'],
-                    'package_amount' => $item['package_amount'],
-                    'package_credit' => $item['package_credit'],
-                    'purchase_date' => $purchaseDate,
-                    'expiry_date' => $item['expiry_date'],
-
-                    ]);
+                        $purchaseDate = Carbon::parse($item['created_at'])->format('Y-m-d H:i:s');
+                        // Insert into my_old_seller_package
+                        DB::table('old_buyer_packages')->insert([
+                        'package_id' => $item['package_id'],
+                        'package_type' => $item['package_type'],
+                        'user_id' => $item['user_id'],
+                        'package_duration' => $item['package_duration'],
+                        'package_amount' => $item['package_amount'],
+                        'package_credit' => $item['package_credit'],
+                        'purchase_date' => $purchaseDate,
+                        'expiry_date' => $item['expiry_date'],
+                        ]);
 
                         // Delete from MySellerPackage
                         MyBuyerPackage::where('id', $item['id'])->delete();
@@ -333,23 +305,19 @@ class CornController extends Controller
             }
             catch (QueryException $exception) {
             throw new InvalidArgumentException($exception->getMessage());
-                // $websiteLog =new WebsiteLogs();
-                // $websiteLog->emp_id = NULL;
-                // $websiteLog->logs_type ="Seller package mothly debit & credit";
-                // $websiteLog->table_name ="mysellerpackage && mysellerwallet";
-                // $websiteLog->response =json_encode($exception->getMessage());
-                // $websiteLog->save();
         }
+        DB::table('cron_logs')->insert([
+            'type' => 'buyer-expiry-package-check',
+            'response' => json_encode($data),
+        ]);
     }
 
-    public function BeforeStartAuction()
-    {
+    public function BeforeStartAuction(){
+        // Every 1 min
         // Get the current datetime
         $now = Carbon::now();
-        
         // Extract the current date in 'Y-m-d' format
         $currentDate = $now->format('Y-m-d');
-        
         // Extract the current time in 'H:i:00' format (excluding seconds)
         $currentTime = $now->format('H:i');
         
@@ -386,15 +354,20 @@ class CornController extends Controller
                 }
             }
         }
+        DB::table('cron_logs')->insert([
+            'type' => 'before-start-auction',
+            'response' => json_encode($data),
+        ]);
     }
     public function SendToSellerMail()
     {
+        // Every 2 min
         // Fetch the first 10 entries from the mail_logs table
         $data = DB::table('mail_logs')->take(10)->get()->toArray();
         // Check if there are any entries to process
         if (count($data) > 0) {
-            DB::beginTransaction();
-            try {
+            // DB::beginTransaction();
+            // try {
                 // Loop through each entry
                 foreach ($data as $item) {
                     // dd($item->response);
@@ -416,11 +389,38 @@ class CornController extends Controller
                     // Delete the entry from the mail_logs table after sending the email
                     DB::table('mail_logs')->where('id', $item->id)->delete();
                 }
-                DB::commit();
-            } catch (\Exception $e) {
-                DB::rollBack();
-                // Handle exception or log error
-            }
+            //     DB::commit();
+            // } catch (\Exception $e) {
+            //     DB::rollBack();
+            //     // Handle exception or log error
+            // }
         }
+        DB::table('cron_logs')->insert([
+            'type' => 'send-to-seller-mail',
+            'response' => json_encode($data),
+        ]);
+    }
+    public function RemoveWebsiteLogs(){
+        // single time after 7 days
+        $now = Carbon::now();
+        $sevenDaysAgo = $now->subDays(7)->format('Y-m-d');
+
+        $websiteLogs = WebsiteLogs::whereDate('created_at', '<', $sevenDaysAgo)->delete();
+        return "Old website logs removed successfully.";
+    }
+    public function RemoveCronLogs()
+    {
+        // every day 1 time
+        // Get the current date and time
+        $now = Carbon::now();
+
+        // Calculate the date 1 day ago
+        $oneDayAgo = $now->subDay()->format('Y-m-d');
+
+        // Delete logs older than 1 day
+        DB::table('cron_logs')->whereDate('created_at', '<', $oneDayAgo)->delete();
+
+        // Return a success message
+        return "Old cron logs removed successfully.";
     }
 }

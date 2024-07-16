@@ -132,22 +132,18 @@
                         </div>
                     </div>
                     <div class="row filter-row" id="group_list">
-                        <div class="col-lg-12 col-12">
+                        <div class="col-lg-5 col-12">
                             <div class="dash-filter-holder">
-                                <div class="row align-items-center">
-                                    <div class="col-md-12">
-                                        <div class="search-bar">
-                                            <form>
-                                                <input type="search" name="" placeholder="Search by group name..." id="group_wies_search">
-                                                <button type="submit" class="btn-search btn-animated">
-                                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
-                                                        <path d="M11 19C15.4183 19 19 15.4183 19 11C19 6.58172 15.4183 3 11 3C6.58172 3 3 6.58172 3 11C3 15.4183 6.58172 19 11 19Z" stroke="white" stroke-linecap="round" stroke-linejoin="round"/>
-                                                        <path d="M20.9999 21.0004L16.6499 16.6504" stroke="white" stroke-linecap="round" stroke-linejoin="round"/>
-                                                    </svg>
-                                                </button>
-                                            </form>
-                                        </div>
-                                    </div>
+                                <div class="search-bar">
+                                    <form>
+                                        <input type="search" name="" placeholder="Search by group name..." id="group_wies_search">
+                                        <button type="submit" class="btn-search btn-animated">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
+                                                <path d="M11 19C15.4183 19 19 15.4183 19 11C19 6.58172 15.4183 3 11 3C6.58172 3 3 6.58172 3 11C3 15.4183 6.58172 19 11 19Z" stroke="white" stroke-linecap="round" stroke-linejoin="round"/>
+                                                <path d="M20.9999 21.0004L16.6499 16.6504" stroke="white" stroke-linecap="round" stroke-linejoin="round"/>
+                                            </svg>
+                                        </button>
+                                    </form>
                                 </div>
                             </div>
                         </div>

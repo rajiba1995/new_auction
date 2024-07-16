@@ -48,6 +48,8 @@ Route::get('/clear-cache', function() {
         Route::get('/buyer-expiry-package-check',[CornController::class,'BuyerExpiryPackageCheckCron'])->name('buyer_expiry_package_chcek_cron');
         Route::get('/before-start-auction',[CornController::class,'BeforeStartAuction'])->name('before_start_auction_chcek_cron');
         Route::get('/send-to-seller-mail',[CornController::class,'SendToSellerMail'])->name('send_to_seller_mail');
+        Route::get('/remove-website-logs',[CornController::class,'RemoveWebsiteLogs'])->name('remove_website_logs');
+        Route::get('/remove-cron-logs',[CornController::class,'RemoveCronLogs'])->name('remove_cron_logs');
     });   
 
     Route::group(['middleware' => ['auth', 'check.user.profile']], function () {
@@ -84,6 +86,7 @@ Route::get('/clear-cache', function() {
             Route::get('/seller-package-history', [UserController::class, 'seller_package_history'])->name('user.seller_package_history');
             Route::get('/buyer-package-history', [UserController::class, 'buyer_package_history'])->name('user.buyer_package_history');
             Route::post('/transaction/purchase', [UserController::class, 'purchase'])->name('user.purchase.transaction');
+            Route::get('/verify-badge-price', [UserController::class, 'verify_badge_price'])->name('user.verify.badge_price');
             Route::get('/profile', [UserController::class, 'profile'])->name('user.profile');
             // Route::get('/profile/edit', [UserController::class, 'ProfileEdit'])->name('user.profile.edit');
             Route::get('/state_wise_city', [UserController::class, 'StateWiseCity'])->name('user.state_wise_city');
