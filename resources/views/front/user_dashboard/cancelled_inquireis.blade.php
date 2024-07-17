@@ -276,15 +276,15 @@
                                                                                         </li>
                                                                                         <li>
                                                                                             <label>Description of the Service</label>
-                                                                                            <p class="hidden">{{ucfirst($item['description'])}}</p>
+                                                                                            <p class="hidden">{!!ucfirst($item['description'])!!}</p>
                                                                                         </li>
                                                                                     </ul>
                                                                                 </div>
-                                                                                {{-- <div class="note-wrap">
+                                                                                <div class="note-wrap">
                                                                                     <h3>Notepad</h3>
-                                                                                    <textarea class="form-control note-textarea">It is a long established fact that a reader will be distracted by the readable content of a page when looking at its layout. The point of using Lorem Ipsum is that it has a more-or-less normal distribution of letters, as opposed</textarea>
+                                                                                    <textarea class="form-control note-textarea"></textarea>
                                                                                     <button type="button" class="btn btn-animated bg-green">Save</button>
-                                                                                </div> --}}
+                                                                                </div>
                                                                             </td>
                                                                         </tr>
                                                                     </tbody>

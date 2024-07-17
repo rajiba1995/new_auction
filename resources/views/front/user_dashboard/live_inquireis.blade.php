@@ -136,7 +136,7 @@
                         </div>
                     </div>
                     <div class="row filter-row" id="group_list">
-                        <div class="col-lg-5 col-12">
+                        <div class="col-lg-12 col-12">
                             <div class="search-bar">
                                 <form>
                                     <input type="search" name="" placeholder="Search by inquiry title..." id="group_wies_search">
@@ -150,7 +150,7 @@
                             </div>
                         </div>
                     </div>
-                    <div class="row filter-cta-fow">
+                    {{-- <div class="row filter-cta-fow">
                         <div class="col-lg-5 col-12 text-end">
                             <button type="button" class="btn btn-cta btn-animated">
                                 <svg xmlns="http://www.w3.org/2000/svg" version="1.1" xmlns:xlink="http://www.w3.org/1999/xlink" width="16" height="16" x="0" y="0" viewBox="0 0 24 24" style="enable-background:new 0 0 512 512" xml:space="preserve" class="">
@@ -169,7 +169,7 @@
                                 Refresh
                             </button>
                         </div>
-                    </div>
+                    </div> --}}
                 </div>
             </div>
 
@@ -200,12 +200,12 @@
                                         <tbody id="inquiries_data_append">
                                             @foreach($live_inquiries as $item)
                                             <tr>
-                                                <td class="input-table-column" colspan="6">
+                                                <td class="input-table-column" colspan="5">
                                                     <table class="table input-table">
                                                         <tbody>
                                                             <tr>
                                                                 <td class="input-id-td">{{$item->inquiry_id}}</td>
-                                                                <td class="input-title-td">{{$item->title}}</td>
+                                                                <td class="input-title-td"><span class="inquiry_title">{{$item->title}}</span></td>
                                                                 <td class="input-details-td">
                                                                     <ul class="input-data-list">
                                                                         <li>
@@ -269,15 +269,15 @@
                                                                             </li>
                                                                             <li>
                                                                                 <label>Description of the Service</label>
-                                                                                <p class="hidden">{{$item->description}}</p>
+                                                                                <p class="hidden">{!!$item->description!!}</p>
                                                                             </li>
                                                                         </ul>
                                                                     </div>
-                                                                    {{-- <div class="note-wrap">
+                                                                    <div class="note-wrap" style="padding-top: 0px;">
                                                                         <h3>Notepad</h3>
                                                                         <textarea class="form-control note-textarea"></textarea>
                                                                         <button type="button" class="btn btn-animated bg-green">Save</button>
-                                                                    </div> --}}
+                                                                    </div>
                                                                 </td>
                                                             </tr>
                                                         </tbody>
@@ -798,7 +798,7 @@
     });
 
     $(document).ready(function() {
-        // $('.rajib').on('click', function() {
+        $('.rajib').on('click', function() {
         setInterval(function() {
             console.log('Done')
             $.ajax({
@@ -824,7 +824,7 @@
                        
                         var inquiry_id = item.id;
                        var htmlString = '<tr>'+
-                            '<td class="input-table-column" colspan="6">' +
+                            '<td class="input-table-column" colspan="5">' +
                             '<table class="table input-table">' +
                             '<tbody>' +
                             '<tr>' +
@@ -864,17 +864,8 @@
                             }
                             htmlString +='</td>' +
                             '<td class="input-start-date-td">' + item.start_date_time + '<br> <img src="{{asset("frontend/assets/images/chevron-down.png")}}" alt=""><br>' + item.end_date_time + '</td>' +
-                            '<td class="min-quote-td">' + (item.minimum_quote_amount ? formatCurrency(item.minimum_quote_amount) : '----') + '<br> <img src="{{asset("frontend/assets/images/chevron-down.png")}}" alt=""><br>' + (item.maximum_quote_amount ? formatCurrency(item.maximum_quote_amount) : '----') + '</td>' +
                             '</tr>' +
-                            '<tr>' +
-                            '<td colspan="8" class="note-td">' +
-                            '<div class="note-wrap">' +
-                            '<h3>Notepad</h3>' +
-                            '<textarea class="form-control note-textarea"></textarea>' +
-                            '<button type="button" class="btn btn-animated bg-green">Save</button>' +
-                            '</div>' +
-                            '</td>' +
-                            '</tr>' +
+                            '<tr><td colspan="5" class="note-td"><div class="description-wrap"><ul class="input-data-list"> <li> <label>Min Quote &amp; Max Quote</label><p class="hidden">'+ (item.minimum_quote_amount ? formatCurrency(item.minimum_quote_amount) : '----') + '<br> <img src="{{asset("frontend/assets/images/chevron-down.png")}}" alt=""><br>' + (item.maximum_quote_amount ? formatCurrency(item.maximum_quote_amount) : '----') + '</p></li><li><label>Description of the Service</label><p class="hidden">'+item.description+'</p></li></ul></div><div class="note-wrap" style="padding-top: 0px;"><h3>Notepad</h3><textarea class="form-control note-textarea"></textarea><button type="button" class="btn btn-animated bg-green">Save</button></div></td></tr>'+
                             '</tbody>' +
                             '</table>' +
                             '</td>' +
@@ -1056,7 +1047,7 @@
                 }
             });
         }, 1000); // 1000 milliseconds = 1 second
-        // });
+        });
     });
     $('#UnlockSellerModal').on('submit', function(e) {
         e.preventDefault();

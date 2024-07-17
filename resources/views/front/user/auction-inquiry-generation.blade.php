@@ -262,36 +262,38 @@
                                         </div>
                                     </div>
                                 @endif
-                                @if(count($watch_list_data)>0)
+                                
                                 <div class="row input-row">
                                     <div class="col-12">
                                         <div class="form-group">
                                             <label class="form-label">New Participants*</label>
                                             <div class="participants-block border-red" id="append_new_partisipants">
-                                                @foreach ($watch_list_data as $item)
-                                                {{-- {{dd($SellerData)}} --}}
-                                                @if(!in_array($item->SellerData->id,$SellerData))
-                                                    <label class="participant" id="participant{{$item->id}}">
-                                                        @if($item->SellerData)
-                                                            <input type="hidden" name="participant[]" value="{{$item->SellerData->id}}">
+                                                @if(count($watch_list_data)>0)
+                                                    @foreach ($watch_list_data as $item)
+                                                    {{-- {{dd($SellerData)}} --}}
+                                                    @if(!in_array($item->SellerData->id,$SellerData))
+                                                        <label class="participant" id="participant{{$item->id}}">
+                                                            @if($item->SellerData)
+                                                                <input type="hidden" name="participant[]" value="{{$item->SellerData->id}}">
+                                                            @endif
+                                                            {{$item->SellerData && $item->SellerData->business_name ?$item->SellerData->business_name:""}}
+                                                            <span class="remove Exist_remove2" data-id="{{$item->id}}">
+                                                                <svg width="18" height="16" viewBox="0 0 18 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                                    <path d="M13.3636 3.7738L4.66797 11.2932" stroke="#ee2737" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                                                    <path d="M4.66797 3.7738L13.3636 11.2932" stroke="#ee2737" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                                                </svg>
+                                                            </span>
+                                                        </label>
                                                         @endif
-                                                        {{$item->SellerData && $item->SellerData->business_name ?$item->SellerData->business_name:""}}
-                                                        <span class="remove Exist_remove2" data-id="{{$item->id}}">
-                                                            <svg width="18" height="16" viewBox="0 0 18 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                                                <path d="M13.3636 3.7738L4.66797 11.2932" stroke="#ee2737" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                                                                <path d="M4.66797 3.7738L13.3636 11.2932" stroke="#ee2737" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                                                            </svg>
-                                                        </span>
-                                                    </label>
-                                                    @endif
-                                                @endforeach
+                                                    @endforeach
+                                                @endif
                                             </div>
                                         </div>
                                     </div>
                                 </div>
-                                @endif
+                               
                                 <div class="add-invite-row">
-                                    <button type="button" onclick="checkModal()" id="checkModal" class="btn btn-add-invite" data-bs-toggle="modal" data-bs-target="#inviteModalWebsite">
+                                    <button type="button" onclick="checkModal1()" id="checkModal" class="btn btn-add-invite">
                                         <svg width="23" height="20" viewBox="0 0 23 20" fill="none" xmlns="http://www.w3.org/2000/svg">
                                             <g clip-path="url(#clip0_613_9373)">
                                             <path d="M15.332 17.5V15.8333C15.332 14.9493 14.9282 14.1014 14.2093 13.4763C13.4904 12.8512 12.5154 12.5 11.4987 12.5H4.79036C3.7737 12.5 2.79868 12.8512 2.07979 13.4763C1.3609 14.1014 0.957031 14.9493 0.957031 15.8333V17.5" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
@@ -308,7 +310,7 @@
                                         Add Participants from Website
                                     </button>
 
-                                    <button type="button" class="btn btn-add-invite" data-bs-toggle="modal" data-bs-target="#inviteModal">
+                                    <button type="button" onclick="openInviteModal()" class="btn btn-add-invite">
                                         <svg width="23" height="20" viewBox="0 0 23 20" fill="none" xmlns="http://www.w3.org/2000/svg">
                                             <g clip-path="url(#clip0_613_9373)">
                                             <path d="M15.332 17.5V15.8333C15.332 14.9493 14.9282 14.1014 14.2093 13.4763C13.4904 12.8512 12.5154 12.5 11.4987 12.5H4.79036C3.7737 12.5 2.79868 12.8512 2.07979 13.4763C1.3609 14.1014 0.957031 14.9493 0.957031 15.8333V17.5" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
@@ -466,7 +468,7 @@
 </div>
 
    {{-- invite modal from out side --}}
-   <div class="modal fade invite-modal" id="inviteModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+<div class="modal fade invite-modal" id="inviteModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
@@ -477,15 +479,15 @@
                 <form id="inviteForm" >
                     @csrf
                     <div class="input-row">
-                            <div class="input-wrap">
-                                <input type="hidden" name="groupId" value="{{$group_id}}">
-                                <label>Name</label>
-                                <input type="text" name="name[]" placeholder="Ex, John" class="border-red" required>
-                            </div>
-                            <div class="input-wrap">
-                                <label>Phone Number *</label>
-                                <input type="text" name="phone[]" placeholder="+91 xx - xxx - xxxx" class="border-red" required>
-                            </div>
+                        <div class="input-wrap">
+                            <input type="hidden" name="groupId" value="{{$group_id}}">
+                            <label>Name</label>
+                            <input type="text" name="name[]" placeholder="Ex, John" class="border-red" required>
+                        </div>
+                        <div class="input-wrap">
+                            <label>Phone Number *</label>
+                            <input type="text" name="phone[]" placeholder="+91 xx - xxx - xxxx" class="border-red" required>
+                        </div>
                         <button type="button" class="btn-add" id="addMore">
                             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
                                 <path d="M12 5V19" stroke="white" stroke-linecap="round" stroke-linejoin="round"/>
@@ -521,12 +523,18 @@
                 <div class="modal-body">
                     <div class="row">
                         <div class="search-section">
-                            <div class="location-bar location_bar" style="width: 32% !important;">
-                                <img src="{{asset('frontend/assets/images/location.png')}}" alt="">
-                                <input type="text" placeholder="Select Location" id="location_input" name="global_state_name" autocomplete="off" value="west bengal">
+                            <!--<div class="location-bar location_bar" style="width: 32% !important;">-->
+                            <!--    <img src="{{asset('frontend/assets/images/location.png')}}" alt="">-->
+                            <!--    <input type="text" placeholder="Select Location"  autocomplete="off" value="west bengal">-->
+                            <!--</div>-->
+                            <!--<div id="stateSuggestions"></div>-->
+                            <div class="participant-location-dropdown">
+                                <select class="form-select participant-location" id="location_input" name="global_state_name">
+                                    <option value="west bengal" selected>west bengal</option>
+                                    <option value="Kolkata">Kolkata</option>
+                                    <option value="Mumbai">Mumbai</option>
+                                </select>
                             </div>
-                            <div id="stateSuggestions"></div>
-                            
                             <div class="search-bar search_bar">
                                 <input type="search" name="keyword" id="partisipants_location" placeholder="Search" autocomplete="off">
                             </div>
@@ -548,6 +556,21 @@
 @endsection
 @section('script')
 <script>
+    function checkModal1() {
+        
+        var category =$('#category').val().trim();
+        var subCategory =$('#sub_category').val().trim();
+        // if(category.length === 0  &&  subCategory.length === 0){
+        //     Swal.fire("Please select Category & Sub-Category before adding participants");
+        //     return false;
+        // }else{
+            $('#inviteModalWebsite').modal('show');
+        // }
+    }
+    
+    function openInviteModal() {
+        $('#inviteModal').modal('show');
+    }
     $(document).ready(function(){
         $('#auction_requirement_form button[type="submit"]').click(function(event){
             event.preventDefault();
@@ -917,23 +940,10 @@
 
     }
 </script>
-<script src="{{asset('frontend/assets/js/custom.js')}}"></script>
+<!--<script src="{{asset('frontend/assets/js/custom.js')}}"></script>-->
 
 <script>
-document.addEventListener('DOMContentLoaded', function() {
-    function checkModal(){
-        var category =$('#category').val().trim();
-        var subCategory =$('#sub_category').val().trim();
-        // if(category.length === 0  &&  subCategory.length === 0){
-        //     Swal.fire("Please select Category & Sub-Category before adding participants");
-        //     return false;
-        // }else{
-            $('#inviteModalWebsite').modal('show');
-        // }
-    }
-    // Assuming you have a button or some trigger to call this function
-    document.getElementById('checkModal').addEventListener('click', checkModal);
-});
+
     document.addEventListener('DOMContentLoaded', function() {
         $('#partisipants_location').on('keyup', function() {
             var keyword = $('#partisipants_location').val().toLowerCase();
@@ -964,7 +974,10 @@ document.addEventListener('DOMContentLoaded', function() {
                         var result_data = response.master_date.data;
                         var html= "";
                         result_data.forEach(function(element, index) {
-                            let imageSrc = element.image ? "{{asset("+element.image+")}}" : "{{asset('frontend/assets/images/building.png')}}";
+                            let url = "{{asset("")}}";
+                             let imageSrc = element.image && element.image.trim() !== "" 
+                            ? url+"/"+element.image 
+                            : "{{ asset('frontend/assets/images/building.png') }}";
                             let add_img = "{{asset('frontend/assets/images/add.png')}}";
                             let mobile = element.mobile ? element.mobile : "xxx";
                             let maskedNumber = mobile.replace(/.(?=.{3,}$)/g, 'x');
@@ -1155,4 +1168,10 @@ document.addEventListener('DOMContentLoaded', function() {
 </script>
 <script type="text/javascript" src="{{ asset('frontend/ckeditor/ckeditor.js') }}"></script>
 <script type="text/javascript" src="{{ asset('frontend/ckeditor/adapters/jquery.js') }}"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js"></script>
+<script>
+    $(document).ready(function () {
+        // $('.participant-location').select2();
+    });
+</script>
 @endsection

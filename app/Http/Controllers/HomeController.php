@@ -232,6 +232,7 @@ class HomeController extends Controller
             $data1 = User::with('MyBadgeData', 'UserProductData', 'MyPackageData')
             ->whereIn('id', $User_products)
             ->where('id', '!=', $authUserId)
+            ->whereNotNull('business_name')
             ->get();
             // Fetching users based on keyword search
             $data2 = User::with('MyBadgeData', 'UserProductData', 'MyPackageData')
@@ -249,6 +250,7 @@ class HomeController extends Controller
                     ->orWhere('email', 'like', '%'.$keyword.'%');
             })
             ->where('id', '!=', $authUserId)
+            ->whereNotNull('business_name')
             ->get();
             // Merging both collections
             $mergedData = $data1->merge($data2);
@@ -347,6 +349,7 @@ class HomeController extends Controller
             $data1 = User::with('MyBadgeData', 'UserProductData', 'MyPackageData', 'StateData', 'CityData')
             ->whereIn('id', $User_products)
             ->where('id', '!=', $authUserId)
+            ->whereNotNull('business_name')
             ->get();
             // Fetching users based on keyword search
             $data2 = User::with('MyBadgeData', 'UserProductData', 'MyPackageData', 'StateData', 'CityData')
@@ -364,6 +367,7 @@ class HomeController extends Controller
                     ->orWhere('email', 'like', '%'.$keyword.'%');
             })
             ->where('id', '!=', $authUserId)
+            ->whereNotNull('business_name')
             ->get();
             // Merging both collections
             $mergedData = $data1->merge($data2);
