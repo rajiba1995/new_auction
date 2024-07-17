@@ -206,7 +206,7 @@
                                                 </tr>
                                             </thead>
                                             <tbody class="dashboard_groups">
-                                            @if ($inquiries)
+                                            @if ($inquiries)                                           
                                                 @foreach($inquiries as $item)
                                                     <tr class="item">
                                                         <td class="input-table-column" colspan="6">

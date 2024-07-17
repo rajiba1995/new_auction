@@ -17,7 +17,7 @@
                             <div class="tab-content">
                                 <div class="tab-content-wrapper">
                                     <div class="top-content-bar">
-                                        <p class="text-light">UPLOAD<strong>->YOUR PHOTOS &amp; DOCUMENTS</strong> </p>
+                                        <p class="text-light"><strong>UPLOAD PHOTOS &amp; DOCUMENTS</strong> </p>
                                         <a href="{{ route('user.photos_and_documents') }}" class="btn btn-normal btn-cta"><i class="fa-solid fa-backward"></i> Back</a>
                                     </div>
                                     <div class="inner">
@@ -66,6 +66,7 @@
                                                         <label for="gst_file" class="custom-upload">
                                                             <input type="file" name="gst_file" id="gst_file">
                                                             <span class="btn btn-animated btn-upload">Upload</span>
+                                                            <span class="text-danger" id="gst_file_error" role="alert"></span>
                                                         </label>
                                                         @error('gst_file')
                                                         <span class="text-danger" role="alert">
@@ -86,6 +87,7 @@
                                                         <input type="text" name="gst_number" class="form-control {{$user_document && $user_document->gst_number?"border-red":"border-danger"}}" value="{{$user_document?$user_document->gst_number:old('gst_number')}}">
                                                         @error('gst_number')<span class="text-danger" role="alert"> <strong>{{ $message }}</strong> </span>
                                                         @enderror
+                                                        <span class="text-danger" id="gst_number_error" role="alert"></span>
                                                     </div>
                                                 </div>
                                             </div>
@@ -96,6 +98,7 @@
                                                         <label for="pan_file" class="custom-upload">
                                                             <input type="file" name="pan_file" id="pan_file">
                                                             <span class="btn btn-animated btn-upload">Upload</span>
+                                                            <span class="text-danger" id="pan_file_error" role="alert"></span>
                                                         </label>
                                                         @error('pan_file')
                                                         <span class="text-danger" role="alert">
@@ -116,6 +119,7 @@
                                                         <input type="text" name="pan_number" class="form-control {{$user_document && $user_document->pan_number?"border-red":"border-danger"}}" value="{{$user_document?$user_document->pan_number:old('pan_number')}}">
                                                         @error('pan_number')<span class="text-danger" role="alert"> <strong>{{ $message }}</strong> </span>
                                                         @enderror
+                                                        <span class="text-danger" id="pan_number_error" role="alert"></span>
                                                     </div>
                                                 </div>
                                             </div>
@@ -126,6 +130,8 @@
                                                         <label for="adhar_file" class="custom-upload">
                                                             <input type="file" name="adhar_file" id="adhar_file">
                                                             <span class="btn btn-animated btn-upload">Upload</span>
+                                                            <span class="text-danger" id="adhar_file_error" role="alert"></span>
+                                                            
                                                         </label>
                                                         @error('adhar_file')
                                                         <span class="text-danger" role="alert">
@@ -146,6 +152,7 @@
                                                         <input type="text" name="adhar_number" class="form-control {{$user_document && $user_document->adhar_number?"border-red":"border-danger"}}" value="{{$user_document?$user_document->adhar_number:old('adhar_number')}}">
                                                         @error('adhar_number')<span class="text-danger" role="alert"> <strong>{{ $message }}</strong> </span>
                                                         @enderror
+                                                        <span class="text-danger" id="adhar_number_error" role="alert"></span>
                                                     </div>
                                                 </div>
                                             </div>
@@ -156,6 +163,8 @@
                                                         <label for="trade_license_file" class="custom-upload">
                                                             <input type="file" name="trade_license_file" id="trade_license_file">
                                                             <span class="btn btn-animated btn-upload">Upload</span>
+                                                            <span class="text-danger" id="trade_license_file_error" role="alert"></span>
+
                                                         </label>
                                                         @error('trade_license_file')
                                                         <span class="text-danger" role="alert">
@@ -176,6 +185,7 @@
                                                         <input type="text" name="trade_license_number" class="form-control {{$user_document && $user_document->trade_license_number?"border-red":"border-danger"}}" value="{{$user_document?$user_document->trade_license_number:old('trade_license_number')}}">
                                                         @error('trade_license_number')<span class="text-danger" role="alert"> <strong>{{ $message }}</strong> </span>
                                                         @enderror
+                                                        <span class="text-danger" id="trade_license_number_error" role="alert"></span>
                                                     </div>
                                                 </div>
                                             </div>
@@ -186,6 +196,8 @@
                                                         <label for="cancelled_cheque_file" class="custom-upload">
                                                             <input type="file" name="cancelled_cheque_file" id="cancelled_cheque_file">
                                                             <span class="btn btn-animated btn-upload">Upload</span>
+                                                            <span class="text-danger" id="cancelled_cheque_file_error" role="alert"></span>
+
                                                         </label>
                                                         @error('cancelled_cheque_file')
                                                         <span class="text-danger" role="alert">
@@ -206,6 +218,7 @@
                                                         <input type="text" name="account_number" class="form-control {{$user_document && $user_document->account_number?"border-red":"border-danger"}}" value="{{$user_document?$user_document->account_number:old('account_number')}}">
                                                         @error('account_number')<span class="text-danger" role="alert"> <strong>{{ $message }}</strong> </span>
                                                         @enderror
+                                                        <span class="text-danger" id="account_number_error" role="alert"></span>
                                                     </div>
                                                 </div>
                                                 <div class="col-lg-3 col-12">
@@ -214,6 +227,7 @@
                                                         <input type="text" name="ifsc_code" class="form-control {{$user_document && $user_document->ifsc_code?"border-red":"border-danger"}}" value="{{$user_document?$user_document->ifsc_code:old('ifsc_code')}}">
                                                         @error('ifsc_code')<span class="text-danger" role="alert"> <strong>{{ $message }}</strong> </span>
                                                         @enderror
+                                                        <span class="text-danger" id="ifsc_code_error" role="alert"></span>
                                                     </div>
                                                 </div>
                                             </div>
@@ -224,7 +238,7 @@
                                                     <div class="form-group">
                                                         <label class="form-label">Upload Additional Documents</label>
                                                         <label for="additional_document_file" class="custom-upload">
-                                                            <input type="file" name="additional_document_file[]" class="additional_document_file" id="additional_document_file" required>
+                                                            <input type="file" name="additional_document_file[]" class="additional_document_file" id="additional_document_file">
                                                             <span class="btn btn-animated btn-upload">Upload</span>
                                                         </label>
                                                     </div>
@@ -238,7 +252,7 @@
                                                 <div class="col-lg-3 col-12">
                                                     <div class="form-group">
                                                         <label class="form-label">Additional Document</label>
-                                                        <input type="text" class="form-control border-red" name="additional_documents[]" required>
+                                                        <input type="text" class="form-control border-red" name="additional_documents[]">
                                                     </div>
                                                 </div>
                                                 <div class="col-lg-1 col-12">
@@ -248,27 +262,8 @@
                                                         </a>
                                                     </div>
                                                 </div>
-                                            </div> 
-                                            {{-- <div class="row additional-doc-output-row">
-                                                <div class="offset-lg-4 col-lg-8 col-12">
-                                                    <div class="form-group">
-                                                        <ul>
-                                                            <li>
-                                                                <img src="{{asset('frontend/assets/images/aadhaar_card.jpg')}}" alt="">
-                                                            </li>
-                                                            <li>
-                                                                <img src="{{asset('frontend/assets/images/pan_card.jpg')}}" alt="">
-                                                            </li>
-                                                        </ul>
-                                                    </div>
-                                                </div>
-<<<<<<< HEAD
-                                            </div> --}}
-                                            <div id="additional_document_append"></div>
-=======
-                                            </div>
+                                            </div>                                        
                                             <div id="additional_document_append"></div>                                            
->>>>>>> 3689ccdebea69cdb49eeeb68ddc8b29e2391d2e3
                                             <div class="form-submit-row">
                                                 <button type="submit" class="btn btn-animated btn-submit">Submit</button>
                                             </div>
@@ -625,7 +620,7 @@
     });
 
     // Load previews from local storage when the page loads
-    loadPreviewsFromLocalStorage();
+    // loadPreviewsFromLocalStorage();
 });
 
 
@@ -862,5 +857,130 @@ document.getElementById('user_images').addEventListener('change', function(event
             }
         });
 
+        // submit the form
+        $(document).ready(function() {
+    $('.input-form').on('submit', function(e) {
+        e.preventDefault(); 
+        
+        let isValid = true;
+
+        // Clear previous error messages
+        $('#gst_number_error').text('');
+        $('#gst_file_error').text('');
+        $('#pan_number_error').text('');
+        $('#pan_file_error').text('');
+        $('#adhar_number_error').text('');
+        $('#adhar_file_error').text('');
+        $('#trade_license_number_error').text('');
+        $('#trade_license_file_error').text('');
+        $('#account_number_error').text('');
+        $('#ifsc_code_error').text('');
+        $('#cancelled_cheque_file_error').text('');
+
+        // GST validation
+        let gstFile = $('#gst_file').val();
+        let gstNumber = $('input[name="gst_number"]').val();
+        if (gstFile && !gstNumber) {
+            $('#gst_number_error').text('GST Number is required');
+            isValid = false;
+        }
+        if (gstNumber && !gstFile) {
+            $('#gst_file_error').text('GST Document is required');
+            isValid = false;
+        }
+
+        // PAN card validation
+        let panFile = $('#pan_file').val();
+        let panNumber = $('input[name="pan_number"]').val();
+        if (panFile && !panNumber) {
+            $('#pan_number_error').text('PAN Number is required');
+            isValid = false;
+        }
+
+        if (panNumber && !panFile) {
+            $('#pan_file_error').text('PAN Document is required');
+            isValid = false;
+        }
+
+        // Aadhar card validation
+        let aadharFile = $('#adhar_file').val();
+        let aadharNumber = $('input[name="adhar_number"]').val();
+        if (aadharFile && !aadharNumber) {
+            $('#adhar_number_error').text('Aadhar Number is required');
+            isValid = false;
+        }
+        if (aadharNumber && !aadharFile) {
+            $('#adhar_file_error').text('Aadhar Document is required');
+            isValid = false;
+        }
+
+        // Trade License Validation
+        let tradeFile = $('#trade_license_file').val();
+        let tradeNumber = $('input[name="trade_license_number"]').val();
+        if (tradeFile && !tradeNumber) {
+            $('#trade_license_number_error').text('Trade License Number is required');
+            isValid = false;
+        }
+        if (tradeNumber && !tradeFile) {
+            $('#trade_license_file_error').text('Trade License Document is required');
+            isValid = false;
+        }
+
+        // Cancelled Cheque Validation
+        let chequeFile = $('#cancelled_cheque_file').val();
+        let chequeAccountNumber = $('input[name="account_number"]').val();
+        let chequeIfscCodeNumber = $('input[name="ifsc_code"]').val();
+        if (chequeFile && (!chequeAccountNumber || !chequeIfscCodeNumber)) {
+            if (!chequeAccountNumber) {
+                $('#account_number_error').text('Account Number is required');
+            } 
+            if (!chequeIfscCodeNumber) {
+                $('#ifsc_code_error').text('IFSC Code is required');
+            }
+            isValid = false;
+        }
+        if (chequeAccountNumber && chequeIfscCodeNumber && !chequeFile) {
+            $('#cancelled_cheque_file_error').text('Cancelled Cheque is required');
+            isValid = false;
+        }
+
+        if (!isValid) {
+            return; // Stop form submission if validation fails
+        }
+
+        // Create FormData object
+        let formData = new FormData(this);
+
+        // Make AJAX request to submit the form
+        $.ajax({
+            url: $(this).attr('action'),
+            method: 'POST',
+            data: formData,
+            processData: false, // Do not process the data
+            contentType: false, // Set content type to false
+            success: function(response) {
+                // Handle success response
+                 Swal.fire({
+                    icon: 'success',
+                    title: 'Form Submitted',
+                    text: 'Your form has been submitted successfully!',
+                });
+                // Optionally, you can redirect or clear the form
+            },
+            error: function(response) {
+                // Handle error response
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Submission Failed',
+                    text: 'An error occurred while submitting the form. Please try again.',
+                });
+            }
+        });
+    });
+});
+
+
+
+      
 </script>
 @endsection
