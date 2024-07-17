@@ -69,7 +69,8 @@ Route::get('/clear-cache', function() {
             Route::get('/photos-and-documents/edit', [UserController::class, 'photos_and_documents_edit'])->name('user.photos_and_documents_edit');
             Route::get('/photos-and-documents/delete', [UserController::class, 'photos_and_documents_delete'])->name('user.photos_and_documents_delete');
             Route::post('/photos-and-documents/update', [UserController::class, 'photos_and_documents_update'])->name('user.photos_and_documents_update');
-            
+            Route::get('/additional-photos-and-documents/delete', [UserController::class, 'additional_photos_and_documents_delete'])->name('user.additional_photos_and_documents_delete');        
+
             Route::get('/payment-management', [UserController::class, 'payment_management'])->name('user.payment_management');
             Route::get('/wallet-management', [UserController::class, 'wallet_management'])->name('user.wallet_management');//wallet
             Route::post('/package/payment-management', [UserController::class, 'package_payment_management'])->name('user.package_payment_management');
@@ -140,6 +141,8 @@ Route::get('/clear-cache', function() {
             Route::get('/live-inquiries-fetch-ajax', [BuyerDashboardController::class, 'live_inquiries_fetch_ajax'])->name('buyer_live_inquiries_by_ajax');
             Route::post('/live-inquiries-credit-bit', [BuyerDashboardController::class, 'CreditBuyerBit'])->name('buyer_live_inquiries_credit_bit');
             Route::post('/live-inquiry-seller-allot', [BuyerDashboardController::class, 'live_inquiry_seller_allot'])->name('live_inquiry_seller_allot');
+            Route::post('/update-your-notes', [BuyerDashboardController::class, 'update_your_notes'])->name('update_your_notes');
+
         });
         // Seller Dashboard
             Route::get('seller/groups', [SellerDashboardController::class, 'index'])->name('user_seller_dashboard');

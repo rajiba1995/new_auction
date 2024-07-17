@@ -49,12 +49,12 @@
                                                     @foreach ($AllImages as  $item)
                                                     <div class="photo-wrap" id="RemoveLI{{$item->id}}">
                                                         <img src="{{asset($item->image)}}" alt="No-Image">
-                                                            <span class="remove itemremove" data-id="{{$item->id}}">
-                                                                <svg width="13" height="11" viewBox="0 0 13 11" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                                                    <path d="M9.5486 3.03894L3.26562 8.21932" stroke="white" stroke-linecap="round" stroke-linejoin="round"/>
-                                                                    <path d="M3.26562 3.03894L9.5486 8.21932" stroke="white" stroke-linecap="round" stroke-linejoin="round"/>
-                                                                </svg>                                                        
-                                                            </span>
+                                                        <span class="remove itemremove" data-id="{{$item->id}}">
+                                                            <svg width="13" height="11" viewBox="0 0 13 11" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                                <path d="M9.5486 3.03894L3.26562 8.21932" stroke="white" stroke-linecap="round" stroke-linejoin="round"/>
+                                                                <path d="M3.26562 3.03894L9.5486 8.21932" stroke="white" stroke-linecap="round" stroke-linejoin="round"/>
+                                                            </svg>                                                        
+                                                        </span>
                                                     </div>
                                                     @endforeach                                                    
                                                 </div>
@@ -68,6 +68,7 @@
                                                             <span class="btn btn-animated btn-upload">Upload</span>
                                                             <span class="text-danger" id="gst_file_error" role="alert"></span>
                                                         </label>
+                                                        <input type="hidden" id="document_gst_file" value="{{$user_document?asset($user_document->gst_file):""}}">
                                                         @error('gst_file')
                                                         <span class="text-danger" role="alert">
                                                             <strong>{{ $message }}</strong>
@@ -100,6 +101,7 @@
                                                             <span class="btn btn-animated btn-upload">Upload</span>
                                                             <span class="text-danger" id="pan_file_error" role="alert"></span>
                                                         </label>
+                                                        <input type="hidden" id="document_pan_file" value="{{$user_document?asset($user_document->pan_file):""}}">
                                                         @error('pan_file')
                                                         <span class="text-danger" role="alert">
                                                             <strong>{{ $message }}</strong>
@@ -131,8 +133,9 @@
                                                             <input type="file" name="adhar_file" id="adhar_file">
                                                             <span class="btn btn-animated btn-upload">Upload</span>
                                                             <span class="text-danger" id="adhar_file_error" role="alert"></span>
-                                                            
                                                         </label>
+                                                            
+                                                        <input type="hidden" id="document_adhar_file" value="{{$user_document?asset($user_document->adhar_file) :""}}">
                                                         @error('adhar_file')
                                                         <span class="text-danger" role="alert">
                                                             <strong>{{ $message }}</strong>
@@ -164,8 +167,8 @@
                                                             <input type="file" name="trade_license_file" id="trade_license_file">
                                                             <span class="btn btn-animated btn-upload">Upload</span>
                                                             <span class="text-danger" id="trade_license_file_error" role="alert"></span>
-
                                                         </label>
+                                                        <input type="hidden" id="document_trade_license_file" value="{{$user_document?asset($user_document->trade_license_file) :""}}">
                                                         @error('trade_license_file')
                                                         <span class="text-danger" role="alert">
                                                             <strong>{{ $message }}</strong>
@@ -199,6 +202,8 @@
                                                             <span class="text-danger" id="cancelled_cheque_file_error" role="alert"></span>
 
                                                         </label>
+                                                        <input type="hidden" id="document_cancelled_cheque_file" value="{{$user_document?asset($user_document->cancelled_cheque_file) :""}}">
+
                                                         @error('cancelled_cheque_file')
                                                         <span class="text-danger" role="alert">
                                                             <strong>{{ $message }}</strong>
@@ -240,6 +245,8 @@
                                                         <label for="additional_document_file" class="custom-upload">
                                                             <input type="file" name="additional_document_file[]" class="additional_document_file" id="additional_document_file">
                                                             <span class="btn btn-animated btn-upload">Upload</span>
+                                                        <span class="text-danger" id="additional_document_file_error" role="alert"></span>
+                                                         
                                                         </label>
                                                     </div>
                                                 </div>
@@ -253,6 +260,7 @@
                                                     <div class="form-group">
                                                         <label class="form-label">Additional Document</label>
                                                         <input type="text" class="form-control border-red" name="additional_documents[]">
+                                                        <span class="text-danger" id="additional_document_number_error" role="alert"></span>
                                                     </div>
                                                 </div>
                                                 <div class="col-lg-1 col-12">
@@ -519,12 +527,14 @@
                             <label for="additional_document_file${index}" class="custom-upload">
                                 <input type="file" name="additional_document_file[]" class="additional_document_file" id="additional_document_file${index}" required>
                                 <span class="btn btn-animated btn-upload">Upload</span>
+                                <span class="text-danger" id="additional_document_file_error" role="alert"></span>
+
                             </label>
                         </div>
                     </div>
-                    <div class="col-lg-4 col-12 text-center additionalDocumentFilePreviewColumn" id="additionalDocumentFilePreviewColumn${index}">
+                    <div class="col-lg-4 col-12 text-center additionalDocumentFilePreviewColumn" id="additionalDocumentFilePreviewColumn${index}" >
                         <div class="additionalDocumentFilePreviewContainer" id="additionalDocumentFilePreviewContainer${index}">
-                            <img class="additionalDocumentFilePreview img-fluid" id="additionalDocumentFilePreview${index}" src="" alt="File Preview" style="display: none;" width="85px">
+                            <img class="additionalDocumentFilePreview img-fluid" id="additionalDocumentFilePreview${index}" src="" alt="File Preview" style="display: none;" width="85px" required>
                             <button class="btn btn-primary additionalDocumentViewFileButton" id="additionalDocumentViewFileButton${index}" style="display: none;" onclick="window.open('', '_blank')">View File</button>
                         </div>
                     </div>
@@ -532,6 +542,8 @@
                         <div class="form-group">
                             <label class="form-label">Additional Document</label>
                             <input type="text" class="form-control border-red" name="additional_documents[]" required>
+                            <span class="text-danger" id="additional_document_number_error" role="alert"></span>
+
                         </div>
                     </div>
                     <div class="col-lg-1 col-12">
@@ -570,7 +582,7 @@
                     <div class="form-group">
                         <label class="form-label">Upload Additional Documents</label>
                         <label for="additional_document_file${counter}" class="custom-upload">
-                            <input type="file" name="additional_document_file[]" class="additional_document_file" id="additional_document_file${counter}" required>
+                            <input type="file" name="additional_document_file[]" class="additional_document_file" id="additional_document_file${counter}" >
                             <span class="btn btn-animated btn-upload">Upload</span>
                         </label>
                     </div>
@@ -584,7 +596,7 @@
                 <div class="col-lg-3 col-12">
                     <div class="form-group">
                         <label class="form-label">Additional Document</label>
-                        <input type="text" class="form-control border-red" name="additional_documents[]" required>
+                        <input type="text" class="form-control border-red" name="additional_documents[]" >
                     </div>
                 </div>
                 <div class="col-lg-1 col-12">
@@ -859,125 +871,136 @@ document.getElementById('user_images').addEventListener('change', function(event
 
         // submit the form
         $(document).ready(function() {
-    $('.input-form').on('submit', function(e) {
-        e.preventDefault(); 
-        
-        let isValid = true;
+            $('.input-form').on('submit', function(e) {
+                e.preventDefault(); 
+                
+                let isValid = true;
 
-        // Clear previous error messages
-        $('#gst_number_error').text('');
-        $('#gst_file_error').text('');
-        $('#pan_number_error').text('');
-        $('#pan_file_error').text('');
-        $('#adhar_number_error').text('');
-        $('#adhar_file_error').text('');
-        $('#trade_license_number_error').text('');
-        $('#trade_license_file_error').text('');
-        $('#account_number_error').text('');
-        $('#ifsc_code_error').text('');
-        $('#cancelled_cheque_file_error').text('');
+                // Clear previous error messages
+                $('.text-danger').text('');
+                // GST validation
+                let gstFile = $('#gst_file').val();
+                let gstNumber = $('input[name="gst_number"]').val();
+                let document_gst_file = $('#document_gst_file').val();
+                if (gstFile && !gstNumber && !document_gst_file) {
+                    $('#gst_number_error').text('GST Number is required');
+                    isValid = false;
+                }
+                if (gstNumber && !gstFile && !document_gst_file) {
+                    $('#gst_file_error').text('GST Document is required');
+                    isValid = false;
+                }
 
-        // GST validation
-        let gstFile = $('#gst_file').val();
-        let gstNumber = $('input[name="gst_number"]').val();
-        if (gstFile && !gstNumber) {
-            $('#gst_number_error').text('GST Number is required');
-            isValid = false;
-        }
-        if (gstNumber && !gstFile) {
-            $('#gst_file_error').text('GST Document is required');
-            isValid = false;
-        }
+                // PAN card validation
+                let panFile = $('#pan_file').val();
+                let panNumber = $('input[name="pan_number"]').val();
+                let document_pan_file = $('#document_pan_file').val();
+                if (panFile && !panNumber && !document_pan_file) {
+                    $('#pan_number_error').text('PAN Number is required');
+                    isValid = false;
+                }
 
-        // PAN card validation
-        let panFile = $('#pan_file').val();
-        let panNumber = $('input[name="pan_number"]').val();
-        if (panFile && !panNumber) {
-            $('#pan_number_error').text('PAN Number is required');
-            isValid = false;
-        }
+                if (panNumber && !panFile && !document_pan_file) {
+                    $('#pan_file_error').text('PAN Document is required');
+                    isValid = false;
+                }
 
-        if (panNumber && !panFile) {
-            $('#pan_file_error').text('PAN Document is required');
-            isValid = false;
-        }
+                // Aadhar card validation
+                let aadharFile = $('#adhar_file').val();
+                let aadharNumber = $('input[name="adhar_number"]').val();
+                let document_adhar_file = $('#document_adhar_file').val();
+                if (aadharFile && !aadharNumber && !document_adhar_file) {
+                    $('#adhar_number_error').text('Aadhar Number is required');
+                    isValid = false;
+                }
+                if (aadharNumber && !aadharFile && !document_adhar_file) {
+                    $('#adhar_file_error').text('Aadhar Document is required');
+                    isValid = false;
+                }
 
-        // Aadhar card validation
-        let aadharFile = $('#adhar_file').val();
-        let aadharNumber = $('input[name="adhar_number"]').val();
-        if (aadharFile && !aadharNumber) {
-            $('#adhar_number_error').text('Aadhar Number is required');
-            isValid = false;
-        }
-        if (aadharNumber && !aadharFile) {
-            $('#adhar_file_error').text('Aadhar Document is required');
-            isValid = false;
-        }
+                // Trade License Validation
+                let tradeFile = $('#trade_license_file').val();
+                let tradeNumber = $('input[name="trade_license_number"]').val();
+                let document_trade_license_file = $('#document_trade_license_file').val();
+                if (tradeFile && !tradeNumber && !document_trade_license_file) {
+                    $('#trade_license_number_error').text('Trade License Number is required');
+                    isValid = false;
+                }
+                if (tradeNumber && !tradeFile && !document_trade_license_file) {
+                    $('#trade_license_file_error').text('Trade License Document is required');
+                    isValid = false;
+                }
 
-        // Trade License Validation
-        let tradeFile = $('#trade_license_file').val();
-        let tradeNumber = $('input[name="trade_license_number"]').val();
-        if (tradeFile && !tradeNumber) {
-            $('#trade_license_number_error').text('Trade License Number is required');
-            isValid = false;
-        }
-        if (tradeNumber && !tradeFile) {
-            $('#trade_license_file_error').text('Trade License Document is required');
-            isValid = false;
-        }
+                // Cancelled Cheque Validation
+                let chequeFile = $('#cancelled_cheque_file').val();
+                let chequeAccountNumber = $('input[name="account_number"]').val();
+                let chequeIfscCodeNumber = $('input[name="ifsc_code"]').val();
+                let document_cancelled_cheque_file = $('#document_cancelled_cheque_file').val();
+                if (chequeFile && (!chequeAccountNumber || !chequeIfscCodeNumber) && !document_cancelled_cheque_file) {
+                    if (!chequeAccountNumber) {
+                        $('#account_number_error').text('Account Number is required');
+                    } 
+                    if (!chequeIfscCodeNumber ) {
+                        $('#ifsc_code_error').text('IFSC Code is required');
+                    }
+                    isValid = false;
+                }
+                if (chequeAccountNumber && chequeIfscCodeNumber && !chequeFile && !document_cancelled_cheque_file) {
+                    $('#cancelled_cheque_file_error').text('Cancelled Cheque is required');
+                    isValid = false;
+                }
 
-        // Cancelled Cheque Validation
-        let chequeFile = $('#cancelled_cheque_file').val();
-        let chequeAccountNumber = $('input[name="account_number"]').val();
-        let chequeIfscCodeNumber = $('input[name="ifsc_code"]').val();
-        if (chequeFile && (!chequeAccountNumber || !chequeIfscCodeNumber)) {
-            if (!chequeAccountNumber) {
-                $('#account_number_error').text('Account Number is required');
-            } 
-            if (!chequeIfscCodeNumber) {
-                $('#ifsc_code_error').text('IFSC Code is required');
-            }
-            isValid = false;
-        }
-        if (chequeAccountNumber && chequeIfscCodeNumber && !chequeFile) {
-            $('#cancelled_cheque_file_error').text('Cancelled Cheque is required');
-            isValid = false;
-        }
-
-        if (!isValid) {
-            return; // Stop form submission if validation fails
-        }
-
-        // Create FormData object
-        let formData = new FormData(this);
-
-        // Make AJAX request to submit the form
-        $.ajax({
-            url: $(this).attr('action'),
-            method: 'POST',
-            data: formData,
-            processData: false, // Do not process the data
-            contentType: false, // Set content type to false
-            success: function(response) {
-                // Handle success response
-                 Swal.fire({
-                    icon: 'success',
-                    title: 'Form Submitted',
-                    text: 'Your form has been submitted successfully!',
+                // Additional Documents Validation
+                $('.additional_document_file').each(function(index) {
+                    let additionalDocumentFile = $(this).val();
+                    let additionalDocumentNumber = $(this).closest('.additional-doc-input-row').find('input[name="additional_documents[]"]').val();
+                    if (additionalDocumentFile && !additionalDocumentNumber) {
+                        $(this).closest('.additional-doc-input-row').find('input[name="additional_documents[]"]').after('<span class="text-danger additional_document_number_error" role="alert">Document Number is required</span>');
+                        isValid = false;
+                    }
+                    if (additionalDocumentNumber && !additionalDocumentFile) {
+                        $(this).after('<span class="text-danger additional_document_file_error" role="alert">Document File is required</span>');
+                        isValid = false;
+                    }
                 });
-                // Optionally, you can redirect or clear the form
-            },
-            error: function(response) {
-                // Handle error response
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Submission Failed',
-                    text: 'An error occurred while submitting the form. Please try again.',
+
+                if (!isValid) {
+                    return; // Stop form submission if validation fails
+                }
+
+                // Create FormData object
+                let formData = new FormData(this);
+
+                // Make AJAX request to submit the form
+                $.ajax({
+                    url: $(this).attr('action'),
+                    method: 'POST',
+                    data: formData,
+                    processData: false, // Do not process the data
+                    contentType: false, // Set content type to false
+                    success: function(response) {
+                        // Handle success response
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Form Submitted',
+                            text: 'Your form has been submitted successfully!',
+                        });
+                        // Optionally, you can redirect or clear the form
+                      
+                        
+                    },
+                    error: function(response) {
+                        // Handle error response
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Submission Failed',
+                            text: 'An error occurred while submitting the form. Please try again.',
+                        });
+                    }
                 });
-            }
+            });
+            
         });
-    });
-});
 
 
 

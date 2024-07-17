@@ -1496,6 +1496,14 @@ class UserController extends Controller{
         $UserImage->delete();
         return response()->json(['status'=>200]);
     }
+
+    public function additional_photos_and_documents_delete(Request $request){
+        // dd($request->all());
+        $UserAdditionalDocument = UserAdditionalDocument::findOrFail($request->id);
+        $UserAdditionalDocument->delete();
+        return response()->json(['status'=>200]);
+    }
+
     public function my_watchlist_by_group($slug){
         $User = $this->AuthCheck();
         $GroupWatchList = GroupWatchList::where('slug', $slug)->where('created_by', $User->id)->first();

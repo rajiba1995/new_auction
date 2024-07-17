@@ -275,11 +275,38 @@
                                                                                     </li>
                                                                                 </ul>
                                                                             </div>
-                                                                            {{-- <div class="note-wrap">
+                                                                            <div class="note-wrap">
                                                                                 <h3>Notepad</h3>
                                                                                 <textarea class="form-control note-textarea">It is a long established fact that a reader will be distracted by the readable content of a page when looking at its layout. The point of using Lorem Ipsum is that it has a more-or-less normal distribution of letters, as opposed</textarea>
-                                                                                <button type="button" class="btn btn-animated bg-green">Save</button>
-                                                                            </div> --}}
+                                                                                <button type="button" class="btn btn-animated bg-green" data-bs-toggle="modal" data-bs-target="#NotePadModal{{$item['id']}}">Add</button>
+                                                                            </div>
+                                                                            <div class="modal fade allot-rate-modal offline-allot" id="NotePadModal{{$item['id']}}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                                                                                <div class="modal-dialog">
+                                                                                    <div class="modal-content">
+                                                                                        <div class="modal-header">
+                                                                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                                                        </div>
+                                                                                        <div class="modal-body">
+                                                                                            <form action="{{route('update_your_notes')}}" method="POST">
+                                                                                                @csrf
+                                                                                             <div class="container-fluid">
+                                                                                                <div class="row">
+                                                                                                    <div class="form-group">
+                                                                                                        <label class="form-label">Notepad</label>
+                                                                                                        <textarea class="form-control border-red ckeditor" rows="9" placeholder="Write Some Note Here" name="description" id="description"></textarea>
+                                                                                                        @error('description')<span class="text-danger" role="alert"><strong>{{ $message }}</strong></span>
+                                                                                                        @enderror
+                                                                                                    </div>
+                                                                                                </div>
+                                                                                                <input type="hidden" name="inquiry_id" value="{{$item['id']}}">
+                                                                                                <input type="hidden" name="user_id" value="{{$item['created_by']}}">
+                                                                                                <button type="submit" class="btn btn-animated btn-submit w-50">Submit</button>
+                                                                                            </div>
+                                                                                        </form>
+                                                                                        </div>
+                                                                                    </div>
+                                                                                </div>
+                                                                            </div>
                                                                         </td>
                                                                     </tr>
                                                                 </tbody>

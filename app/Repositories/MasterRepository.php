@@ -981,8 +981,9 @@ class MasterRepository implements MasterContract
             ->where('current_unit', '>', 0)
             ->first();
         // Determine the current unit to return
+       
         if ($hasActivePackage || $latestWallet) {
-            $currentUnit = $latestWallet->current_unit;
+              $currentUnit = $latestWallet?$latestWallet->current_unit:0;
         } else {
             $currentUnit = 0;
         }
@@ -1003,7 +1004,7 @@ class MasterRepository implements MasterContract
         ->first();
         // Determine the current unit to return
         if ($hasActivePackage || $latestWallet) {
-            $currentUnit = $latestWallet->current_unit;
+            $currentUnit = $latestWallet?$latestWallet->current_unit:0;
         } else {
             $currentUnit = 0;
             }
