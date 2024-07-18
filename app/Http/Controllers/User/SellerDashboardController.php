@@ -228,12 +228,16 @@ class SellerDashboardController extends Controller
         }
     }
     public function pending_inquiries(Request $request){
-        $pending_inquiries =  $this->SellerDashboardRepository->pending_inquiries_by_seller();
+        $keyword = $request->keyword;
+        $start_date = $request->start_date;
+        $end_date = $request->end_date;
+
+        $pending_inquiries =  $this->SellerDashboardRepository->pending_inquiries_by_seller($keyword, $start_date , $end_date);
         $group_wise_list_count =  $this->SellerDashboardRepository->group_wise_inquiries_by_user($this->getAuthenticatedUserId());
         $all_inquery =  $this->SellerDashboardRepository->all_participants_inquiries_of_seller($this->getAuthenticatedUserId());
         $live_inquiries_count =  $this->SellerDashboardRepository->live_inquiries_by_seller();
-        $pending_inquiries_count =  $this->SellerDashboardRepository->pending_inquiries_by_seller();
-        $confirmed_inquiries_count =  $this->SellerDashboardRepository->confirmed_inquiries_by_seller(); 
+        $pending_inquiries_count =  $this->SellerDashboardRepository->pending_inquiries_by_seller($keyword, $start_date , $end_date);
+        $confirmed_inquiries_count =  $this->SellerDashboardRepository->confirmed_inquiries_by_seller($keyword, $start_date, $end_date); 
         $rejected_inquiries =  $this->SellerDashboardRepository->rejected_inquiries_by_seller($this->getAuthenticatedUserId());
         $all_inquery_count = 0;
         foreach ( $all_inquery as  $item){
@@ -350,17 +354,21 @@ class SellerDashboardController extends Controller
                   
                 }
             }
+            $pending_inquiries_count = count($inquiries);
         }
         return view('front.seller_dashboard.pending_inquireis',compact('inquiries','all_inquery_count', 'group_wise_list_count', 'live_inquiries_count', 'pending_inquiries_count', 'confirmed_inquiries_count', 'rejected_inquiries_count'));
     }
     public function confirmed_inquiries(Request $request){
+        $keyword = $request->keyword;
+        $start_date = $request->start_date;
+        $end_date = $request->end_date;
         $my_id = $this->getAuthenticatedUserId();
-        $confirmed_inquiries =  $this->SellerDashboardRepository->confirmed_inquiries_by_seller();  
+        $confirmed_inquiries =  $this->SellerDashboardRepository->confirmed_inquiries_by_seller($keyword, $start_date, $end_date);  
         $group_wise_list_count =  $this->SellerDashboardRepository->group_wise_inquiries_by_user($this->getAuthenticatedUserId());
         $all_inquery =  $this->SellerDashboardRepository->all_participants_inquiries_of_seller($this->getAuthenticatedUserId());
         $live_inquiries_count =  $this->SellerDashboardRepository->live_inquiries_by_seller();
         $pending_inquiries_count =  $this->SellerDashboardRepository->pending_inquiries_by_seller();
-        $confirmed_inquiries_count =  $this->SellerDashboardRepository->confirmed_inquiries_by_seller(); 
+        $confirmed_inquiries_count =  $this->SellerDashboardRepository->confirmed_inquiries_by_seller($keyword, $start_date, $end_date); 
         $rejected_inquiries =  $this->SellerDashboardRepository->rejected_inquiries_by_seller($this->getAuthenticatedUserId());
         $all_inquery_count = 0;
         foreach ( $all_inquery as  $item){
@@ -374,6 +382,7 @@ class SellerDashboardController extends Controller
                 $rejected_inquiries_count+=1;
             }
         }
+
         return view('front.seller_dashboard.confirmed_inquireis', compact('my_id','confirmed_inquiries','all_inquery_count', 'group_wise_list_count', 'live_inquiries_count', 'pending_inquiries_count', 'confirmed_inquiries_count', 'rejected_inquiries_count'));
     }
     public function history_inquiries(Request $request){
@@ -588,6 +597,30 @@ class SellerDashboardController extends Controller
         return redirect()->back();
        }
     }
+    // update your notes
+    public function update_your_notes(Request $request){
+        // dd($request->all())
+        // Extract data from the request
+        $description = $request->input('description');
+        $inquiryId = $request->input('inquiry_id');
+        $userId = (int) $request->input('user_id');
+    
+        // Update or Insert the note
+        DB::table('seller_notes')->updateOrInsert(
+            [
+                'inquiry_id' => $inquiryId,
+                'user_id' => $userId,
+            ],
+            [
+                'notes' => $description,
+                'updated_at' => now(),  // Set the update timestamp
+            ]
+        );
+    
+        // Redirect back with a success message
+        return redirect()->back()->with('success', 'Note updated successfully!');
+           
+        }
     public function setSessionAndRedirect(Request $request){
          // Set the intended URL in the session
          Session::put('url.intended', $request->intended_url);

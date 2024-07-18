@@ -164,6 +164,7 @@ Route::get('/clear-cache', function() {
                 Route::get('/history-inquiries', [SellerDashboardController::class, 'history_inquiries'])->name('seller_history_inquiries');
                 Route::post('/cancelled', [SellerDashboardController::class, 'cancelled_reason'])->name('seller_cancelled_inquiry');
                 Route::post('/after-confirm-seller-cancelled-reason', [SellerDashboardController::class, 'after_confirm_seller_cancelled_reason'])->name('after_confirm_seller_cancelled_inquiry');
+                Route::post('/update-your-notes', [SellerDashboardController::class, 'update_your_notes'])->name('update_your_notes');
                 
             });
     });

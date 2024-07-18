@@ -82,18 +82,29 @@ class BuyerDashboardController extends Controller
     }
     public function pending_inquiries(Request $request){
       
-        $start_date = $request->input('start_date');
-        $end_date = $request->input('end_date');
-        $seller_id = $request->input('seller');
-        $keyword = $request->input('keyword');
+        $user_id = $this->getAuthenticatedUserId();
+    
+    // Check if any search parameters are provided
+    $isSearch = $request->has('start_date') || $request->has('end_date') || $request->has('seller') || $request->has('keyword');
+    
+    if ($isSearch) {
+        $pending_inquiries_data = $this->BuyerDashboardRepository->all_inquiries_by_search(
+            $user_id,
+            $request->input('start_date'),
+            $request->input('end_date'),
+            $request->input('seller'),
+            $request->input('keyword'),2
+        );
+    } else {
+        $pending_inquiries_data =  $this->BuyerDashboardRepository->pending_inquiries_by_user($user_id);
+    }
 
-        $pending_inquiries_data =  $this->BuyerDashboardRepository->pending_inquiries_by_user($start_date,$end_date,$seller_id,$keyword);
        
-        $group_wise_list =  $this->BuyerDashboardRepository->group_wise_inquiries_by_user($this->getAuthenticatedUserId());
-        $confirmed_inquiry_data =  $this->BuyerDashboardRepository->confirmed_inquiries_by_user($this->getAuthenticatedUserId());
-        $cancelled_inquiry_data =  $this->BuyerDashboardRepository->cancelled_inquiries_by_user($this->getAuthenticatedUserId());
-        $live_inquiries =  $this->BuyerDashboardRepository->live_inquiries_by_user($this->getAuthenticatedUserId());
-        $saved_inquiries =  $this->BuyerDashboardRepository->saved_inquiries_by_user($this->getAuthenticatedUserId());
+        $group_wise_list =  $this->BuyerDashboardRepository->group_wise_inquiries_by_user($user_id);
+        $confirmed_inquiry_data =  $this->BuyerDashboardRepository->confirmed_inquiries_by_user($user_id);
+        $cancelled_inquiry_data =  $this->BuyerDashboardRepository->cancelled_inquiries_by_user($user_id);
+        $live_inquiries =  $this->BuyerDashboardRepository->live_inquiries_by_user($user_id);
+        $saved_inquiries =  $this->BuyerDashboardRepository->saved_inquiries_by_user($user_id);
 
         $pending_inquiries = [];
         $suppliers = [];
@@ -207,12 +218,12 @@ class BuyerDashboardController extends Controller
     $isSearch = $request->has('start_date') || $request->has('end_date') || $request->has('seller') || $request->has('keyword');
     
     if ($isSearch) {
-        $confirmed_inquiry_data = $this->BuyerDashboardRepository->confirmed_inquiries_by_search(
+        $confirmed_inquiry_data = $this->BuyerDashboardRepository->all_inquiries_by_search(
             $user_id,
             $request->input('start_date'),
             $request->input('end_date'),
             $request->input('seller'),
-            $request->input('keyword')
+            $request->input('keyword'),3
         );
     } else {
         $confirmed_inquiry_data = $this->BuyerDashboardRepository->confirmed_inquiries_by_user($user_id);
@@ -330,12 +341,12 @@ class BuyerDashboardController extends Controller
         $isSearch = $request->has('start_date') || $request->has('end_date') || $request->has('seller') || $request->has('keyword');
     
         if ($isSearch) {
-            $cancelled_inquiry_data = $this->BuyerDashboardRepository->cancelled_inquiries_by_search(
+            $cancelled_inquiry_data = $this->BuyerDashboardRepository->all_inquiries_by_search(
                 $user_id,
                 $request->input('start_date'),
                 $request->input('end_date'),
                 $request->input('seller'),
-                $request->input('keyword')
+                $request->input('keyword'),4
             );
         } else {
             $cancelled_inquiry_data = $this->BuyerDashboardRepository->cancelled_inquiries_by_user($user_id);

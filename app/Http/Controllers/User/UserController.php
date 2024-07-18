@@ -1500,6 +1500,13 @@ class UserController extends Controller{
     public function additional_photos_and_documents_delete(Request $request){
         // dd($request->all());
         $UserAdditionalDocument = UserAdditionalDocument::findOrFail($request->id);
+        $filePath = $UserAdditionalDocument->additional_document_file;
+        if(file_exists($filePath)){
+            if (!unlink($filePath)) {
+                return response()->json(['status'=>500, 'message' => 'File could not be deleted.']);
+            }
+        }
+        
         $UserAdditionalDocument->delete();
         return response()->json(['status'=>200]);
     }
