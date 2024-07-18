@@ -419,30 +419,7 @@
     @endsection
     @section('script')
     <script>
-        $(document).ready(function(){
-            $('#group_wies_search').keyup(function(){
-                var selectedValue = $(this).val().toLowerCase(); // Convert to lowercase for case-insensitive comparison
-                $('.item').show();
-                var found = false; // Flag to track if any items are found
-                $('.item').each(function() {
-                    var group_name = $(this).find('.group_name').text().toLowerCase(); // Get location text and convert to lowercase
-                    if (group_name.indexOf(selectedValue) === -1) {
-                        $(this).hide(); // Hide the item if location doesn't match
-                    } else {
-                        found = true; // Set the flag to true if at least one item is found
-                    }
-                });
-                if (!found) {
-                    $('#noDataAlert').remove(); // Remove the alert if items are found
-                    var append = `<div class="alert alert-danger" id="noDataAlert" role="alert">
-                    No data found
-                    </div>`;
-                    $('.dashboard_groups').append(append);
-                } else {
-                    $('#noDataAlert').remove(); // Remove the alert if items are found
-                }
-            });
-        });
+        
         $("input[name='inquiry_type']").click(function() {
             var inputval = $(this).val();
             var id = $(this).attr('data-id');
