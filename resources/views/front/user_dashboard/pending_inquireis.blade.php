@@ -277,7 +277,12 @@
                                                                             </div>
                                                                             <div class="note-wrap">
                                                                                 <h3>Notepad</h3>
-                                                                                <textarea class="form-control note-textarea">It is a long established fact that a reader will be distracted by the readable content of a page when looking at its layout. The point of using Lorem Ipsum is that it has a more-or-less normal distribution of letters, as opposed</textarea>
+                                                                                @php
+                                                                                    $buyer_notes = DB::table('buyer_notes')->where('inquiry_id', $item['id'])->where('user_id', Auth::guard('web')->user()->id)->first();
+                                                                                @endphp
+                                                                                <div class="card w-50 p-3 mb-2" >
+                                                                                    {!!$buyer_notes?$buyer_notes->notes:""!!}
+                                                                                </div>
                                                                                 <button type="button" class="btn btn-animated bg-green" data-bs-toggle="modal" data-bs-target="#NotePadModal{{$item['id']}}">Add</button>
                                                                             </div>
                                                                             <div class="modal fade allot-rate-modal offline-allot" id="NotePadModal{{$item['id']}}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
@@ -293,13 +298,13 @@
                                                                                                 <div class="row">
                                                                                                     <div class="form-group">
                                                                                                         <label class="form-label">Notepad</label>
-                                                                                                        <textarea class="form-control border-red ckeditor" rows="9" placeholder="Write Some Note Here" name="description" id="description"></textarea>
+                                                                                                        <textarea class="form-control border-red ckeditor" rows="9" placeholder="Write Some Note Here" name="description" id="description"> {{$buyer_notes?$buyer_notes->notes:""}}</textarea>
                                                                                                         @error('description')<span class="text-danger" role="alert"><strong>{{ $message }}</strong></span>
                                                                                                         @enderror
                                                                                                     </div>
                                                                                                 </div>
                                                                                                 <input type="hidden" name="inquiry_id" value="{{$item['id']}}">
-                                                                                                <input type="hidden" name="user_id" value="{{$item['created_by']}}">
+                                                                                                <input type="hidden" name="user_id" value="{{Auth::guard('web')->user()->id}}">
                                                                                                 <button type="submit" class="btn btn-animated btn-submit w-50">Submit</button>
                                                                                             </div>
                                                                                         </form>

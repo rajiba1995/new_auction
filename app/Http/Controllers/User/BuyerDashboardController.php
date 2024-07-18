@@ -701,23 +701,12 @@ class BuyerDashboardController extends Controller
 
     // update_your_notes
     public function update_your_notes(Request $request){
-          // Validate incoming request data
-    // $request->validate([
-    //     'description' => 'required|string',
-    //     'inquiry_id' => 'required|integer',
-    //     'user_id' => 'required|integer',
-    // ]);
 
     // Extract data from the request
     $description = $request->input('description');
     $inquiryId = $request->input('inquiry_id');
     $userId = (int) $request->input('user_id');
 
-    dd([
-        'description' => $description,
-        'inquiry_id' => $inquiryId,
-        'user_id' => $userId,
-    ]);
     // Update or Insert the note
     DB::table('buyer_notes')->updateOrInsert(
         [
