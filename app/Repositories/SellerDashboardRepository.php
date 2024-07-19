@@ -45,23 +45,24 @@ class SellerDashboardRepository implements SellerDashboardContract{
             ->get();
     }
 
-    public function rejected_inquiries_by_seller($id, $keyword = null, $start_date = null, $end_date = null)
-    {
+    public function rejected_inquiries_by_seller($id, $keyword = null, $start_date = null, $end_date = null) {
         $query = Inquiry::with('BuyerData')
             ->select('inquiry_participants.user_id as my_id', 'inquiries.*', 'inquiry_participants.rejected_reason', 'inquiry_participants.status as participants_status')
             ->join('inquiry_participants', 'inquiry_participants.inquiry_id', '=', 'inquiries.id')
             ->join('users', 'users.id', '=', 'inquiries.created_by')
             ->where('inquiry_participants.user_id', $id)
-            ->whereIn('inquiry_participants.status', [2, 3]) // 2: Seller own cancelled, 3: Buyer selected another seller
-            ->orWhere('inquiries.status', 4); // Buyer Cancelled inquiry
+            ->where(function ($query) {
+                $query->whereIn('inquiry_participants.status', [2, 3]) // 2: Seller own cancelled, 3: Buyer selected another seller
+                    ->orWhere('inquiries.status', 4); // Buyer Cancelled inquiry
+            });
     
         // Add conditions based on parameters
         $query->whereNotNull('inquiries.inquiry_id')
             ->orderBy('inquiries.created_at', 'DESC');
     
         // Conditionally add keyword filter
-        $query->when($keyword, function ($q, $keyword) {
-            return $q->where(function ($q) use ($keyword) {
+        if ($keyword) {
+            $query->where(function ($q) use ($keyword) {
                 $q->where('inquiries.inquiry_id', 'LIKE', '%' . $keyword . '%')
                     ->orWhere('inquiries.title', 'LIKE', '%' . $keyword . '%')
                     ->orWhere('inquiries.category', 'LIKE', '%' . $keyword . '%')
@@ -70,20 +71,21 @@ class SellerDashboardRepository implements SellerDashboardContract{
                     ->orWhere('inquiries.inquiry_amount', 'LIKE', '%' . $keyword . '%')
                     ->orWhere('inquiries.location', 'LIKE', '%' . $keyword . '%');
             });
-        });
+        }
     
         // Conditionally add start date filter
-        $query->when($start_date, function ($q, $start_date) {
-            return $q->whereDate('inquiries.start_date', '>=', $start_date);
-        });
+        if ($start_date) {
+            $query->whereDate('inquiries.start_date', '>=', $start_date);
+        }
     
         // Conditionally add end date filter
-        $query->when($end_date, function ($q, $end_date) {
-            return $q->whereDate('inquiries.start_date', '<=', $end_date);
-        });
+        if ($end_date) {
+            $query->whereDate('inquiries.start_date', '<=', $end_date);
+        }
     
         return $query->get();
     }
+    
     
     public function all_inquiries_of_seller($id){
         return Inquiry::where('id',$id)->get();

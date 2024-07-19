@@ -44,6 +44,10 @@ class SellerDashboardController extends Controller
     }
 
     public function index(Request $request){
+        $keyword = $request->keyword;
+        $start_date = $request->start_date;
+        $end_date = $request->end_date;
+
         $group_wise_list =  $this->SellerDashboardRepository->group_wise_inquiries_by_user($this->getAuthenticatedUserId());
         $all_inquery =  $this->SellerDashboardRepository->all_participants_inquiries_of_seller($this->getAuthenticatedUserId());
         $live_inquiries_count =  $this->SellerDashboardRepository->live_inquiries_by_seller();
@@ -65,6 +69,10 @@ class SellerDashboardController extends Controller
         return view('front.seller_dashboard.index',compact('group_wise_list', 'all_inquery_count', 'live_inquiries_count', 'pending_inquiries_count', 'confirmed_inquiries_count', 'rejected_inquiries_count'));
     }
     public function all_inquiries(Request $request){
+        $keyword = $request->keyword;
+        $start_date = $request->start_date;
+        $end_date = $request->end_date;
+
         $seller_cancell_reasons = $this->MasterRepository->getAllSellerReason();
         $seller_active_credit = $this->MasterRepository->getSellerActiveCredit($this->getAuthenticatedUserId());
         $group_wise_list_count =  $this->SellerDashboardRepository->group_wise_inquiries_by_user($this->getAuthenticatedUserId());
@@ -90,6 +98,9 @@ class SellerDashboardController extends Controller
         return view('front.seller_dashboard.all_inquireis',compact('seller_active_credit','all_inquery', 'all_inquery_count', 'group_wise_list_count', 'live_inquiries_count', 'pending_inquiries_count', 'confirmed_inquiries_count', 'rejected_inquiries_count','seller_cancell_reasons'));
     }
     public function live_inquiries(Request $request){
+        $keyword = $request->keyword;
+        $start_date = $request->start_date;
+        $end_date = $request->end_date;
         $group_wise_list_count =  $this->SellerDashboardRepository->group_wise_inquiries_by_user($this->getAuthenticatedUserId());
         $all_inquery =  $this->SellerDashboardRepository->all_participants_inquiries_of_seller($this->getAuthenticatedUserId());
         $live_inquiries_count =  $this->SellerDashboardRepository->live_inquiries_by_seller();
@@ -364,6 +375,7 @@ class SellerDashboardController extends Controller
         $keyword = $request->keyword;
         $start_date = $request->start_date;
         $end_date = $request->end_date;
+        
         $my_id = $this->getAuthenticatedUserId();
         $confirmed_inquiries =  $this->SellerDashboardRepository->confirmed_inquiries_by_seller($keyword, $start_date, $end_date);  
         $group_wise_list_count =  $this->SellerDashboardRepository->group_wise_inquiries_by_user($this->getAuthenticatedUserId());
@@ -391,7 +403,7 @@ class SellerDashboardController extends Controller
         $keyword = $request->keyword;
         $start_date = $request->start_date;
         $end_date = $request->end_date;
-
+        
         $rejected_inquiries =  $this->SellerDashboardRepository->rejected_inquiries_by_seller($this->getAuthenticatedUserId(),$keyword, $start_date, $end_date);
         $group_wise_list_count =  $this->SellerDashboardRepository->group_wise_inquiries_by_user($this->getAuthenticatedUserId());
         $all_inquery =  $this->SellerDashboardRepository->all_participants_inquiries_of_seller($this->getAuthenticatedUserId());
