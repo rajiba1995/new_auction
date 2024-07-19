@@ -40,6 +40,7 @@ use Carbon\Carbon;
 use Illuminate\Support\Facades\Session;
 use App\Mail\welcomeMail;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Http;
 use PDF;
 use Hash;
 
@@ -1796,5 +1797,6 @@ class UserController extends Controller{
         ->send(new welcomeMail());
         dd("Mail sent successfully!"); // Optional: Check if the mail sending is successful
     }
+
 
 }
