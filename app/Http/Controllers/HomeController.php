@@ -60,7 +60,7 @@ class HomeController extends Controller
         $data = (object)[];
         $data->banners = Banner::orderBy('file_path', 'ASC')->paginate(20);
         // dd($data->banners);  
-
+        
         $data->collections = Collection::with('categoryDetails')->latest()->where('status', 1)->where('deleted_at', 1)->where('created_by', 1)->limit(2)->get();
         $data->categories = Category::latest()->where('deleted_at', 1)->where('status', 1)->where('created_by', 1)->paginate(20);
         $data->tutorials = Tutorial::latest()->where('deleted_at', 1)->paginate(20);

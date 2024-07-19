@@ -12,6 +12,8 @@ use Illuminate\Support\Facades\Auth;
 use App\Models\Product;
 use App\Models\Collection;
 use App\Models\Category;
+use App\Models\SocialMedia;
+use App\Models\Setting;
 use App\Models\User;
 use App\Models\State;
 use App\Models\Notification;
@@ -75,6 +77,16 @@ class AppServiceProvider extends ServiceProvider
                 }
                 
             }
+            // Fetch the social media data
+        $socialmedias = SocialMedia::orderBy('title', 'ASC')->paginate(20);
+         // Fetch the settings data
+        $settings = Setting::pluck('content','title')->toArray();
+        // Share the data with the 'front.layout.app' view
+        View::composer('front.layout.app', function ($view) use ($socialmedias,$settings) {
+            $view->with('socialmedias', $socialmedias);
+            $view->with('settings',$settings);
+        });
+
             $allLocation = array_merge($cityNames, $stateNames);
             // $allTitles = array_merge($products, $collections, $categories);
 

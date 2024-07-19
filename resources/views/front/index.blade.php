@@ -15,9 +15,14 @@
                                        <div class="swiper-slide">
                                             @if($banner->file_path)
                                             <div class="slider-img">
-                                                <a href="{{$banner->image_link}}"> 
-                                                    <img src="{{ $banner->file_path}}" alt="">
-                                                 </a> 
+                                             @if (Auth::guard('web')->check())
+                                                <img src="{{ $banner->file_path}}" alt="">
+                                              @else
+                                              <a href="{{$banner->image_link}}"> 
+                                                <img src="{{ $banner->file_path}}" alt="">
+                                             </a> 
+                                             @endif
+                                               
                                             </div>
                                             @else
                                             <div class="slider-video">
@@ -100,7 +105,7 @@
                                                     <h5>{{$category->title}}</h5>
                                                     <a href="#">
                                                         Explore
-                                                        <img src="{{asset('frontend/assets/images/arrow-right-white.png')}}">
+                                                         <img src="{{asset('frontend/assets/images/arrow-right-white.png')}}">
                                                     </a>
                                                 </div>
                                             </div>
@@ -604,8 +609,7 @@
                             <div class="swiper-slide">
                                 <img src="{{ $client->image }}" alt="">
                                 </div>  
-                            @endforeach
-                            
+                            @endforeach                           
                         </div>
                     </div>
                 </div>
