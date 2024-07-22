@@ -55,8 +55,8 @@ class LoginController extends Controller
             'password' => 'required',
         ],
         [
-            'email.required' => 'Please Enter Valid Email ID ',
-            'email.email' => 'Please Enter Valid Email ID',
+            'email.required' => 'Kindly provide a valid Email Address ',
+            'email.email' => 'Kindly provide a valid Email Address',
             'email.exists' => 'This email does not exist in our records.',
             'password.required' => 'Please Enter Password.',
         ]);

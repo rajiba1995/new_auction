@@ -21,7 +21,7 @@
                                 <div class="tab-pane {{ (request()->is('my/product-and-service*')) ? 'active' : '' }}" id="productsServices" role="tabpanel" aria-labelledby="productsServices-tab" tabindex="0">
                                     <div class="tab-content-wrapper">
                                         <div class="top-content-bar">
-                                            <p>UPDATE<strong>->{{strtoupper($Product->title)}}</strong> </p>
+                                            <p class="text-light"><strong> UPDATE  {{strtoupper($Product->title)}}</strong> </p>
                                             <a href="{{route('user.product_and_service')}}" class="btn btn-normal btn-cta"><i class="fa-solid fa-backward"></i>                                              
                                                Back
                                             </a>
@@ -74,7 +74,7 @@
                                                                         <label class="form-label">Product Image*</label>
                                                                         <div class="profile-image-upload-box border-red">
                                                                             <div class="profile-img-box">
-                                                                                <img src="{{$Product->image?asset($Product->image):asset('frontend/assets/images/person-2.png')}}" alt="">
+                                                                                <img id="profileImgPreview" src="{{$Product->image?asset($Product->image):asset('frontend/assets/images/person-2.png')}}" alt="">
                                                                             </div>
                                                                             <div class="cta-box">
                                                                                 <label for="profileImgUpload" class="custom-upload">
@@ -190,7 +190,7 @@
                                                                         <label class="form-label">Service Image*</label>
                                                                         <div class="profile-image-upload-box border-red">
                                                                             <div class="profile-img-box">
-                                                                                <img src="{{$Product->image?asset($Product->image):asset('frontend/assets/images/person-2.png')}}" alt="">
+                                                                                <img id="serviceImgPreview" src="{{$Product->image?asset($Product->image):asset('frontend/assets/images/person-2.png')}}" alt="">
                                                                             </div>
                                                                             <div class="cta-box">
                                                                                 <label for="serviceImgUpload" class="custom-upload">
@@ -389,6 +389,41 @@
             });
         });
     });
+
+    document.addEventListener('DOMContentLoaded', function() {
+    var profileImgUpload = document.getElementById('profileImgUpload');
+    var serviceImgUpload = document.getElementById('serviceImgUpload');
+
+    if (profileImgUpload) {
+        profileImgUpload.addEventListener('change', function(event) {
+            var file = event.target.files[0];
+            if (file) {
+                var reader = new FileReader();
+                reader.onload = function(e) {
+                    document.getElementById('profileImgPreview').src = e.target.result;
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+    }
+
+    if (serviceImgUpload) {
+        serviceImgUpload.addEventListener('change', function(event) {
+            var file = event.target.files[0];
+            if (file) {
+                var reader = new FileReader();
+                reader.onload = function(e) {
+                    document.getElementById('serviceImgPreview').src = e.target.result;
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+    }
+});
+
+
+
+   
 
 
     </script>

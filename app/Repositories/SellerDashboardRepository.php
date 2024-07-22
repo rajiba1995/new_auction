@@ -33,35 +33,94 @@ class SellerDashboardRepository implements SellerDashboardContract{
             ->get();
     }
     
-    public function all_participants_inquiries_of_seller($id){
-        return DB::table('inquiries')
-            ->select('users.name as buyer_name', 'inquiry_participants.status as status','inquiry_participants.selected_from as selected_from', 'inquiry_participants.user_id as my_id', 'inquiries.*')
+    public function all_participants_inquiries_of_seller($id, $keyword = null, $start_date = null, $end_date = null, $buyer = null)
+    {
+        // Initialize the query
+        $query = DB::table('inquiries')
+            ->select('users.name as buyer_name', 'users.business_name as buyer_business_name', 'inquiry_participants.status as status', 'inquiry_participants.selected_from as selected_from', 'inquiry_participants.user_id as my_id', 'inquiries.*')
             ->join('inquiry_participants', 'inquiry_participants.inquiry_id', '=', 'inquiries.id')
             ->join('users', 'users.id', '=', 'inquiries.created_by')
             ->where('inquiry_participants.user_id', $id)
             ->where('inquiry_participants.status', 1)
-            ->whereNotNull('inquiries.inquiry_id')
-            ->orderBy('inquiries.created_at', 'DESC')
-            ->get();
+            ->orderBy('inquiries.created_at', 'DESC');
+    
+        // Add conditions based on parameters
+        if ($start_date) {
+            $query->whereDate('inquiries.start_date', '>=', $start_date);
+        }
+    
+        if ($end_date) {
+            $query->whereDate('inquiries.start_date', '<=', $end_date);
+        }
+    
+        if ($buyer) {
+            $query->where('inquiries.created_by', $buyer);
+        }
+    
+        if ($keyword) {
+            $query->where(function ($q) use ($keyword) {
+                $q->where('inquiries.inquiry_id', 'LIKE', '%' . $keyword . '%')
+                    ->orWhere('inquiries.title', 'LIKE', '%' . $keyword . '%')
+                    ->orWhere('inquiries.category', 'LIKE', '%' . $keyword . '%')
+                    ->orWhere('inquiries.sub_category', 'LIKE', '%' . $keyword . '%')
+                    ->orWhere('inquiries.inquiry_type', 'LIKE', '%' . $keyword . '%')
+                    ->orWhere('inquiries.inquiry_amount', 'LIKE', '%' . $keyword . '%')
+                    ->orWhere('inquiries.location', 'LIKE', '%' . $keyword . '%');
+            });
+        }
+    
+        // Get the results
+        return $query->get();
     }
-    public function rejected_inquiries_by_seller($id){
-        return Inquiry::with('BuyerData')
-            ->select('inquiry_participants.user_id as my_id', 'inquiries.*', 'inquiry_participants.rejected_reason', 'inquiry_participants.status as participants_status')
+    
+
+    public function rejected_inquiries_by_seller($id, $keyword = null, $start_date = null, $end_date = null, $buyer=null) {
+        $query = Inquiry::with('BuyerData')
+            ->select('users.business_name as buyer_business_name','inquiry_participants.user_id as my_id', 'inquiries.*', 'inquiry_participants.rejected_reason', 'inquiry_participants.status as participants_status')
             ->join('inquiry_participants', 'inquiry_participants.inquiry_id', '=', 'inquiries.id')
             ->join('users', 'users.id', '=', 'inquiries.created_by')
             ->where('inquiry_participants.user_id', $id)
-            ->whereIn('inquiry_participants.status', [2, 3]) // 2: Seller own cancelled, 3: Buyer selected another seller
-            ->orWhere('inquiries.status', 4) // Buyer Cancelled inquiry 
-            // ->whereNotNull('inquiry_participants.rejected_reason')
-            ->whereNotNull('inquiries.inquiry_id')
-            ->orderBy('inquiries.created_at', 'DESC')
-            ->get();
+            ->where(function ($query) {
+                $query->whereIn('inquiry_participants.status', [2, 3]) // 2: Seller own cancelled, 3: Buyer selected another seller
+                    ->orWhere('inquiries.status', 4); // Buyer Cancelled inquiry
+            });
+    
+        // Add conditions based on parameters
+        $query->whereNotNull('inquiries.inquiry_id')
+            ->orderBy('inquiries.created_at', 'DESC');
+        // Add conditions based on parameters
+        $query->when($start_date, function ($q, $start_date) {
+            return $q->whereDate('inquiries.start_date', '>=', $start_date);
+        });
+
+        $query->when($end_date, function ($q, $end_date) {
+            return $q->whereDate('inquiries.start_date', '<=', $end_date);
+        });
+        $query->when($buyer, function ($q, $buyer) {
+            return $q->where('inquiries.created_by', $buyer);
+        });
+
+        $query->when($keyword, function ($q, $keyword) {
+            return $q->where(function ($q) use ($keyword) {
+                $q->where('inquiries.inquiry_id', 'LIKE', '%' . $keyword . '%')
+                    ->orWhere('inquiries.title', 'LIKE', '%' . $keyword . '%')
+                    ->orWhere('inquiries.category', 'LIKE', '%' . $keyword . '%')
+                    ->orWhere('inquiries.sub_category', 'LIKE', '%' . $keyword . '%')
+                    ->orWhere('inquiries.inquiry_type', 'LIKE', '%' . $keyword . '%')
+                    ->orWhere('inquiries.inquiry_amount', 'LIKE', '%' . $keyword . '%')
+                    ->orWhere('inquiries.location', 'LIKE', '%' . $keyword . '%');
+            });
+        });
+    
+        return $query->get();
     }
+    
     
     public function all_inquiries_of_seller($id){
         return Inquiry::where('id',$id)->get();
     }
     public function live_inquiries_by_seller(){
+        // dd($this->getAuthenticatedUserId());
         return Inquiry::with('buyerData') // Eager load the 'buyerData' relationship
             ->select(
                 'inquiries.*', 
@@ -73,7 +132,7 @@ class SellerDashboardRepository implements SellerDashboardContract{
                 'users.mobile as buyer_mobile'
             )
             ->whereNotNull('inquiries.inquiry_id') // Filter inquiries where 'inquiry_id' is not null
-            // ->where('inquiries.status', 1) // Filter inquiries with a status of 1
+            ->where('inquiries.status', 1) // Filter inquiries with a status of 1
             ->join('inquiry_participants', 'inquiries.id', '=', 'inquiry_participants.inquiry_id') // Join 'inquiry_participants' table
             ->join('users', 'inquiries.created_by', '=', 'users.id') // Join 'users' table
             ->whereIn('inquiry_participants.status', [1,4,3]) 
@@ -81,35 +140,90 @@ class SellerDashboardRepository implements SellerDashboardContract{
             ->get(); // Get the results
     }
     
-    public function pending_inquiries_by_seller(){
-        return Inquiry::with('buyerData') // Eager load the 'buyerData' relationship
-        ->select(
-            'inquiries.*', 
-            'inquiry_participants.user_id as my_id', 
-            'users.business_name as buyer_business_name', 
-            'users.name as buyer_name', 
-            'users.country_code as country_code',
-            'users.mobile as buyer_mobile'
-        )
-        ->whereNotNull('inquiries.inquiry_id') // Filter inquiries where 'inquiry_id' is not null
-        ->where('inquiries.status', 2) // Filter inquiries with a status of 1
-        ->join('inquiry_participants', 'inquiries.id', '=', 'inquiry_participants.inquiry_id') // Join 'inquiry_participants' table
-        ->join('users', 'inquiries.created_by', '=', 'users.id') // Join 'users' table
-        ->where('inquiry_participants.user_id', $this->getAuthenticatedUserId()) // Filter by authenticated user's ID
-        ->get(); // Get the results
+    public function pending_inquiries_by_seller($keyword = null, $start_date = null, $end_date = null, $buyer=null)
+    {
+        $query = Inquiry::with('buyerData')
+            ->select(
+                'inquiries.*',
+                'inquiry_participants.user_id as my_id',
+                'users.business_name as buyer_business_name',
+                'users.name as buyer_name',
+                'users.country_code as country_code',
+                'users.mobile as buyer_mobile'
+            )
+            ->whereNotNull('inquiries.inquiry_id')
+            ->where('inquiries.status', 2)
+            ->join('inquiry_participants', 'inquiries.id', '=', 'inquiry_participants.inquiry_id')
+            ->join('users', 'inquiries.created_by', '=', 'users.id')
+            ->where('inquiry_participants.user_id', $this->getAuthenticatedUserId());
+    
+        // Add conditions based on parameters
+        $query->when($start_date, function ($q, $start_date) {
+            return $q->whereDate('inquiries.start_date', '>=', $start_date);
+        });
+    
+        $query->when($end_date, function ($q, $end_date) {
+            return $q->whereDate('inquiries.start_date', '<=', $end_date);
+        });
+        $query->when($buyer, function ($q, $buyer) {
+            return $q->where('inquiries.created_by', $buyer);
+        });
+    
+        $query->when($keyword, function ($q, $keyword) {
+            return $q->where(function ($q) use ($keyword) {
+                $q->where('inquiries.inquiry_id', 'LIKE', '%' . $keyword . '%')
+                    ->orWhere('inquiries.title', 'LIKE', '%' . $keyword . '%')
+                    ->orWhere('inquiries.category', 'LIKE', '%' . $keyword . '%')
+                    ->orWhere('inquiries.sub_category', 'LIKE', '%' . $keyword . '%')
+                    ->orWhere('inquiries.inquiry_type', 'LIKE', '%' . $keyword . '%')
+                    ->orWhere('inquiries.inquiry_amount', 'LIKE', '%' . $keyword . '%')
+                    ->orWhere('inquiries.location', 'LIKE', '%' . $keyword . '%');
+            });
+        });
+    
+        return $query->get();
     }
-    public function confirmed_inquiries_by_seller(){
-        return Inquiry::with('buyerData')
-        ->select(
-            'inquiries.*'
-        )
-        ->where('inquiries.inquiry_id', '!=', null)
-        ->where('inquiries.status', 3)
-        ->join('inquiry_participants', 'inquiries.id', '=', 'inquiry_participants.inquiry_id')
-        ->where('inquiry_participants.user_id', $this->getAuthenticatedUserId())
-        ->where('inquiry_participants.status', 4)
-        ->where('inquiries.allot_seller', $this->getAuthenticatedUserId())
-        ->get();
+    
+    public function confirmed_inquiries_by_seller($keyword = null, $start_date = null, $end_date = null, $buyer=null)
+    {
+        $query = Inquiry::with('buyerData')
+            ->select('inquiries.*','users.business_name as buyer_business_name',)
+            ->where('inquiries.inquiry_id', '!=', null)
+            ->where('inquiries.status', 3)
+            ->join('inquiry_participants', 'inquiries.id', '=', 'inquiry_participants.inquiry_id')
+            ->join('users', 'inquiries.created_by', '=', 'users.id')
+            ->where('inquiry_participants.user_id', $this->getAuthenticatedUserId())
+            ->where('inquiry_participants.status', 4)
+            ->where('inquiries.allot_seller', $this->getAuthenticatedUserId());
+    
+        // Add conditions based on parameters
+        $query->when($start_date, function ($q, $start_date) {
+            return $q->whereDate('inquiries.start_date', '>=', $start_date);
+        });
+    
+        $query->when($end_date, function ($q, $end_date) {
+            return $q->whereDate('inquiries.start_date', '<=', $end_date);
+        });
+        $query->when($buyer, function ($q, $buyer) {
+            return $q->where('inquiries.created_by', $buyer);
+        });
+    
+        $query->when($keyword, function ($q, $keyword) {
+            return $q->where(function ($q) use ($keyword) {
+                $q->where('inquiries.inquiry_id', 'LIKE', '%' . $keyword . '%')
+                    ->orWhere('inquiries.title', 'LIKE', '%' . $keyword . '%')
+                    ->orWhere('inquiries.category', 'LIKE', '%' . $keyword . '%')
+                    ->orWhere('inquiries.sub_category', 'LIKE', '%' . $keyword . '%')
+                    ->orWhere('inquiries.inquiry_type', 'LIKE', '%' . $keyword . '%')
+                    ->orWhere('inquiries.inquiry_amount', 'LIKE', '%' . $keyword . '%')
+                    ->orWhere('inquiries.location', 'LIKE', '%' . $keyword . '%');
+            });
+        });
+    
+        return $query->get();
     }
+    
+
+    
 
 }

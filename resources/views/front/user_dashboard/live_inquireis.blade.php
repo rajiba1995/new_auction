@@ -798,7 +798,7 @@
     });
 
     $(document).ready(function() {
-        $('.rajib').on('click', function() {
+        // $('.rajib').on('click', function() {
         setInterval(function() {
             console.log('Done')
             $.ajax({
@@ -841,9 +841,8 @@
                             '<p>' + item.category + '</p>' +
                             '</li>' +
                             '<li>' +
-                            '<label>Description of the Service</label>' +
-                            '<p class="hidden">' + (item.description ? item.description : '') + '</p>' +
-                            '<div class="read-more"><span>read more</span></div>' +
+                            '<label>Sub-Category</label>' +
+                            '<p>' + item.sub_category + '</p>' +
                             '</li>' +
                             '<li>' +
                             '<label>Date of execution of the task</label>' +
@@ -1047,7 +1046,7 @@
                 }
             });
         }, 1000); // 1000 milliseconds = 1 second
-        });
+        // });
     });
     $('#UnlockSellerModal').on('submit', function(e) {
         e.preventDefault();

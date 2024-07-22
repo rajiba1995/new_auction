@@ -131,49 +131,43 @@
                             </ul>
                         </div>
                     </div>
+                 <form method="GET" id="resetForm">
                     <div class="row filter-row" id="group_list">
                         <div class="col-xl-2 col-lg-3 col-md-6 col-12">
                             <label for="start_date" class="form-label">Start Date</label>
-                            <input type="date" class="form-control" id="start_date" placeholder="Select start date" name="start_date">
+                            <input type="date" class="form-control" id="start_date" placeholder="Select start date" name="start_date" value="{{request()->input('start_date')}}">
                         </div>
                         <div class="col-xl-2 col-lg-3 col-md-6 col-12 mt-md-0 mt-3">
                             <label for="end_date" class="form-label">End Date</label>
-                            <input type="date" class="form-control" id="end_date" placeholder="Select end date" name="end_date">
+                            <input type="date" class="form-control" id="end_date" placeholder="Select end date" name="end_date" value="{{request()->input('end_date')}}">
                         </div>
                         <div class="col-xl-3 col-lg-6 col-12 mt-lg-0 mt-3">
                             <label for="seller" class="form-label">Suppliers</label>
                             <select class="form-select seller" name="seller">
-                                <option>1</option>
-                                <option>2</option>
+                                <option value="" selected hidden>supplier</option>
+                                @foreach ($suppliers_data as $item)
+                                    <option value="{{$item['id']}}" {{request()->input('seller') == $item['id'] ? 'selected' : ''}}>{{$item['name']}}</option>
+                                @endforeach
+                                {{-- <option>2</option>
                                 <option>3</option>
-                                <option>4</option>
+                                <option>4</option> --}}
                             </select>
                         </div>
                         <div class="col-xl-5 col-12 mt-xl-0 mt-3">
-                            <div class="search-bar">
-                                <form>
-                                    <input type="search" name="" placeholder="Search by inquiry title..." id="group_wies_search">
-                                    <button type="submit" class="btn-search btn-animated">
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
-                                            <path d="M11 19C15.4183 19 19 15.4183 19 11C19 6.58172 15.4183 3 11 3C6.58172 3 3 6.58172 3 11C3 15.4183 6.58172 19 11 19Z" stroke="white" stroke-linecap="round" stroke-linejoin="round"/>
-                                            <path d="M20.9999 21.0004L16.6499 16.6504" stroke="white" stroke-linecap="round" stroke-linejoin="round"/>
-                                        </svg>
-                                    </button>
-                                </form>
+                            <div class="search-bar">                               
+                                <input type="search" name="keyword" placeholder="Search by inquiry title..." id="group_wies_search" value="{{request()->input('keyword')}}">
+                                <button type="submit" class="btn-search btn-animated">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
+                                        <path d="M11 19C15.4183 19 19 15.4183 19 11C19 6.58172 15.4183 3 11 3C6.58172 3 3 6.58172 3 11C3 15.4183 6.58172 19 11 19Z" stroke="white" stroke-linecap="round" stroke-linejoin="round"/>
+                                        <path d="M20.9999 21.0004L16.6499 16.6504" stroke="white" stroke-linecap="round" stroke-linejoin="round"/>
+                                    </svg>
+                                </button>                              
                             </div>
                         </div>
                     </div>
                     <div class="row filter-cta-fow">
-                        <div class="col-lg-5 col-12 text-end">
-                            <button type="button" class="btn btn-cta btn-animated">
-                                <svg xmlns="http://www.w3.org/2000/svg" version="1.1" xmlns:xlink="http://www.w3.org/1999/xlink" width="16" height="16" x="0" y="0" viewBox="0 0 24 24" style="enable-background:new 0 0 512 512" xml:space="preserve" class="">
-                                    <g>
-                                        <path d="M17 5a3 3 0 1 1 3 3 3 3 0 0 1-3-3zM2 6h12a1 1 0 0 0 0-2H2a1 1 0 0 0 0 2zm6 3a3 3 0 0 0-2.82 2H2a1 1 0 0 0 0 2h3.18A3 3 0 1 0 8 9zm14 2h-8a1 1 0 0 0 0 2h8a1 1 0 0 0 0-2zm-12 7H2a1 1 0 0 0 0 2h8a1 1 0 0 0 0-2zm12 0h-3.18a3 3 0 1 0 0 2H22a1 1 0 0 0 0-2z" fill="#ffffff" opacity="1" data-original="#000000" class=""></path>
-                                    </g>
-                                </svg>
-                                Filter
-                            </button>
-                            <button type="button" class="btn btn-cta btn-animated">
+                        <div class="col-lg-5 col-12 text-end" >
+                            <button type="reset" class="btn btn-cta btn-animated" id="resetURL">
                                 <svg xmlns="http://www.w3.org/2000/svg" version="1.1" xmlns:xlink="http://www.w3.org/1999/xlink" width="16" height="16" x="0" y="0" viewBox="0 0 512.449 512.449" style="enable-background:new 0 0 512 512" xml:space="preserve" class="">
                                     <g>
                                         <path d="M152.083 286.805c7.109-8.155 1.318-20.888-9.501-20.888H110.19a147.458 147.458 0 0 1-.329-9.692c0-80.706 65.658-146.364 146.363-146.364 38.784 0 74.087 15.168 100.304 39.877l45.676-53.435c-39.984-36.577-91.44-56.612-145.98-56.612-57.838 0-112.214 22.524-153.112 63.421-40.897 40.898-63.421 95.274-63.421 153.112 0 3.243.081 6.473.222 9.692H12.629c-10.819 0-16.611 12.733-9.501 20.888l61.549 70.6 12.928 14.829 46.416-53.242zM509.321 245.614l-45.907-52.658-28.57-32.771-40.791 46.789-33.686 38.64c-7.109 8.155-1.318 20.888 9.501 20.888h32.354c-5.293 75.928-68.748 136.086-145.997 136.086-33.721 0-64.811-11.469-89.586-30.703l-45.679 53.439c38.267 30.731 85.479 47.434 135.266 47.434 57.838 0 112.214-22.523 153.112-63.421 38.466-38.466 60.672-88.856 63.177-142.834h27.306c10.818-.001 16.609-12.734 9.5-20.889z" fill="#ffffff" opacity="1" data-original="#000000" class=""></path>
@@ -182,7 +176,8 @@
                                 Refresh
                             </button>
                         </div>
-                    </div>
+                    </div> 
+                </form>
                 </div>
             </div>
 
@@ -190,8 +185,7 @@
             <div class="tab-pane fade show active" id="cancelled" role="tabpanel" aria-labelledby="pendingresults-tab" tabindex="0">
                         <div class="container-fluid">
                             <div class="row">
-                                <div class="col-12">
-                                
+                                <div class="col-12">                               
                                         <div class="table-responsive inquiry-tables">
                                             <table class="table inquiry-wrapper-table">
                                                 <thead>
@@ -282,8 +276,40 @@
                                                                                 </div>
                                                                                 <div class="note-wrap">
                                                                                     <h3>Notepad</h3>
-                                                                                    <textarea class="form-control note-textarea"></textarea>
-                                                                                    <button type="button" class="btn btn-animated bg-green">Save</button>
+                                                                                    @php
+                                                                                        $buyer_notes = DB::table('buyer_notes')->where('inquiry_id', $item['id'])->where('user_id', Auth::guard('web')->user()->id)->first();
+                                                                                    @endphp
+                                                                                    <div class="card w-50 p-3 mb-2" >
+                                                                                        {!!$buyer_notes?$buyer_notes->notes:""!!}
+                                                                                    </div>
+                                                                                    <button type="button" class="btn btn-animated bg-green" data-bs-toggle="modal" data-bs-target="#NotePadModal{{$item['id']}}">Add</button>
+                                                                                </div>
+                                                                                <div class="modal fade allot-rate-modal offline-allot" id="NotePadModal{{$item['id']}}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                                                                                    <div class="modal-dialog">
+                                                                                        <div class="modal-content">
+                                                                                            <div class="modal-header">
+                                                                                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                                                            </div>
+                                                                                            <div class="modal-body">
+                                                                                                <form action="{{route('update_your_buyer_notes')}}" method="POST">
+                                                                                                    @csrf
+                                                                                                 <div class="container-fluid">
+                                                                                                    <div class="row">
+                                                                                                        <div class="form-group">
+                                                                                                            <label class="form-label">Notepad</label>
+                                                                                                            <textarea class="form-control border-red ckeditor" rows="9" placeholder="Write Some Note Here" name="description" id="description"> {{$buyer_notes?$buyer_notes->notes:""}}</textarea>
+                                                                                                            @error('description')<span class="text-danger" role="alert"><strong>{{ $message }}</strong></span>
+                                                                                                            @enderror
+                                                                                                        </div>
+                                                                                                    </div>
+                                                                                                    <input type="hidden" name="inquiry_id" value="{{$item['id']}}">
+                                                                                                    <input type="hidden" name="user_id" value="{{Auth::guard('web')->user()->id}}">
+                                                                                                    <button type="submit" class="btn btn-animated btn-submit w-50">Submit</button>
+                                                                                                </div>
+                                                                                            </form>
+                                                                                            </div>
+                                                                                        </div>
+                                                                                    </div>
                                                                                 </div>
                                                                             </td>
                                                                         </tr>
@@ -635,6 +661,11 @@
 <script>
      $(document).ready(function () {
         $(".seller").select2();
+    });
+
+    document.getElementById('resetURL').addEventListener('click',function(){
+        document.getElementById('resetForm').reset();
+        window.location.href = window.location.pathname;
     });
 </script>
 @endsection

@@ -141,7 +141,8 @@ Route::get('/clear-cache', function() {
             Route::get('/live-inquiries-fetch-ajax', [BuyerDashboardController::class, 'live_inquiries_fetch_ajax'])->name('buyer_live_inquiries_by_ajax');
             Route::post('/live-inquiries-credit-bit', [BuyerDashboardController::class, 'CreditBuyerBit'])->name('buyer_live_inquiries_credit_bit');
             Route::post('/live-inquiry-seller-allot', [BuyerDashboardController::class, 'live_inquiry_seller_allot'])->name('live_inquiry_seller_allot');
-            Route::post('/update-your-notes', [BuyerDashboardController::class, 'update_your_notes'])->name('update_your_notes');
+            Route::post('/update-your-notes', [BuyerDashboardController::class, 'update_your_notes'])->name('update_your_buyer_notes');
+            Route::post('/allot-ofline-seller', [BuyerDashboardController::class, 'allot_offline_seller'])->name('buyer_allot_offline_seller');
 
         });
         // Seller Dashboard
@@ -164,6 +165,7 @@ Route::get('/clear-cache', function() {
                 Route::get('/history-inquiries', [SellerDashboardController::class, 'history_inquiries'])->name('seller_history_inquiries');
                 Route::post('/cancelled', [SellerDashboardController::class, 'cancelled_reason'])->name('seller_cancelled_inquiry');
                 Route::post('/after-confirm-seller-cancelled-reason', [SellerDashboardController::class, 'after_confirm_seller_cancelled_reason'])->name('after_confirm_seller_cancelled_inquiry');
+                Route::post('/update-your-notes', [SellerDashboardController::class, 'update_your_notes'])->name('update_your_notes');
                 
             });
     });

@@ -13,6 +13,7 @@ use App\Models\Inquiry;
 use App\Models\InquiryAllotmentData;
 use App\Models\InquiryParticipant;
 use App\Models\User;
+use App\Models\AllotOffline;
 use App\Models\InquirySellerQuotes;
 use App\Models\InquirySellerComments;
 use Illuminate\Support\Facades\Crypt;
@@ -57,15 +58,26 @@ class BuyerDashboardController extends Controller
     }
 
     public function saved_inquiries(Request $request){
-        $saved_inquiries =  $this->BuyerDashboardRepository->saved_inquiries_by_user($this->getAuthenticatedUserId());
+       
+
+        // Check if any search parameters are provided
+        $isSearch = $request->has('start_date') || $request->has('end_date') || $request->has('seller') || $request->has('keyword');
+    
+        if ($isSearch) {
+            $saved_inquiries = $this->BuyerDashboardRepository->all_save_inquiries_by_search(
+                $this->getAuthenticatedUserId(),
+                $request->input('start_date'),
+                $request->input('end_date'),
+                $request->input('keyword')
+            );
+        }else{
+            $saved_inquiries =  $this->BuyerDashboardRepository->saved_inquiries_by_user($this->getAuthenticatedUserId());
+        }
         $group_wise_list =  $this->BuyerDashboardRepository->group_wise_inquiries_by_user($this->getAuthenticatedUserId());
         $live_inquiries =  $this->BuyerDashboardRepository->live_inquiries_by_user($this->getAuthenticatedUserId());
         $confirmed_inquiry_data =  $this->BuyerDashboardRepository->confirmed_inquiries_by_user($this->getAuthenticatedUserId());
         $pending_inquiries_data =  $this->BuyerDashboardRepository->pending_inquiries_by_user($this->getAuthenticatedUserId());
         $cancelled_inquiry_data =  $this->BuyerDashboardRepository->cancelled_inquiries_by_user($this->getAuthenticatedUserId());
-
-
-
         return view('front.user_dashboard.saved_inquireis', compact('saved_inquiries','group_wise_list','live_inquiries','confirmed_inquiry_data','pending_inquiries_data','cancelled_inquiry_data'));
     }
     public function live_inquiries(Request $request){
@@ -82,18 +94,29 @@ class BuyerDashboardController extends Controller
     }
     public function pending_inquiries(Request $request){
       
-        $start_date = $request->input('start_date');
-        $end_date = $request->input('end_date');
-        $seller_id = $request->input('seller');
-        $keyword = $request->input('keyword');
+        $user_id = $this->getAuthenticatedUserId();
+    
+    // Check if any search parameters are provided
+    $isSearch = $request->has('start_date') || $request->has('end_date') || $request->has('seller') || $request->has('keyword');
+    
+    if ($isSearch) {
+        $pending_inquiries_data = $this->BuyerDashboardRepository->all_inquiries_by_search(
+            $user_id,
+            $request->input('start_date'),
+            $request->input('end_date'),
+            $request->input('seller'),
+            $request->input('keyword'),2
+        );
+    } else {
+        $pending_inquiries_data =  $this->BuyerDashboardRepository->pending_inquiries_by_user($user_id);
+    }
 
-        $pending_inquiries_data =  $this->BuyerDashboardRepository->pending_inquiries_by_user($start_date,$end_date,$seller_id,$keyword);
        
-        $group_wise_list =  $this->BuyerDashboardRepository->group_wise_inquiries_by_user($this->getAuthenticatedUserId());
-        $confirmed_inquiry_data =  $this->BuyerDashboardRepository->confirmed_inquiries_by_user($this->getAuthenticatedUserId());
-        $cancelled_inquiry_data =  $this->BuyerDashboardRepository->cancelled_inquiries_by_user($this->getAuthenticatedUserId());
-        $live_inquiries =  $this->BuyerDashboardRepository->live_inquiries_by_user($this->getAuthenticatedUserId());
-        $saved_inquiries =  $this->BuyerDashboardRepository->saved_inquiries_by_user($this->getAuthenticatedUserId());
+        $group_wise_list =  $this->BuyerDashboardRepository->group_wise_inquiries_by_user($user_id);
+        $confirmed_inquiry_data =  $this->BuyerDashboardRepository->confirmed_inquiries_by_user($user_id);
+        $cancelled_inquiry_data =  $this->BuyerDashboardRepository->cancelled_inquiries_by_user($user_id);
+        $live_inquiries =  $this->BuyerDashboardRepository->live_inquiries_by_user($user_id);
+        $saved_inquiries =  $this->BuyerDashboardRepository->saved_inquiries_by_user($user_id);
 
         $pending_inquiries = [];
         $suppliers = [];
@@ -207,12 +230,12 @@ class BuyerDashboardController extends Controller
     $isSearch = $request->has('start_date') || $request->has('end_date') || $request->has('seller') || $request->has('keyword');
     
     if ($isSearch) {
-        $confirmed_inquiry_data = $this->BuyerDashboardRepository->confirmed_inquiries_by_search(
+        $confirmed_inquiry_data = $this->BuyerDashboardRepository->all_inquiries_by_search(
             $user_id,
             $request->input('start_date'),
             $request->input('end_date'),
             $request->input('seller'),
-            $request->input('keyword')
+            $request->input('keyword'),3
         );
     } else {
         $confirmed_inquiry_data = $this->BuyerDashboardRepository->confirmed_inquiries_by_user($user_id);
@@ -330,12 +353,12 @@ class BuyerDashboardController extends Controller
         $isSearch = $request->has('start_date') || $request->has('end_date') || $request->has('seller') || $request->has('keyword');
     
         if ($isSearch) {
-            $cancelled_inquiry_data = $this->BuyerDashboardRepository->cancelled_inquiries_by_search(
+            $cancelled_inquiry_data = $this->BuyerDashboardRepository->all_inquiries_by_search(
                 $user_id,
                 $request->input('start_date'),
                 $request->input('end_date'),
                 $request->input('seller'),
-                $request->input('keyword')
+                $request->input('keyword'),4
             );
         } else {
             $cancelled_inquiry_data = $this->BuyerDashboardRepository->cancelled_inquiries_by_user($user_id);
@@ -706,7 +729,6 @@ class BuyerDashboardController extends Controller
     $description = $request->input('description');
     $inquiryId = $request->input('inquiry_id');
     $userId = (int) $request->input('user_id');
-
     // Update or Insert the note
     DB::table('buyer_notes')->updateOrInsert(
         [
@@ -792,5 +814,46 @@ class BuyerDashboardController extends Controller
         ];
         $pdf = Pdf::loadView('admin.inquiry.generate-inquiry-pdf', $data);
         return $pdf->download('inquiry-pdf.pdf');
+    }
+    public function allot_offline_seller(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'name' => 'required|string|max:255',
+            'mobile' => 'required|digits:10',
+            'rate' => 'required|numeric',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['success' => false, 'errors' => $validator->errors()], 400);
+        }
+        // Process the form data (e.g., save to the database)
+        // Example:
+        if($request->input('id')){
+            $formData = new AllotOffline();
+            $formData->inquiry_id  = $request->input('id');
+            $formData->name = $request->input('name');
+            $formData->mobile = $request->input('mobile');
+            $formData->amount = $request->input('rate');
+            $formData->save();
+            $inquiry= Inquiry::findOrFail($request->id);
+            $inquiry->allot_seller = $formData->id;
+            $inquiry->inquiry_amount = $request->rate;
+            $inquiry->allotment_type = 1; //for Offline Seller
+            $inquiry->status = 3; //Confirmed
+            $inquiry->save();
+            if ($inquiry) {
+                $data = InquiryParticipant::where('inquiry_id', $inquiry->id)
+                                            ->get();
+                
+                // Loop through each record and update the status to 3
+                foreach ($data as $participant) {
+                    $participant->update(['status' => 3, 'rejected_reason'=>'Buyer selected another supplier']);
+                }
+            }
+            return response()->json(['success' => true, 'message' => 'Form submitted successfully!']);
+        }else{
+            return response()->json(['success' => false, 'errors' => "Inquiry Id not found!"], 500);
+        }
+       
     }
 }

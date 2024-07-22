@@ -213,7 +213,7 @@
                                                                     <label class="form-label">Service Image*</label>
                                                                     <div class="profile-image-upload-box border-red">
                                                                         <div class="profile-img-box">
-                                                                            <img src="{{asset('frontend/assets/images/person-2.png')}}" alt="">
+                                                                            <img id="serviceImgPreview" src="{{asset('frontend/assets/images/person-2.png')}}" alt="">
                                                                         </div>
                                                                         <div class="cta-box">
                                                                             <label for="serviceImgUpload" class="custom-upload">
@@ -471,6 +471,16 @@
         var reader = new FileReader();
         reader.onload = function(e) {
             document.getElementById('product_image_preview').src = e.target.result;
+        };
+        reader.readAsDataURL(file);
+    }
+});
+    document.getElementById('serviceImgUpload').addEventListener('change', function(event) {
+    var file = event.target.files[0];
+    if (file) {
+        var reader = new FileReader();
+        reader.onload = function(e) {
+            document.getElementById('serviceImgPreview').src = e.target.result;
         };
         reader.readAsDataURL(file);
     }
