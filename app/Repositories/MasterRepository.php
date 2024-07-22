@@ -997,18 +997,32 @@ class MasterRepository implements MasterContract
         ->where('user_id', $id)
         ->exists();
         // Get the latest wallet entry with current_unit > 0 for the user
+        if($hasActivePackage){
+            $status = 0;
+        }else{
+            $status = 1;
+        }
         $latestWallet = MyBuyerWallet::latest()
-        ->where('status', 1)
+        ->where('status', $status)
         ->where('user_id', $id)
         ->where('current_unit', '>', 0)
         ->first();
+        
         // Determine the current unit to return
         if ($hasActivePackage || $latestWallet) {
+            if(!$latestWallet){
+                $latestWallet = MyBuyerWallet::latest()
+                ->where('status', $status)
+                ->where('user_id', $id)
+                ->where('current_unit', '>', 0)
+                ->first();
+            }
             $currentUnit = $latestWallet?$latestWallet->current_unit:0;
         } else {
             $currentUnit = 0;
             }
         return $currentUnit;
+        
     }
 
     public function AuctionCreateByUserId($id){

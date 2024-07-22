@@ -216,12 +216,12 @@
                                         </div>
                                     </div>
                                 @endif
-                                @if(count($outside_participant_data)>0)
+                                {{-- @if(count($outside_participant_data)>0) --}}
                                     <div class="row input-row">
                                         <div class="col-12">
                                             <div class="form-group">
                                                 <label class="form-label">Outside Participants*</label>
-                                                <div class="participants-block border-red">
+                                                <div class="participants-block border-red" id="append_outside_partisipants">
                                                     @foreach ($outside_participant_data as $item)
                                                         <label class="participant" id="participant{{$item->id}}">
                                                                 <input type="hidden" name="outside_participant[]" value="{{$item->id}}">
@@ -238,7 +238,7 @@
                                             </div>
                                         </div>
                                     </div>
-                                @endif
+                                {{-- @endif --}}
                                 @if(count($outside_participant_without_group)>0 && $group_id=="")
                                     <div class="row input-row">
                                         <div class="col-12">
@@ -247,7 +247,7 @@
                                                 <div class="participants-block border-red">
                                                     @foreach ($outside_participant_without_group as $item)
                                                         <label class="participant" id="participant{{$item->id}}">
-                                                                <input type="hidden" name="outside_participant[]" value="{{$item->id}}">
+                                                            <input type="hidden" name="outside_participant[]" value="{{$item->id}}">
                                                             {{$item->name}}
                                                             <span class="remove outside_participant_remove" data-id="{{$item->id}}">
                                                                 <svg width="18" height="16" viewBox="0 0 18 16" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -917,7 +917,43 @@
             data: formData,
             success: function(response) {
                 if(response.status==200){
-                    location.reload();
+                    var result_data = response.seller;
+                    var html= "";
+                    if (result_data.length > 0) {
+                        result_data.forEach(function(element, index) {
+                            if(element.type==="outside"){
+                                html+= `<label class="participant" id="participant${element.id}">
+                                        <input type="hidden" name="outside_participant[]" value="${element.id}">
+                                        ${element.name}
+                                        <span class="remove outside_participant_remove" data-id="${element.id}">
+                                            <svg width="18" height="16" viewBox="0 0 18 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                <path d="M13.3636 3.7738L4.66797 11.2932" stroke="#ee2737" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                                <path d="M4.66797 3.7738L13.3636 11.2932" stroke="#ee2737" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                            </svg>
+                                        </span>
+                                    </label>`;
+                                    $('#append_outside_partisipants').append(html);
+                            }else{
+                                html+= `<label class="participant" id="participant${element.id}">
+                                    <input type="hidden" name="participant[]" value="${element.user_id}">
+                                    <input type="hidden" id="watchlist${element.id}" value="${element.id}">
+                                        ${element.name}
+                                        <span class="remove Exist_remove2" data-id="${element.id}">
+                                            <svg width="18" height="16" viewBox="0 0 18 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                <path d="M13.3636 3.7738L4.66797 11.2932" stroke="#ee2737" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+                                                <path d="M4.66797 3.7738L13.3636 11.2932" stroke="#ee2737" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+                                            </svg>
+                                        </span>
+                                    </label>`;
+                                $('#append_new_partisipants').append(html);
+                            }
+                            
+                        });
+                        $('#inviteModal').modal('hide');  // Hide the modal
+                        $('#AppendData').html("");        // Clear the HTML content inside the element with id "AppendData"
+                        $('#inviteForm')[0].reset();      // Reset the form with id "inviteForm"
+
+                    }
                 }
                 if(response.status==400){
                     const alertHtml = `

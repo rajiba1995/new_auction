@@ -255,6 +255,7 @@ class BuyerDashboardController extends Controller
                 $seller_data = [];
                 $all_inquiries = [];
                 $all_inquiries['id'] = $value->id;
+                $all_inquiries['allotment_type'] = $value->allotment_type;
                 $all_inquiries['allot_seller'] = $value->allot_seller;
                 $all_inquiries['inquiry_id'] = $value->inquiry_id;
                 $all_inquiries['bill'] = $value->bill;
@@ -753,12 +754,16 @@ class BuyerDashboardController extends Controller
             if($inquiry->status==3){
                 $sender = env('SMS_SENDER');
                 $inquiry_id = $inquiry->inquiry_id?$inquiry->inquiry_id:"...";
-                $company = $inquiry->BuyerData?$inquiry->BuyerData->business_name:"a company";
+                $company = $inquiry->BuyerData?ucwords($inquiry->BuyerData->business_name):"a company";
                 $time = date('d-m-Y h:i a');
-                $seller = User::where('id', $inquiry->allot_seller)->first();
+                if($inquiry->allotment_type==1){
+                    $seller = AllotOffline::where('id', $inquiry->allot_seller)->first();
+                 }else{
+                     $seller = User::where('id',$inquiry->allot_seller)->first();
+                 }
                 $url = 'https://milaapp.in/seller/cancelled';
                 $myMessage = urlencode("Auction ".$inquiry_id." has been cancelled by ".$company." on ".$time.". Details: ".$url." - Sarv-Megh Technology (OPC) Private Limited");
-                $customer_mobile_no = $seller->mobile?$seller->mobile:null;
+                $customer_mobile_no = $seller?$seller->mobile:null;
                 $checkPhoneNumberValid = checkPhoneNumberValid($customer_mobile_no);
                 if($checkPhoneNumberValid){
                     sendSMS($sender, $customer_mobile_no, $myMessage);
@@ -775,9 +780,13 @@ class BuyerDashboardController extends Controller
     
     }
     public function InquiryPdfGenarate($id){
-        // dd($id);
         $inquiry = Inquiry::where('id',$id)->first();
-        $final_seller_details = User::where('id',$inquiry->allot_seller)->first();
+        if($inquiry->allotment_type==1){
+           $final_seller_details = AllotOffline::where('id', $inquiry->allot_seller)->first();
+        }else{
+            $final_seller_details = User::where('id',$inquiry->allot_seller)->first();
+        }
+        
         $buyer_details = User::where('id',$inquiry->created_by)->first();
         $max_rate = InquirySellerQuotes::where('inquiry_id', $id)->max('quotes');
         $min_rate = InquirySellerQuotes::where('inquiry_id', $id)->min('quotes');
@@ -829,7 +838,10 @@ class BuyerDashboardController extends Controller
         // Process the form data (e.g., save to the database)
         // Example:
         if($request->input('id')){
-            $formData = new AllotOffline();
+            $formData = AllotOffline::where('inquiry_id', $request->input('id'))->first();
+            if(!$formData){
+                $formData = new AllotOffline();
+            }
             $formData->inquiry_id  = $request->input('id');
             $formData->name = $request->input('name');
             $formData->mobile = $request->input('mobile');
@@ -849,6 +861,17 @@ class BuyerDashboardController extends Controller
                 foreach ($data as $participant) {
                     $participant->update(['status' => 3, 'rejected_reason'=>'Buyer selected another supplier']);
                 }
+            }
+            $company = $inquiry->BuyerData?ucwords($inquiry->BuyerData->business_name):"a company";
+            $execution_date = $inquiry->execution_date?$inquiry->execution_date:"...";
+            $amount =number_format($request->input('rate'), 2, '.', ',');
+            $url = 'https://milaapp.in/seller/confirmed';
+            $myMessage = urlencode("Auction ".$inquiry->inquiry_id." from ".$company.". is ASSIGNED to you. Amt ".$amount.". Expected: ".$execution_date." Details: ".$url.". (owned by SMTPL) Regards, Sarv Megh Technology (OPC) Private Limited");
+            $customer_mobile_no = $request->input('mobile');
+            $checkPhoneNumberValid = checkPhoneNumberValid($customer_mobile_no);
+            if($checkPhoneNumberValid){
+                $sender = env('SMS_SENDER');
+                sendSMS($sender, $customer_mobile_no, $myMessage);
             }
             return response()->json(['success' => true, 'message' => 'Form submitted successfully!']);
         }else{

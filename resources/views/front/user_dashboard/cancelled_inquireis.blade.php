@@ -525,7 +525,7 @@
                                                                 </table>
                                                             </td>
                                                         </tr>
-                                                        <!-- Allot-offline -modal -->
+                                                        <!-- modal -->
                                                         <div class="modal fade allot-rate-modal offline-allot" id="PendingallotOfflineModal{{$item['id']}}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
                                                             <div class="modal-dialog">
                                                                 <div class="modal-content">
@@ -533,23 +533,31 @@
                                                                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                                                     </div>
                                                                     <div class="modal-body">
-                                                                        <div class="container-fluid">
-                                                                            <div class="row">
-                                                                                <div class="col-sm-6 col-12">
-                                                                                    <h4 class="content-heading">Name*</h4>
-                                                                                    <input type="text" class="form-control">
+                                                                        <form action="" method="post" id="allotOfflineform{{$item['id']}}">
+                                                                            @csrf
+                                                                            <div class="container-fluid">
+                                                                                <div class="row">
+                                                                                    <div class="col-sm-6 col-12">
+                                                                                        <h4 class="content-heading">Name*</h4>
+                                                                                        <input type="text" class="form-control" name="name" id="name{{$item['id']}}">
+                                                                                        <span class="text-danger" id="name-error{{$item['id']}}"></span>
+                                                                                    </div>
+                                                                                    <div class="col-sm-6 col-12 mt-3 mt-sm-0">
+                                                                                        <h4 class="content-heading">Mobile Number*</h4>
+                                                                                        <input type="text" class="form-control" name="mobile" id="mobile{{$item['id']}}">
+                                                                                        <span class="text-danger" id="mobile-error{{$item['id']}}"></span>
+                                                                                    </div>
                                                                                 </div>
-                                                                                <div class="col-sm-6 col-12 mt-3 mt-sm-0">
-                                                                                    <h4 class="content-heading">Phone Number*</h4>
-                                                                                    <input type="text" class="form-control">
+                                                                                <h4 class="content-heading">Please give the Rate at which you want to Allot(in Rs) *</h4>
+                                                                                <div class="allot-amount">
+                                                                                    <input type="text" class="form-control" name="rate" id="rate{{$item['id']}}">
+                                                                                    <span class="text-danger" id="rate-error{{$item['id']}}"></span>
+                                                                                    <span class="" id="form-success{{$item['id']}}"></span>
                                                                                 </div>
+                                                                                <input type="hidden" name="id" id="id{{$item['id']}}" value="{{$item['id']}}">
+                                                                                <button type="button" class="btn btn-animated btn-submit w-50" onclick="formSubmit({{$item['id']}})">Submit</button>
                                                                             </div>
-                                                                            <h4 class="content-heading">Please give the Rate at which you want to Allot(in Rs) *</h4>
-                                                                            <div class="allot-amount">
-                                                                                <input type="text" class="form-control">
-                                                                            </div>
-                                                                            <button type="button" class="btn btn-animated btn-submit w-50">Submit</button>
-                                                                        </div>
+                                                                        </form>
                                                                     </div>
                                                                 </div>
                                                             </div>
@@ -656,6 +664,58 @@
             }
         });
     });
+    function formSubmit(formId) {
+        var form = $('#allotOfflineform' + formId);
+
+        $.ajax({
+            url: "{{route('buyer_allot_offline_seller')}}", // Replace with your Laravel route
+            type: 'POST',
+            data: form.serialize(),
+            dataType: 'json',
+            success: function(response) {
+                if (response.success) {
+                    $('#form-success' + formId).text('Form submitted successfully!').css({'color': 'green'}).show();
+                    form[0].reset();
+                    setTimeout(function() {
+                    $('#form-success' + formId).text('');
+                        window.location.href = "{{route('buyer_confirmed_inquiries')}}";
+                    }, 3000);
+                } else {
+                    $('#form-success' + formId).text('something went wrong!').css({'color': 'red'}).show();
+                    setTimeout(function() {
+                    $('#form-success' + formId).text('');
+                       window.reload();
+                    }, 3000);
+                }
+                
+            },
+            error: function(response) {
+                console.log(response);
+                if (response.status === 400) {
+                    var errors = response.responseJSON.errors;
+                    if (errors.name) {
+                        $('#name-error' + formId).text(errors.name[0]);
+                    }
+                    if (errors.mobile) {
+                        $('#mobile-error' + formId).text(errors.mobile[0]);
+                    }
+                    if (errors.rate) {
+                        $('#rate-error' + formId).text(errors.rate[0]);
+                    }
+
+                    // Remove error messages after 3 seconds
+                    setTimeout(function() {
+                        $('#name-error' + formId).text('');
+                        $('#mobile-error' + formId).text('');
+                        $('#rate-error' + formId).text('');
+                    }, 3000);
+                } else {
+                    var errors = response.responseJSON.errors;
+                    alert(errors);
+                }
+            }
+        });
+    }
 </script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js"></script>
 <script>

@@ -548,7 +548,7 @@
                                                                             <div class="col-12">
                                                                                 <h4 class="content-heading">Select a Reason*</h4>
                                                                                 <select name="cancelled_reason" class="form-control" required>
-                                                                                    <option selected disabled>Select</option>
+                                                                                    {{-- <option selected disabled>Select</option> --}}
                                                                                     <option value="Withdrawn by Supplier">Withdrawn by Supplier</option>
                                                                                     <option value="Supplier Unavailable">Supplier Unavailable</option>
                                                                                     <option value="Duplicate Inquiry">Duplicate Inquiry</option>

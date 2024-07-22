@@ -640,6 +640,7 @@
     </div>
 </div>
 
+<!-- modal -->
 <div class="modal fade allot-rate-modal offline-allot" id="allotOfflineModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
@@ -647,23 +648,31 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                <div class="container-fluid">
-                    <div class="row">
-                        <div class="col-sm-6 col-12">
-                            <h4 class="content-heading">Name*</h4>
-                            <input type="text" class="form-control">
+                <form action="" method="post" id="allotOfflineform">
+                    @csrf
+                    <div class="container-fluid">
+                        <div class="row">
+                            <div class="col-sm-6 col-12">
+                                <h4 class="content-heading">Name*</h4>
+                                <input type="text" class="form-control" name="name" id="name">
+                                <span class="text-danger" id="name-error"></span>
+                            </div>
+                            <div class="col-sm-6 col-12 mt-3 mt-sm-0">
+                                <h4 class="content-heading">Mobile Number*</h4>
+                                <input type="text" class="form-control" name="mobile" id="mobile">
+                                <span class="text-danger" id="mobile-error"></span>
+                            </div>
                         </div>
-                        <div class="col-sm-6 col-12 mt-3 mt-sm-0">
-                            <h4 class="content-heading">Phone Number*</h4>
-                            <input type="text" class="form-control">
+                        <h4 class="content-heading">Please give the Rate at which you want to Allot(in Rs) *</h4>
+                        <div class="allot-amount">
+                            <input type="text" class="form-control" name="rate" id="rate">
+                            <span class="text-danger" id="rate-error"></span>
+                            <span class="" id="form-success"></span>
                         </div>
+                        <input type="hidden" name="id" id="id" value="">
+                        <button type="button" class="btn btn-animated btn-submit w-50" onclick="formSubmit()">Submit</button>
                     </div>
-                    <h4 class="content-heading">Please give the Rate at which you want to Allot(in Rs) *</h4>
-                    <div class="allot-amount">
-                        <input type="text" class="form-control">
-                    </div>
-                    <button type="button" class="btn btn-animated btn-submit w-50">Submit</button>
-                </div>
+                </form>
             </div>
         </div>
     </div>
@@ -672,6 +681,8 @@
 <div class="modal fade allot-rate-modal cancel-inquiry" id="cancelInquiryModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
+        <form method="post" action="{{ route('buyer_cancelled_reason') }}">
+            @csrf
             <div class="modal-header">
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
@@ -682,46 +693,25 @@
                         <div class="col-12">
                             <h4 class="content-heading">Are you sure you want to cancel this Inquiry?</h4>
                         </div>
-                        <div class="col-md-6 col-sm-4 col-6">
-                            <label for="cancelInquiryYes" class="modal-custom-radio">
-                                <input type="radio" name="cancelinquiry" id="cancelInquiryYes" value="yes" checked>
-                                <span class="checkmark">
-                                    <span class="checkedmark"></span>
-                                </span>
-                                <div class="radio-text">
-                                    <label>Yes</label>
-                                </div>
-                            </label>
+                        <input type="hidden" name="id" id="inquiry_id" value="">
+                        <div class="row mt-3">
+                            <div class="col-12">
+                                <h4 class="content-heading">Select a Reason*</h4>
+                                <select name="cancelled_reason" class="form-control" required>
+                                    {{-- <option selected disabled>Select</option> --}}
+                                    <option value="Withdrawn by Supplier">Withdrawn by Supplier</option>
+                                    <option value="Supplier Unavailable">Supplier Unavailable</option>
+                                    <option value="Duplicate Inquiry">Duplicate Inquiry</option>
+                                    <option value="Not Interested Anymore">Not Interested Anymore</option>
+                                    <option value="My Reason is not listed here">My Reason is not listed here</option>
+                                </select>
+                            </div>
                         </div>
-                        <div class="col-md-6 col-sm-4 col-6">
-                            <label for="cancelInquiryNo" class="modal-custom-radio">
-                                <input type="radio" name="cancelinquiry" id="cancelInquiryNo" value="no">
-                                <span class="checkmark">
-                                    <span class="checkedmark"></span>
-                                </span>
-                                <div class="radio-text">
-                                    <label>No</label>
-                                </div>
-                            </label>
-                        </div>
-                    </div>
-                    <div class="row mt-3">
-                        <div class="col-12">
-                            <h4 class="content-heading">Select a Reason*</h4>
-                            <select class="form-control">
-                                <option selected disabled>Select</option>
-                                <option value="">Withdrawn by Supplier</option>
-                                <option value="">Supplier Unavailable</option>
-                                <option value="">Duplicate Inquiry</option>
-                                <option value="">Not Interested Anymore</option>
-                                <option value="">My Reason is not listed here</option>
-                            </select>
-                        </div>
-                    </div>
                 </div>
                 
-                <button type="button" class="btn btn-animated btn-submit w-50">Submit</button>
+                <button type="submit" class="btn btn-animated btn-submit w-50">Submit</button>
             </div>
+        </form>
         </div>
     </div>
 </div>
@@ -744,6 +734,10 @@
     }
     function UnlockSellerModal(id){
         $('#unlock_inquiry_id').val(id);
+    }
+    function GetInquiryId(id){
+        $('#id').val(id);
+        $('#inquiry_id').val(id);
     }
     function allotRateModal(id){
         var value_quotes = $('#value_quotes'+id).val();
@@ -1024,11 +1018,11 @@
                             '<tbody>' +
                             '<tr>' +
                             '<td class="other-actions-td">' +
-                            '<a href="javascript:void(0)" data-bs-toggle="modal" data-bs-target="#allotOfflineModal" class="btn btn-yellow btn-allot-offline">' +
+                            '<a href="javascript:void(0)" data-bs-toggle="modal" data-bs-target="#allotOfflineModal" onclick="GetInquiryId(' + item.id + ')" class="btn btn-yellow btn-allot-offline">' +
                             '<img src="{{asset("frontend/assets/images/green-circle-tick.png")}}" alt="Allot Offline">' +
                             'Allot Offline' +
                             '</a>' +
-                            '<a href="javascript:void(0)" data-bs-toggle="modal" data-bs-target="#cancelInquiryModal" class="btn btn-red btn-cancel-inquiry">' +
+                            '<a href="javascript:void(0)" data-bs-toggle="modal" data-bs-target="#cancelInquiryModal" class="btn btn-red btn-cancel-inquiry" onclick="GetInquiryId(' + item.id + ')">' +
                             '<img src="{{asset("frontend/assets/images/white-circle-cross.png")}}" alt="Cancel">' +
                             'Cancel Inquiry' +
                             '</a>' +
@@ -1077,6 +1071,56 @@
             }
         });
     });
+    function formSubmit() {
+        var form = $('#allotOfflineform');
+        $.ajax({
+            url: "{{route('buyer_allot_offline_seller')}}", // Replace with your Laravel route
+            type: 'POST',
+            data: form.serialize(),
+            dataType: 'json',
+            success: function(response) {
+                if (response.success) {
+                    $('#form-success').text('Form submitted successfully!').css({'color': 'green'}).show();
+                    form[0].reset();
+                    setTimeout(function() {
+                    $('#form-success').text('');
+                        window.location.href = "{{route('buyer_confirmed_inquiries')}}";
+                    }, 3000);
+                } else {
+                    $('#form-success').text('something went wrong!').css({'color': 'red'}).show();
+                    setTimeout(function() {
+                    $('#form-success').text('');
+                        window.reload();
+                    }, 3000);
+                }
+                
+            },
+            error: function(response) {
+                if (response.status === 400) {
+                    var errors = response.responseJSON.errors;
+                    if (errors.name) {
+                        $('#name-error').text(errors.name[0]);
+                    }
+                    if (errors.mobile) {
+                        $('#mobile-error').text(errors.mobile[0]);
+                    }
+                    if (errors.rate) {
+                        $('#rate-error').text(errors.rate[0]);
+                    }
+
+                    // Remove error messages after 3 seconds
+                    setTimeout(function() {
+                        $('#name-error').text('');
+                        $('#mobile-error').text('');
+                        $('#rate-error').text('');
+                    }, 3000);
+                } else {
+                    var errors = response.responseJSON.errors;
+                    alert(errors);
+                }
+            }
+        });
+    }
 </script>
 
 @endsection
