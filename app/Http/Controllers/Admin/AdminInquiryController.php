@@ -116,10 +116,8 @@ class AdminInquiryController extends Controller
             // Set headers to download file rather than displayed
             header('Content-Type: text/csv');
             header('Content-Disposition: attachment; filename="' . $fileName . '";');
-
             //output all remaining data on a file pointer
             fpassthru($f);
-
         }
     }
 

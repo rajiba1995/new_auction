@@ -45,7 +45,7 @@ class BuyerDashboardRepository implements BuyerDashboardContract{
     }
 
     public function all_inquiries_by_search($user_id, $start_date = null, $end_date = null, $seller_id = null, $keyword = null, $status = null) {
-        $query = Inquiry::query()->where('created_by', $user_id);
+        $query = Inquiry::query()->where('created_by', $user_id)->with('participantsData'); ;
 
         $query->when($start_date, function ($q) use ($start_date) {
             return $q->whereDate('start_date', '>=', $start_date);
@@ -72,8 +72,11 @@ class BuyerDashboardRepository implements BuyerDashboardContract{
                   ->orWhere('location', 'LIKE', '%' . $keyword . '%');
             });
         });
-        
-        return $query->where('status', $status)->latest()->get();
+        // Debug status filter
+        $query->when($status, function ($q) use ($status) {
+        return $q->where('status', $status);
+    });
+        return $query->latest()->get();
     }
     public function all_save_inquiries_by_search($user_id, $start_date = null, $end_date = null, $keyword = null) {
         $query = Inquiry::query()->where('created_by', $user_id);

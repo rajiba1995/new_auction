@@ -143,6 +143,8 @@ Route::get('/clear-cache', function() {
             Route::post('/live-inquiry-seller-allot', [BuyerDashboardController::class, 'live_inquiry_seller_allot'])->name('live_inquiry_seller_allot');
             Route::post('/update-your-notes', [BuyerDashboardController::class, 'update_your_notes'])->name('update_your_buyer_notes');
             Route::post('/allot-ofline-seller', [BuyerDashboardController::class, 'allot_offline_seller'])->name('buyer_allot_offline_seller');
+            Route::get('/export-confirm-inquiries', [BuyerDashboardController::class, 'exportConfirmInquiries'])->name('export_confirm_inquiries');
+            Route::get('/export-cancelled-inquiries', [BuyerDashboardController::class, 'exportCancelledInquiries'])->name('export_cancelled_inquiries');
 
         });
         // Seller Dashboard
@@ -166,7 +168,9 @@ Route::get('/clear-cache', function() {
                 Route::post('/cancelled', [SellerDashboardController::class, 'cancelled_reason'])->name('seller_cancelled_inquiry');
                 Route::post('/after-confirm-seller-cancelled-reason', [SellerDashboardController::class, 'after_confirm_seller_cancelled_reason'])->name('after_confirm_seller_cancelled_inquiry');
                 Route::post('/update-your-notes', [SellerDashboardController::class, 'update_your_notes'])->name('update_your_notes');
-                
+                Route::get('/export-confirm-inquiries', [SellerDashboardController::class, 'exportConfirmInquiries'])->name('export_confirm_seller_inquiries');
+                Route::get('/export-cancelled-inquiries', [SellerDashboardController::class, 'exportCancelledInquiries'])->name('export_cancelled_seller_inquiries');
+    
             });
     });
     Route::group(['middleware' => ['auth']], function () {

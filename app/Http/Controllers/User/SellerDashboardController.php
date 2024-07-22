@@ -12,6 +12,7 @@ use App\Models\InquirySellerQuotes;
 use App\Models\InquiryParticipant;
 use App\Models\InquirySellerComments;
 use App\Models\Inquiry;
+use App\Models\User;
 use App\Models\MySellerWallet;
 use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\Redirect;
@@ -420,6 +421,65 @@ class SellerDashboardController extends Controller
 
         return view('front.seller_dashboard.confirmed_inquireis', compact('total_buyers','my_id','confirmed_inquiries','all_inquery_count', 'group_wise_list_count', 'live_inquiries_count', 'pending_inquiries_count', 'confirmed_inquiries_count', 'rejected_inquiries_count'));
     }
+    public function exportConfirmInquiries(Request $request){
+        
+        
+        // Retrieve confirmed inquiries based on search parameters
+        $confirm_inquiry_data = $this->SellerDashboardRepository->confirmed_inquiries_by_seller(
+            
+            $request->input('keyword'),
+            $request->input('start_date'),
+            $request->input('end_date'),
+            $request->input('buyer'),
+          
+        );
+        
+        $delimiter = ",";
+        $fileName = "Confirm_Inquiries-" . date('d-m-Y') . ".csv";
+        // Create a file pointer
+         $f = fopen('php://memory', 'w');
+         $header = array('Sl.No', 'Inquiry ID', 'Title', 'Start Date Time', 'End Date Time', 'Category', 
+                    'Sub Category', 'Description', 'Execution Date',
+                    'Minimum Quote Amount', 'Maximum Quote Amount', 'Alloted Seller','Final Alloted Amount','Buyer Name',
+                    'Inquiry Type', 'Location', 'Remarks');
+
+           fputcsv($f, $header, $delimiter);
+           foreach ($confirm_inquiry_data as $index => $inquiry) {
+            $description = strip_tags($inquiry->description);
+            $alloted_seller = User::where('id',$inquiry->allot_seller)->first();    
+            $user_name = $inquiry->buyer_business_name;     
+                       
+                $exportData = array(
+                    $index+1,
+                    $inquiry->inquiry_id, 
+                    $inquiry->title, 
+                    date('d M, Y h:i A', strtotime($inquiry->start_date.' '.$inquiry->start_time)), 
+                    date('d M, Y h:i A', strtotime($inquiry->end_date.' '.$inquiry->end_time)), 
+                    $inquiry->category, 
+                    $inquiry->sub_category, 
+                    $description, 
+                    $inquiry->execution_date,
+                    $inquiry->minimum_quote_amount, 
+                    $inquiry->maximum_quote_amount, 
+                    $alloted_seller ? $alloted_seller->business_name : '',
+                    $inquiry->inquiry_amount,
+                    $user_name,
+                    $inquiry->inquiry_type, 
+                    $inquiry->location, 
+                    $inquiry->status == 3 ? "Confirmed" : ''
+                );
+            
+       
+            fputcsv($f,$exportData,$delimiter);
+        }
+        fseek($f,0);
+        // Set headers to download file rather than displayed
+        header('Content-Type: text/csv');
+        header('Content-Disposition: attachment; filename="' . $fileName . '";');
+
+        //output all remaining data on a file pointer
+        fpassthru($f);
+    }
     public function history_inquiries(Request $request){
         $keyword = $request->keyword;
         $start_date = $request->start_date;
@@ -461,6 +521,61 @@ class SellerDashboardController extends Controller
         }
         $distinct = array_unique($distinct);
         return view('front.seller_dashboard.history_inquireis', compact('total_buyers','rejected_inquiries', 'distinct','all_inquery_count', 'group_wise_list_count', 'live_inquiries_count', 'pending_inquiries_count', 'confirmed_inquiries_count', 'rejected_inquiries_count'));
+    }
+    public function exportCancelledInquiries(Request $request){
+        $user_id = $this->getAuthenticatedUserId();
+        
+        // Retrieve confirmed inquiries based on search parameters
+        $cancelled_inquiry_data = $this->SellerDashboardRepository->rejected_inquiries_by_seller(
+            $user_id,
+            $request->input('keyword'),
+            $request->input('start_date'),
+            $request->input('end_date'),
+            $request->input('buyer'),
+            4 // Assuming '4' is the status code for confirmed inquiries
+        );
+
+        $delimiter = ",";
+        $fileName = "Rejected_Inquiries-" . date('d-m-Y') . ".csv";
+        // Create a file pointer
+         $f = fopen('php://memory', 'w');
+         $header = array('Sl.No', 'Inquiry ID', 'Title', 'Start Date Time', 'End Date Time', 'Category', 
+                    'Sub Category', 'Description', 'Execution Date',
+                    'Minimum Quote Amount', 'Maximum Quote Amount', 'Buyer Name',
+                    'Inquiry Type', 'Location', 'Remarks');
+
+           fputcsv($f, $header, $delimiter);
+           foreach ($cancelled_inquiry_data as $index => $inquiry) {
+            $description = strip_tags($inquiry->description);
+                $user_name = $inquiry->buyer_business_name;           
+                $exportData = array(
+                    $index+1,
+                    $inquiry->inquiry_id, 
+                    $inquiry->title, 
+                    date('d M, Y h:i A', strtotime($inquiry->start_date.' '.$inquiry->start_time)), 
+                    date('d M, Y h:i A', strtotime($inquiry->end_date.' '.$inquiry->end_time)), 
+                    $inquiry->category, 
+                    $inquiry->sub_category, 
+                    $description, 
+                    $inquiry->execution_date,
+                    $inquiry->minimum_quote_amount, 
+                    $inquiry->maximum_quote_amount, 
+                    $user_name,
+                    $inquiry->inquiry_type, 
+                    $inquiry->location, 
+                    $inquiry->status == 4 ? "Cancelled" : ''
+                );
+            
+       
+            fputcsv($f,$exportData,$delimiter);
+        }
+        fseek($f,0);
+        // Set headers to download file rather than displayed
+        header('Content-Type: text/csv');
+        header('Content-Disposition: attachment; filename="' . $fileName . '";');
+
+        //output all remaining data on a file pointer
+        fpassthru($f);
     }
     public function seller_start_quotes(Request $request){
         // dd($request->all());

@@ -23,6 +23,9 @@ use Carbon\Carbon;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Contracts\Encryption\DecryptException;
 use Illuminate\Support\Facades\DB;
+use Symfony\Component\HttpFoundation\StreamedResponse;
+use Illuminate\Support\Facades\Log;
+
 
 
 class BuyerDashboardController extends Controller
@@ -107,6 +110,7 @@ class BuyerDashboardController extends Controller
             $request->input('seller'),
             $request->input('keyword'),2
         );
+
     } else {
         $pending_inquiries_data =  $this->BuyerDashboardRepository->pending_inquiries_by_user($user_id);
     }
@@ -346,6 +350,104 @@ class BuyerDashboardController extends Controller
         }
         return view('front.user_dashboard.confirmed_inquireis', compact('confirmed_inquiries','live_inquiries','saved_inquiries','group_wise_list','confirmed_inquiry_data','pending_inquiries_data','cancelled_inquiry_data','suppliers_data'));
     }
+    // confirm_enquiry_export
+    public function exportConfirmInquiries(Request $request){
+        $user_id = $this->getAuthenticatedUserId();
+        
+        // Retrieve confirmed inquiries based on search parameters
+        $confirmed_inquiry_data = $this->BuyerDashboardRepository->all_inquiries_by_search(
+            $user_id,
+            $request->input('start_date'),
+            $request->input('end_date'),
+            $request->input('seller'),
+            $request->input('keyword'),
+            3 // Assuming '3' is the status code for confirmed inquiries
+        );
+    
+        // Determine if the search includes participants
+        $includesParticipants = !is_null($request->input('seller'));
+    
+            $delimiter = ",";
+            $fileName = "Inquiry Details-".date('d-m-Y').".csv";
+            // Create a file pointer
+            $f = fopen('php://memory', 'w');
+
+            // Conditional header based on whether participants are included
+            if ($includesParticipants) {
+                $header = array('Sl.No', 'Inquiry ID', 'Title', 'Start Date Time', 'End Date Time', 'Category', 
+                    'Sub Category', 'Description', 'Execution Date',
+                    'Minimum Quote Amount', 'Maximum Quote Amount', 'Participant Details', 'Last Quote', 
+                    'Inquiry Type', 'Allot Seller', 'Final Allot Amount', 'Location', 'Remarks'
+                );
+            } else {
+                $header = array('Sl.No', 'Inquiry ID', 'Title', 'Start Date Time', 'End Date Time', 'Category', 
+                    'Sub Category', 'Description', 'Execution Date',
+                    'Minimum Quote Amount', 'Maximum Quote Amount', 
+                    'Inquiry Type', 'Allot Seller', 'Final Allot Amount', 'Location', 'Remarks');
+            }
+            fputcsv($f,$header,$delimiter);
+    
+            // Add the data of the CSV
+            foreach ($confirmed_inquiry_data as $index => $inquiry) {
+                $description = strip_tags($inquiry->description);
+                $allot_seller = User::where('id', $inquiry->allot_seller)->first();
+                if ($includesParticipants) {
+                    $seller_id = $request->input('seller');
+                    $InquirySellerQuotes = InquirySellerQuotes::with('SellerData')->where('inquiry_id', $inquiry->id)->where('seller_id', $seller_id)->latest()->first();
+                    $seller_info = 'Name: ' . ($InquirySellerQuotes->SellerData ? $InquirySellerQuotes->SellerData->business_name : '') 
+                    . ' Mobile No: ' . ($InquirySellerQuotes->SellerData ? $InquirySellerQuotes->SellerData->mobile : '');
+        
+                    $exportData = array(
+                        $index+1,
+                        $inquiry->inquiry_id, 
+                        $inquiry->title, 
+                        date('d M, Y h:i A', strtotime($inquiry->start_date.' '.$inquiry->start_time)), 
+                        date('d M, Y h:i A', strtotime($inquiry->end_date.' '.$inquiry->end_time)), 
+                        $inquiry->category, 
+                        $inquiry->sub_category, 
+                        $description, 
+                        $inquiry->execution_date,
+                        $inquiry->minimum_quote_amount, 
+                        $inquiry->maximum_quote_amount, 
+                        $seller_info, 
+                        $InquirySellerQuotes->quotes, 
+                        $inquiry->inquiry_type, 
+                        $allot_seller?$allot_seller->business_name:"", 
+                        $inquiry->inquiry_amount, 
+                        $inquiry->location, 
+                        $inquiry->status == 3 ? "Confirmed" : ''
+                    );
+                } else {
+                    $exportData = array(
+                       $index+1, 
+                        $inquiry->inquiry_id, 
+                        $inquiry->title, 
+                        date('d M, Y h:i A', strtotime($inquiry->start_date.' '.$inquiry->start_time)), 
+                        date('d M, Y h:i A', strtotime($inquiry->end_date.' '.$inquiry->end_time)), 
+                        $inquiry->category, 
+                        $inquiry->sub_category, 
+                        $description, 
+                        $inquiry->execution_date, 
+                        $inquiry->minimum_quote_amount, 
+                        $inquiry->maximum_quote_amount, 
+                        $inquiry->inquiry_type, 
+                        $allot_seller?$allot_seller->business_name:"", 
+                        $inquiry->inquiry_amount, 
+                        $inquiry->location, 
+                        $inquiry->status ==3 ? "Confirmed" : ''
+                    );
+                }
+                fputcsv($f,$exportData,$delimiter);
+            }
+            fseek($f,0);
+            // Set headers to download file rather than displayed
+            header('Content-Type: text/csv');
+            header('Content-Disposition: attachment; filename="' . $fileName . '";');
+
+            //output all remaining data on a file pointer
+            fpassthru($f);
+    }
+    
     public function cancelled_inquiries(Request $request){
         $user_id = $this->getAuthenticatedUserId();
 
@@ -465,6 +567,103 @@ class BuyerDashboardController extends Controller
           
         }
         return view('front.user_dashboard.cancelled_inquireis', compact('cancelled_inquiries','group_wise_list','saved_inquiries','live_inquiries','confirmed_inquiry_data','pending_inquiries_data','cancelled_inquiry_data','suppliers_data'));
+    }
+
+    public function exportCancelledInquiries(Request $request){
+        $user_id = $this->getAuthenticatedUserId();
+        
+        // Retrieve confirmed inquiries based on search parameters
+        $cancelled_inquiry_data = $this->BuyerDashboardRepository->all_inquiries_by_search(
+            $user_id,
+            $request->input('start_date'),
+            $request->input('end_date'),
+            $request->input('seller'),
+            $request->input('keyword'),
+            4 // Assuming '4' is the status code for confirmed inquiries
+        );
+    
+        // Determine if the search includes participants
+        $includesParticipants = !is_null($request->input('seller'));
+    
+            $delimiter = ",";
+            $fileName = "Inquiry Details-".date('d-m-Y').".csv";
+            // Create a file pointer
+            $f = fopen('php://memory', 'w');
+
+            // Conditional header based on whether participants are included
+            if ($includesParticipants) {
+                $header = array('Sl.No', 'Inquiry ID', 'Title', 'Start Date Time', 'End Date Time', 'Category', 
+                    'Sub Category', 'Description', 'Execution Date',
+                    'Minimum Quote Amount', 'Maximum Quote Amount', 'Participant Details', 'Last Quote', 
+                    'Inquiry Type', 'Allot Seller', 'Final Allot Amount', 'Location', 'Remarks'
+                );
+            } else {
+                $header = array('Sl.No', 'Inquiry ID', 'Title', 'Start Date Time', 'End Date Time', 'Category', 
+                    'Sub Category', 'Description', 'Execution Date',
+                    'Minimum Quote Amount', 'Maximum Quote Amount', 
+                    'Inquiry Type', 'Allot Seller', 'Final Allot Amount', 'Location', 'Remarks');
+            }
+            fputcsv($f,$header,$delimiter);
+    
+            // Add the data of the CSV
+            foreach ($cancelled_inquiry_data as $index => $inquiry) {
+                $description = strip_tags($inquiry->description);
+                $allot_seller = User::where('id', $inquiry->allot_seller)->first();
+                if ($includesParticipants) {
+                    $seller_id = $request->input('seller'); 
+                    $InquirySellerQuotes = InquirySellerQuotes::with('SellerData')->where('inquiry_id', $inquiry->id)->where('seller_id', $seller_id)->latest()->first();
+                    $seller_info = 'Name: ' . ($InquirySellerQuotes->SellerData ? $InquirySellerQuotes->SellerData->business_name : '') 
+                    . ' Mobile No: ' . ($InquirySellerQuotes->SellerData ? $InquirySellerQuotes->SellerData->mobile : '');
+        
+                    $exportData = array(
+                        $index+1,
+                        $inquiry->inquiry_id, 
+                        $inquiry->title, 
+                        date('d M, Y h:i A', strtotime($inquiry->start_date.' '.$inquiry->start_time)), 
+                        date('d M, Y h:i A', strtotime($inquiry->end_date.' '.$inquiry->end_time)), 
+                        $inquiry->category, 
+                        $inquiry->sub_category, 
+                        $description, 
+                        $inquiry->execution_date,
+                        $inquiry->minimum_quote_amount, 
+                        $inquiry->maximum_quote_amount, 
+                        $seller_info, 
+                        $InquirySellerQuotes->quotes, 
+                        $inquiry->inquiry_type, 
+                        $allot_seller?$allot_seller->business_name:"", 
+                        $inquiry->inquiry_amount, 
+                        $inquiry->location, 
+                        $inquiry->status == 4 ? "Cancelled" : ''
+                    );
+                } else {
+                    $exportData = array(
+                       $index+1, 
+                        $inquiry->inquiry_id, 
+                        $inquiry->title, 
+                        date('d M, Y h:i A', strtotime($inquiry->start_date.' '.$inquiry->start_time)), 
+                        date('d M, Y h:i A', strtotime($inquiry->end_date.' '.$inquiry->end_time)), 
+                        $inquiry->category, 
+                        $inquiry->sub_category, 
+                        $description, 
+                        $inquiry->execution_date, 
+                        $inquiry->minimum_quote_amount, 
+                        $inquiry->maximum_quote_amount, 
+                        $inquiry->inquiry_type, 
+                        $allot_seller?$allot_seller->business_name:"", 
+                        $inquiry->inquiry_amount, 
+                        $inquiry->location, 
+                        $inquiry->status == 4 ? "Cancelled" : ''
+                    );
+                }
+                fputcsv($f,$exportData,$delimiter);
+            }
+            fseek($f,0);
+            // Set headers to download file rather than displayed
+            header('Content-Type: text/csv');
+            header('Content-Disposition: attachment; filename="' . $fileName . '";');
+
+            //output all remaining data on a file pointer
+            fpassthru($f);
     }
 
     public function live_inquiries_fetch_ajax(){
