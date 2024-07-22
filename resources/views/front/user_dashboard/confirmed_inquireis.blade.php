@@ -322,6 +322,24 @@
                                                     <td class="output-table-column" colspan="5">
                                                         <table class="table output-table">
                                                             <tbody>
+                                                                    @if($item['allotment_type']==1)
+                                                                    <tr>
+                                                                        <td colspan="5" class="text-center">
+                                                                            <p class="badge btn-red">Offline Allot Seller</p>
+                                                                            @php
+                                                                                $AllotOffline = App\models\AllotOffline::where('id', $item['allot_seller'])->first();
+                                                                            @endphp
+                                                                            <ul style="list-style: none;">
+                                                                                <li>Name: <strong>{{$AllotOffline?$AllotOffline->name:""}}</strong></li>
+                                                                                <li>Mobile: <strong>{{$AllotOffline?$AllotOffline->mobile:""}}</strong></li>
+                                                                                <li>
+                                                                                    <a href="javascript:void(0)" class="btn btn-yellow btn-allot" title="Allotment amount">  {{ number_format($item['inquiry_amount'], 2, '.', ',') }}
+                                                                                    </a>
+                                                                                </li>
+                                                                            </ul>
+                                                                        </td>
+                                                                    </tr>
+                                                                    @endif
                                                                     @if(count($item['seller_data'])>0)
                                                                         @foreach ($item['seller_data'] as $seller_key => $seller_item)
                                                                         <tr>
@@ -422,79 +440,10 @@
                                                                                 @endif
                                                                             </td>
                                                                             <td class="actions-td">
-                                                                                @if($item['allot_seller']!=$seller_item['seller_id'])
-                                                                                <a href="javascript:void(0)" data-bs-toggle="modal" data-bs-target="#startAllotModal{{$item['inquiry_id']}}{{$seller_item['id']}}" class="btn btn-yellow btn-allot">Allot</a>
-                                                                                <div class="modal fade allot-rate-modal start-allot" id="startAllotModal{{$item['inquiry_id']}}{{$seller_item['id']}}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-                                                                                    <div class="modal-dialog">
-                                                                                        <form action="{{route('live_inquiry_seller_allot')}}" method="POST" id="seller_allot_form{{$item['id']}}">
-                                                                                            @csrf
-                                                                                            <div class="modal-content">
-                                                                                                <div class="modal-header">
-                                                                                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                                                                                                </div>
-                                                                                                <div class="modal-body">
-                                                                                                    <h4 class="content-heading">Please give the Rate at which you want to Allot(in Rs) *</h4>
-                                                                                                    <div class="allot-amount">
-                                                                                                        <input type="hidden" name="allotrate" class="form-control" value="yes">
-                                                                                                        <input type="hidden" name="type" class="form-control" value="new">
-                                                                                                        <input type="hidden" name="inquiry_id" class="form-control" value="{{$item['id']}}">
-                                                                                                        <input type="hidden" name="bidder_id" class="form-control" value="{{$seller_item['seller_id']}}">
-                                                                                                        <input type="text" name="allot_amount" class="form-control" onkeyup="validateAmount(this, '{{$item['id']}}')" required>
-                                                                                                        <div id="{{$item['id']}}error-message" style="color: red;"></div>
-                                                                                                    </div>
-                                                                                                    <button type="submit" class="btn btn-animated btn-submit w-75">Submit</button>
-                                                                                                </div>
-                                                                                            </div>
-                                                                                        </form>
-                                                                                    </div>
-                                                                                </div>
-                                                                                @else
-                                                                                <a href="javascript:void(0)" data-bs-toggle="modal" data-bs-target="#OldstartAllotModal{{$item['inquiry_id']}}{{$seller_item['id']}}" class="btn btn-yellow btn-allot">  
-                                                                                    <img src="{{asset('frontend/assets/images/green-circle-tick.png')}}" alt="Allot Offline">{{$item['inquiry_amount']}}</a>
-                                                                                    <a href="javascript:void(0)" data-bs-toggle="modal" data-bs-target="#viewQuoteModal{{$item['id']}}{{$seller_item['id']}}" class="mt-2 btn btn-view-details btn-view-comment">Details</a>
-                                                                                    <div class="modal fade view-comment-modal" id="viewQuoteModal{{$item['id']}}{{$seller_item['id']}}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-                                                                                        <div class="modal-dialog">
-                                                                                            <div class="modal-content">
-                                                                                                <div class="modal-header">
-                                                                                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                                                                                                </div>
-                                                                                                <div class="modal-body">
-                                                                                                    <table>
-                                                                                                        <thead>
-                                                                                                            <tr>
-                                                                                                                <th width="20%">Date & Time</th>
-                                                                                                                <th width="30%">Seller</th>
-                                                                                                                <th width="10%">Quote</th>
-                                                                                                                <th width="20%">Reason</th>
-                                                                                                            </tr>
-                                                                                                        </thead>
-                                                                                                        <tbody>
-                                                                                                            @foreach (GetAllQuotesData($item['id']) as $k=>$quote_item)
-                                                                                                            {{-- {{dd($quote_item)}} --}}
-                                                                                                                <tr>
-                                                                                                                    <td>{{date('d M Y h:i a', strtotime($quote_item->created_at))}}</td>
-                                                                                                                    <td>{{$quote_item->SellerData?$quote_item->SellerData->business_name:"---"}}</td>
-                                                                                                                    <td>
-                                                                                                                        @if($k!=0)
-                                                                                                                         <img src="{{asset('frontend/assets/images/up-arrow.png')}}" alt="">
-                                                                                                                         @endif
-                                                                                                                       <p class="d-flex font-weight-bold"> 
-                                                                                                                        @if($k==0)
-                                                                                                                        <img src="{{asset('frontend/assets/images/green-circle-tick.png')}}" alt="">
-                                                                                                                        @endif
-                                                                                                                         {{$quote_item->quote}}</p>
-                                                                                                                         
-                                                                                                                        </td>
-                                                                                                                    <td>{{$quote_item->reason?$quote_item->reason:""}}</td>
-                                                                                                                </tr>
-                                                                                                            @endforeach
-                                                                                                        </tbody>
-                                                                                                    </table>
-                                                                                                </div>
-                                                                                            </div>
-                                                                                        </div>
-                                                                                    </div>
-                                                                                    <div class="modal fade allot-rate-modal start-allot" id="OldstartAllotModal{{$item['inquiry_id']}}{{$seller_item['id']}}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                                                                                @if($item['allotment_type']==0)
+                                                                                    @if($item['allot_seller']!=$seller_item['seller_id'])
+                                                                                    <a href="javascript:void(0)" data-bs-toggle="modal" data-bs-target="#startAllotModal{{$item['inquiry_id']}}{{$seller_item['id']}}" class="btn btn-yellow btn-allot">Allot</a>
+                                                                                    <div class="modal fade allot-rate-modal start-allot" id="startAllotModal{{$item['inquiry_id']}}{{$seller_item['id']}}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
                                                                                         <div class="modal-dialog">
                                                                                             <form action="{{route('live_inquiry_seller_allot')}}" method="POST" id="seller_allot_form{{$item['id']}}">
                                                                                                 @csrf
@@ -503,19 +452,14 @@
                                                                                                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                                                                                     </div>
                                                                                                     <div class="modal-body">
-                                                                                                        <h4 class="content-heading text-danger">If you want to change the previous rate*</h4>
                                                                                                         <h4 class="content-heading">Please give the Rate at which you want to Allot(in Rs) *</h4>
                                                                                                         <div class="allot-amount">
                                                                                                             <input type="hidden" name="allotrate" class="form-control" value="yes">
-                                                                                                            <input type="hidden" name="type" class="form-control" value="old">
+                                                                                                            <input type="hidden" name="type" class="form-control" value="new">
                                                                                                             <input type="hidden" name="inquiry_id" class="form-control" value="{{$item['id']}}">
                                                                                                             <input type="hidden" name="bidder_id" class="form-control" value="{{$seller_item['seller_id']}}">
-                                                                                                            <input type="text" name="allot_amount" class="form-control" onkeyup="validateAmount(this, '{{$item['id']}}')" value="{{$item['inquiry_amount']}}" required>
+                                                                                                            <input type="text" name="allot_amount" class="form-control" onkeyup="validateAmount(this, '{{$item['id']}}')" required>
                                                                                                             <div id="{{$item['id']}}error-message" style="color: red;"></div>
-                                                                                                            <div class="text-start">
-                                                                                                                <label for="">Reason *</label>
-                                                                                                                <textarea name="reallot_reason" rows="2" class="form-control" style="border-color: #0076D7;" required></textarea>
-                                                                                                            </div>
                                                                                                         </div>
                                                                                                         <button type="submit" class="btn btn-animated btn-submit w-75">Submit</button>
                                                                                                     </div>
@@ -523,6 +467,82 @@
                                                                                             </form>
                                                                                         </div>
                                                                                     </div>
+                                                                                    @else
+                                                                                    <a href="javascript:void(0)" data-bs-toggle="modal" data-bs-target="#OldstartAllotModal{{$item['inquiry_id']}}{{$seller_item['id']}}" class="btn btn-yellow btn-allot">  
+                                                                                        <img src="{{asset('frontend/assets/images/green-circle-tick.png')}}" alt="Allot Offline">{{$item['inquiry_amount']}}</a>
+                                                                                        <a href="javascript:void(0)" data-bs-toggle="modal" data-bs-target="#viewQuoteModal{{$item['id']}}{{$seller_item['id']}}" class="mt-2 btn btn-view-details btn-view-comment">Details</a>
+                                                                                        <div class="modal fade view-comment-modal" id="viewQuoteModal{{$item['id']}}{{$seller_item['id']}}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                                                                                            <div class="modal-dialog">
+                                                                                                <div class="modal-content">
+                                                                                                    <div class="modal-header">
+                                                                                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                                                                    </div>
+                                                                                                    <div class="modal-body">
+                                                                                                        <table>
+                                                                                                            <thead>
+                                                                                                                <tr>
+                                                                                                                    <th width="20%">Date & Time</th>
+                                                                                                                    <th width="30%">Seller</th>
+                                                                                                                    <th width="10%">Quote</th>
+                                                                                                                    <th width="20%">Reason</th>
+                                                                                                                </tr>
+                                                                                                            </thead>
+                                                                                                            <tbody>
+                                                                                                                @foreach (GetAllQuotesData($item['id']) as $k=>$quote_item)
+                                                                                                                {{-- {{dd($quote_item)}} --}}
+                                                                                                                    <tr>
+                                                                                                                        <td>{{date('d M Y h:i a', strtotime($quote_item->created_at))}}</td>
+                                                                                                                        <td>{{$quote_item->SellerData?$quote_item->SellerData->business_name:"---"}}</td>
+                                                                                                                        <td>
+                                                                                                                            @if($k!=0)
+                                                                                                                            <img src="{{asset('frontend/assets/images/up-arrow.png')}}" alt="">
+                                                                                                                            @endif
+                                                                                                                        <p class="d-flex font-weight-bold"> 
+                                                                                                                            @if($k==0)
+                                                                                                                            <img src="{{asset('frontend/assets/images/green-circle-tick.png')}}" alt="">
+                                                                                                                            @endif
+                                                                                                                            {{$quote_item->quote}}</p>
+                                                                                                                            
+                                                                                                                            </td>
+                                                                                                                        <td>{{$quote_item->reason?$quote_item->reason:""}}</td>
+                                                                                                                    </tr>
+                                                                                                                @endforeach
+                                                                                                            </tbody>
+                                                                                                        </table>
+                                                                                                    </div>
+                                                                                                </div>
+                                                                                            </div>
+                                                                                        </div>
+                                                                                        <div class="modal fade allot-rate-modal start-allot" id="OldstartAllotModal{{$item['inquiry_id']}}{{$seller_item['id']}}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                                                                                            <div class="modal-dialog">
+                                                                                                <form action="{{route('live_inquiry_seller_allot')}}" method="POST" id="seller_allot_form{{$item['id']}}">
+                                                                                                    @csrf
+                                                                                                    <div class="modal-content">
+                                                                                                        <div class="modal-header">
+                                                                                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                                                                        </div>
+                                                                                                        <div class="modal-body">
+                                                                                                            <h4 class="content-heading text-danger">If you want to change the previous rate*</h4>
+                                                                                                            <h4 class="content-heading">Please give the Rate at which you want to Allot(in Rs) *</h4>
+                                                                                                            <div class="allot-amount">
+                                                                                                                <input type="hidden" name="allotrate" class="form-control" value="yes">
+                                                                                                                <input type="hidden" name="type" class="form-control" value="old">
+                                                                                                                <input type="hidden" name="inquiry_id" class="form-control" value="{{$item['id']}}">
+                                                                                                                <input type="hidden" name="bidder_id" class="form-control" value="{{$seller_item['seller_id']}}">
+                                                                                                                <input type="text" name="allot_amount" class="form-control" onkeyup="validateAmount(this, '{{$item['id']}}')" value="{{$item['inquiry_amount']}}" required>
+                                                                                                                <div id="{{$item['id']}}error-message" style="color: red;"></div>
+                                                                                                                <div class="text-start">
+                                                                                                                    <label for="">Reason *</label>
+                                                                                                                    <textarea name="reallot_reason" rows="2" class="form-control" style="border-color: #0076D7;" required></textarea>
+                                                                                                                </div>
+                                                                                                            </div>
+                                                                                                            <button type="submit" class="btn btn-animated btn-submit w-75">Submit</button>
+                                                                                                        </div>
+                                                                                                    </div>
+                                                                                                </form>
+                                                                                            </div>
+                                                                                        </div>
+                                                                                    @endif
                                                                                 @endif
                                                                             </td>
                                                                         </tr>
@@ -536,10 +556,12 @@
                                                             <tbody>
                                                                 <tr>
                                                                     <td class="other-actions-td">
-                                                                        <a href="javascript:void(0)" data-bs-toggle="modal" data-bs-target="#PendingallotOfflineModal{{$item['id']}}" class="btn btn-yellow btn-allot-offline">
-                                                                            <img src="{{asset('frontend/assets/images/green-circle-tick.png')}}" alt="Allot Offline">
-                                                                            Allot Offline
-                                                                        </a>
+                                                                        @if($item['allotment_type']==0)
+                                                                            <a href="javascript:void(0)" data-bs-toggle="modal" data-bs-target="#PendingallotOfflineModal{{$item['id']}}" class="btn btn-yellow btn-allot-offline">
+                                                                                <img src="{{asset('frontend/assets/images/green-circle-tick.png')}}" alt="Allot Offline">
+                                                                                Allot Offline
+                                                                            </a>
+                                                                        @endif
                                                                         <a href="javascript:void(0)" data-bs-toggle="modal" data-bs-target="#PendingcancelInquiryModal{{$item['id']}}" class="btn btn-red btn-cancel-inquiry">
                                                                             <img src="{{asset('frontend/assets/images/white-circle-cross.png')}}" alt="Cancel">
                                                                             Cancel Inquiry
@@ -573,23 +595,31 @@
                                                                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                                             </div>
                                                             <div class="modal-body">
-                                                                <div class="container-fluid">
-                                                                    <div class="row">
-                                                                        <div class="col-sm-6 col-12">
-                                                                            <h4 class="content-heading">Name*</h4>
-                                                                            <input type="text" class="form-control">
+                                                                <form action="" method="post" id="allotOfflineform{{$item['id']}}">
+                                                                    @csrf
+                                                                    <div class="container-fluid">
+                                                                        <div class="row">
+                                                                            <div class="col-sm-6 col-12">
+                                                                                <h4 class="content-heading">Name*</h4>
+                                                                                <input type="text" class="form-control" name="name" id="name{{$item['id']}}">
+                                                                                <span class="text-danger" id="name-error{{$item['id']}}"></span>
+                                                                            </div>
+                                                                            <div class="col-sm-6 col-12 mt-3 mt-sm-0">
+                                                                                <h4 class="content-heading">Mobile Number*</h4>
+                                                                                <input type="text" class="form-control" name="mobile" id="mobile{{$item['id']}}">
+                                                                                <span class="text-danger" id="mobile-error{{$item['id']}}"></span>
+                                                                            </div>
                                                                         </div>
-                                                                        <div class="col-sm-6 col-12 mt-3 mt-sm-0">
-                                                                            <h4 class="content-heading">Phone Number*</h4>
-                                                                            <input type="text" class="form-control">
+                                                                        <h4 class="content-heading">Please give the Rate at which you want to Allot(in Rs) *</h4>
+                                                                        <div class="allot-amount">
+                                                                            <input type="text" class="form-control" name="rate" id="rate{{$item['id']}}">
+                                                                            <span class="text-danger" id="rate-error{{$item['id']}}"></span>
+                                                                            <span class="" id="form-success{{$item['id']}}"></span>
                                                                         </div>
+                                                                        <input type="hidden" name="id" id="id{{$item['id']}}" value="{{$item['id']}}">
+                                                                        <button type="button" class="btn btn-animated btn-submit w-50" onclick="formSubmit({{$item['id']}})">Submit</button>
                                                                     </div>
-                                                                    <h4 class="content-heading">Please give the Rate at which you want to Allot(in Rs) *</h4>
-                                                                    <div class="allot-amount">
-                                                                        <input type="text" class="form-control">
-                                                                    </div>
-                                                                    <button type="button" class="btn btn-animated btn-submit w-50">Submit</button>
-                                                                </div>
+                                                                </form>
                                                             </div>
                                                         </div>
                                                     </div>
@@ -598,6 +628,8 @@
                                                 <div class="modal fade allot-rate-modal cancel-inquiry" id="PendingcancelInquiryModal{{$item['id']}}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
                                                     <div class="modal-dialog">
                                                         <div class="modal-content">
+                                                        <form method="post" action="{{ route('buyer_cancelled_reason') }}">
+                                                            @csrf
                                                             <div class="modal-header">
                                                                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                                             </div>
@@ -608,31 +640,6 @@
                                                                         <div class="col-12">
                                                                             <h4 class="content-heading">Are you sure you want to cancel this Inquiry?</h4>
                                                                         </div>
-                                                                        {{-- <div class="col-md-6 col-sm-4 col-6">
-                                                                            <label for="cancelInquiryYes" class="modal-custom-radio">
-                                                                                <input type="radio" name="cancelinquiry" id="cancelInquiryYes" value="yes" checked>
-                                                                                <span class="checkmark">
-                                                                                    <span class="checkedmark"></span>
-                                                                                </span>
-                                                                                <div class="radio-text">
-                                                                                    <label>Yes</label>
-                                                                                </div>
-                                                                            </label>
-                                                                        </div> --}}
-                                                                        {{-- <div class="col-md-6 col-sm-4 col-6">
-                                                                            <label for="cancelInquiryNo" class="modal-custom-radio">
-                                                                                <input type="radio" name="cancelinquiry" id="cancelInquiryNo" value="no">
-                                                                                <span class="checkmark">
-                                                                                    <span class="checkedmark"></span>
-                                                                                </span>
-                                                                                <div class="radio-text">
-                                                                                    <label>No</label>
-                                                                                </div>
-                                                                            </label>
-                                                                        </div>class="dashboard_groups
-                                                                    </div> --}}
-                                                                    <form method="post" action="{{ route('buyer_cancelled_reason') }}">
-                                                                        @csrf
                                                                         <input type="hidden" name="id" value="{{$item['id']}}">
                                                                         <div class="row mt-3">
                                                                             <div class="col-12">
@@ -716,6 +723,57 @@
             }
         });
     });
+    function formSubmit(formId) {
+        var form = $('#allotOfflineform' + formId);
+
+        $.ajax({
+            url: "{{route('buyer_allot_offline_seller')}}", // Replace with your Laravel route
+            type: 'POST',
+            data: form.serialize(),
+            dataType: 'json',
+            success: function(response) {
+                if (response.success) {
+                    $('#form-success' + formId).text('Form submitted successfully!').css({'color': 'green'}).show();
+                    form[0].reset();
+                    setTimeout(function() {
+                    $('#form-success' + formId).text('');
+                        window.location.href = "{{route('buyer_confirmed_inquiries')}}";
+                    }, 3000);
+                } else {
+                    $('#form-success' + formId).text('something went wrong!').css({'color': 'red'}).show();
+                    setTimeout(function() {
+                    $('#form-success' + formId).text('');
+                        window.reload();
+                    }, 3000);
+                }
+                
+            },
+            error: function(response) {
+                if (response.status === 400) {
+                    var errors = response.responseJSON.errors;
+                    if (errors.name) {
+                        $('#name-error' + formId).text(errors.name[0]);
+                    }
+                    if (errors.mobile) {
+                        $('#mobile-error' + formId).text(errors.mobile[0]);
+                    }
+                    if (errors.rate) {
+                        $('#rate-error' + formId).text(errors.rate[0]);
+                    }
+
+                    // Remove error messages after 3 seconds
+                    setTimeout(function() {
+                        $('#name-error' + formId).text('');
+                        $('#mobile-error' + formId).text('');
+                        $('#rate-error' + formId).text('');
+                    }, 3000);
+                } else {
+                    var errors = response.responseJSON.errors;
+                    alert(errors);
+                }
+            }
+        });
+    }
 </script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js"></script>
 <script>

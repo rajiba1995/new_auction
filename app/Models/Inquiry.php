@@ -21,6 +21,7 @@ class Inquiry extends Model{
         'minimum_quote_amount',
         'maximum_quote_amount',
         'inquiry_type',
+        'allot_seller',
     ];
 
     public function ParticipantsData(){
@@ -37,6 +38,9 @@ class Inquiry extends Model{
     }
     public function SellerData(){
         return $this->belongsTo('App\Models\User','allot_seller','id');
+    }
+    public function OfflineData(){
+        return $this->belongsTo('App\Models\AllotOffline','allot_seller','id');
     }
     
 }

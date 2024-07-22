@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Contracts\AdminInquiryContract;
 use Barryvdh\DomPDF\Facade\Pdf;
 use App\Models\Inquiry;
+use App\Models\AllotOffline;
 use App\Models\InquirySellerQuotes;
 use App\Models\InquirySellerComments;
 use App\Models\User;
@@ -123,7 +124,11 @@ class AdminInquiryController extends Controller
 
     public function InquiryPdfGenarate($id){
         $inquiry = Inquiry::where('id',$id)->first();
-        $final_seller_details = User::where('id',$inquiry->allot_seller)->first();
+        if($inquiry->allotment_type==1){
+            $final_seller_details = AllotOffline::where('id', $inquiry->allot_seller)->first();
+         }else{
+             $final_seller_details = User::where('id',$inquiry->allot_seller)->first();
+         }
         $buyer_details = User::where('id',$inquiry->created_by)->first();
         $max_rate = InquirySellerQuotes::where('inquiry_id', $id)->max('quotes');
         $min_rate = InquirySellerQuotes::where('inquiry_id', $id)->min('quotes');

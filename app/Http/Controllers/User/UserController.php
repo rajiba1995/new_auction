@@ -1735,45 +1735,80 @@ class UserController extends Controller{
       }
         $goupId = $request->groupId;
         // Iterate over the arrays and save each participant
-        foreach($request->name as $key => $name) {
+        $seller_data = [];
+
+        foreach ($request->name as $key => $name) {
             $phone = $request->phone[$key]; // Get corresponding phone number
-            // $phone = 1000; // Get corresponding phone number
-            if($name==null){
-                return response()->json(['status' => 400, 'error'=>'Please enter name.']);
+
+            if ($name == null) {
+                return response()->json(['status' => 400, 'error' => 'Please enter name.']);
             }
-            if($phone==null){
-                return response()->json(['status' => 400, 'error'=>'Please enter phone number.']);
+
+            if ($phone == null) {
+                return response()->json(['status' => 400, 'error' => 'Please enter phone number.']);
             }
-            if(checkPhoneNumberValid($phone)==false){
-                return response()->json(['status' => 400, 'error'=>'Phone number must be exactly 10 digits.']);
+
+            if (checkPhoneNumberValid($phone) == false) {
+                return response()->json(['status' => 400, 'error' => 'Phone number must be exactly 10 digits.']);
             }
+
             $User = User::where('mobile', $phone)->first();
-            if($User){
-                if($request->groupId){
-                    $exist_user = WatchList::with('SellerData')->where('buyer_id', $data->id)->where('seller_id', $User->id)->where('group_id', $request->groupId)->first();
-                }else{
-                    $exist_user = WatchList::with('SellerData')->where('buyer_id', $data->id)->where('seller_id', $User->id)->first();
+
+            if ($User) {
+                if ($request->groupId) {
+                    $exist_user = WatchList::with('SellerData')
+                        ->where('buyer_id', $data->id)
+                        ->where('seller_id', $User->id)
+                        ->where('group_id', $request->groupId)
+                        ->first();
+                } else {
+                    $exist_user = WatchList::with('SellerData')
+                        ->where('buyer_id', $data->id)
+                        ->where('seller_id', $User->id)
+                        ->first();
                 }
-                if(!isset($exist_user)){
+                if (!isset($exist_user)) {
                     $WatchList = new WatchList;
                     $WatchList->buyer_id = $data->id;
                     $WatchList->seller_id = $User->id;
-                    $WatchList->group_id = $request->groupId?$request->groupId:NULL;
+                    $WatchList->group_id = $request->groupId ? $request->groupId : null;
                     $WatchList->save();
-                }else{
-                    // $business_name = $exist_user->SellerData?$exist_user->SellerData->business_name:"";
-                    session()->flash('warning', ''.$name.' seller already exists');
+
+                    $exist_user_data = [
+                        'type' => 'inside',
+                        'id' => $WatchList->id,
+                        'user_id' => $User->id,
+                        'group_id' => $WatchList->group_id,
+                        'name' => ucwords($User->business_name),
+                    ];
+                } else {
+                    return response()->json(['status' => 400, 'error' => $name . ' seller already exists']);
                 }
-            }else{
-                $outSide_participants = new OutsideParticipant();
-                $outSide_participants->group_id = $request->groupId; // Use groupId directly
-                $outSide_participants->buyer_id = $data->id;
-                $outSide_participants->name = $name;
-                $outSide_participants->mobile = $phone;
-                $outSide_participants->save();
+            } else {
+                $OutsideParticipant = OutsideParticipant::where('buyer_id', $data->id)->where('mobile', $phone)->first();
+                if($OutsideParticipant){
+                    return response()->json(['status' => 400, 'error' => $phone . ' this phone number already exists']);
+                }else{
+                    $outSide_participants = new OutsideParticipant();
+                    $outSide_participants->group_id = $request->groupId; // Use groupId directly
+                    $outSide_participants->buyer_id = $data->id;
+                    $outSide_participants->name = $name;
+                    $outSide_participants->mobile = $phone;
+                    $outSide_participants->save();
+    
+                    $exist_user_data = [
+                        'type' => 'outside',
+                        'id' => $outSide_participants->id,
+                        'group_id' => $outSide_participants->group_id,
+                        'name' => ucwords($name),
+                    ];
+                }
             }
+
+            // Add the exist_user_data to the seller_data array
+            $seller_data[] = $exist_user_data;
         }
-        return response()->json(['status' => 200]);
+        return response()->json(['status' => 200, 'seller'=>$seller_data]);
         }
 
     // public function mail(){
