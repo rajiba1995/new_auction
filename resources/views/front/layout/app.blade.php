@@ -34,6 +34,27 @@
             left: 30px !important;
         }
     </style>
+    @php
+    // Get the client's IP address
+        $ip = $_SERVER['REMOTE_ADDR'];
+    
+        // Use geoplugin.net to get location data based on the IP address
+        $ipdat = @json_decode(file_get_contents("http://www.geoplugin.net/json.gp?ip=" . $ip));
+    
+        // Check if the data was retrieved successfully
+        if ($ipdat && $ipdat->geoplugin_status == 200) {
+            $country = $ipdat->geoplugin_countryName;
+            $city_name = $ipdat->geoplugin_city;
+            $region = $ipdat->geoplugin_region;
+            $latitude = $ipdat->geoplugin_latitude;
+            $longitude = $ipdat->geoplugin_longitude;
+        } else {
+            $country = '';
+            $city_name = '';
+            $region = '';
+        }
+    
+    @endphp
 </head>
 <body>
 
@@ -50,14 +71,14 @@
                 <div class="search-section">
                     <div class="location-bar">
                         <img src="{{asset('frontend/assets/images/location.png')}}" alt="">
-                        <input type="text" placeholder="Select Location" id="stateInput" name="global_state_name" autocomplete="off" value="@yield('location')">
+                        <input type="text" placeholder="Select Location" id="stateInput" name="global_state_name" autocomplete="off" value="@yield('location', $city_name)">
                         <div id="stateSuggestions"></div>
                     </div>
                     
                     
                     <div class="search-bar">
                         <form action="{{route('user.global.make_slug')}}" method="GET" id="Search_form">
-                            <input type="hidden" name="location" id="hidden_location" value="@yield('location')">
+                            <input type="hidden" name="location" id="hidden_location" value="@yield('location', $city_name)">
                             <!-- <input type="search" name="keyword" id="autocomplete-input" placeholder="Search for Service, Category, etc" value="@yield('keyword')"> -->
                             <input type="search" name="keyword" id="autocomplete-input" placeholder="Search" autocomplete="off">
                             
@@ -249,13 +270,13 @@
                 <div class="search-section">
                     <div class="location-bar">
                         <img src="{{asset('frontend/assets/images/location.png')}}">
-                        <input type="text" placeholder="Search Location..." id="stateInput" name="global_state_name" value="@yield('location')">
+                        <input type="text" placeholder="Search Location..." id="stateInput" name="global_state_name" value="@yield('location', $city_name)">
                         <div id="stateSuggestions"></div>
                     </div>
                     
                     <div class="search-bar">
                         <form action="{{route('user.global.make_slug')}}" method="GET" id="Search_form">
-                            <input type="hidden" name="location" id="hidden_location" value="@yield('location')">
+                            <input type="hidden" name="location" id="hidden_location" value="@yield('location', $city_name)">
                             <input type="search" name="keyword" id="autocomplete-input" placeholder="Search" value="@yield('keyword')">
                             <button type="submit" class="btn-search btn-animated" id="global_form_submit">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
@@ -372,39 +393,24 @@
                             <div class="col-xl-7 col-12 third-col">
                                 <h4>Popular Category</h4>
                                 <div class="row">
-                                @php
-                                    $chunks = $categories->chunk(ceil($categories->count() / 2));
-                                @endphp
-                                @foreach ($chunks as $chunk)
                                     <div class="col-sm-6 col-12">
                                         <ul class="footer-menu">
-                                            @foreach ($chunk as $category)
+                                            @foreach ($categories as $k =>$category)
+                                            @if($k<7)
                                               <li><a href="#">{{$category->title}} </a></li>
+                                            @endif
                                             @endforeach
-                                                
-                                            {{--  <li><a href="">Centres</a></li>
-                                            <li><a href="">Cinema Halls </a></li>
-                                            <li><a href="">Schools</a></li>
-                                            <li><a href="">Beauty </a></li>
-                                            <li><a href="">Spas</a></li>
-                                            <li><a href="">Dermatologists</a></li>
-                                            <li><a href="">Hospitals</a></li>
-                                            <li><a href="">Malls</a></li> --}}
                                         </ul>
                                     </div>
-                                @endforeach
-                                  
-                                    {{-- <div class="col-sm-6 col-12">
+                                    <div class="col-sm-6 col-12">
                                         <ul class="footer-menu">
-                                            <li><a href="">Gyms</a></li>
-                                            <li><a href="">Beauty</a></li>
-                                            <li><a href="">Parlours</a></li>
-                                            <li><a href="">Estate</a></li>
-                                            <li><a href="">Agents </a></li>
-                                            <li><a href="">Banquet Halls</a></li>
-                                            <li><a href="">ENT Doctors</a></li>
+                                            @foreach ($categories as $k =>$category)
+                                                @if($k>7)
+                                                <li><a href="#">{{$category->title}} </a></li>
+                                                @endif
+                                            @endforeach
                                         </ul>
-                                    </div> --}}
+                                    </div>
                                 </div>
                             </div>
                             <div class="col-xl-5 col-12 fourth-col">

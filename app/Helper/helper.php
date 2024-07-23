@@ -341,7 +341,7 @@ if (!function_exists('previously_worked')) {
 if (!function_exists('sendMail')) {
 
     function sendMail($data,$email,$subject) {
-        $email = 'rajib.a@techmantra.co';
+        // $email = 'rajib.a@techmantra.co';
         $cc = $data['cc'];
         if (!empty(array_filter($cc, function($value) { return !is_null($value); }))) {
             // Reindex the array (optional)
