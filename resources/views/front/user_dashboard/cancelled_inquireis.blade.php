@@ -142,9 +142,9 @@
                             <input type="date" class="form-control" id="end_date" placeholder="Select end date" name="end_date" value="{{request()->input('end_date')}}">
                         </div>
                         <div class="col-xl-3 col-lg-6 col-12 mt-lg-0 mt-3">
-                            <label for="seller" class="form-label">Suppliers</label>
+                            <label for="seller" class="form-label">Seller</label>
                             <select class="form-select seller" name="seller">
-                                <option value="" selected hidden>supplier</option>
+                                <option value="" selected hidden>seller</option>
                                 @foreach ($suppliers_data as $item)
                                     <option value="{{$item['id']}}" {{request()->input('seller') == $item['id'] ? 'selected' : ''}}>{{$item['name']}}</option>
                                 @endforeach

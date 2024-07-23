@@ -34,28 +34,6 @@
             left: 30px !important;
         }
     </style>
-    @php
-    // Get the client's IP address
-        $ip = $_SERVER['REMOTE_ADDR'];
-    
-        // Use geoplugin.net to get location data based on the IP address
-        $ipdat = @json_decode(file_get_contents("http://www.geoplugin.net/json.gp?ip=" . $ip));
-    
-        // Check if the data was retrieved successfully
-        if ($ipdat && $ipdat->geoplugin_status == 200) {
-            $country = $ipdat->geoplugin_countryName;
-            $city_name = $ipdat->geoplugin_city;
-            $region = $ipdat->geoplugin_region;
-            $latitude = $ipdat->geoplugin_latitude;
-            $longitude = $ipdat->geoplugin_longitude;
-        } else {
-            $country = '';
-            $city_name = '';
-            $region = '';
-        }
-    
-    @endphp
-
 </head>
 <body>
 
@@ -72,14 +50,14 @@
                 <div class="search-section">
                     <div class="location-bar">
                         <img src="{{asset('frontend/assets/images/location.png')}}" alt="">
-                        <input type="text" placeholder="Select Location" id="stateInput" name="global_state_name" autocomplete="off" value="@yield('location', $city_name)">
+                        <input type="text" placeholder="Select Location" id="stateInput" name="global_state_name" autocomplete="off" value="@yield('location')">
                         <div id="stateSuggestions"></div>
                     </div>
                     
                     
                     <div class="search-bar">
                         <form action="{{route('user.global.make_slug')}}" method="GET" id="Search_form">
-                            <input type="hidden" name="location" id="hidden_location" value="@yield('location', $city_name)">
+                            <input type="hidden" name="location" id="hidden_location" value="@yield('location')">
                             <!-- <input type="search" name="keyword" id="autocomplete-input" placeholder="Search for Service, Category, etc" value="@yield('keyword')"> -->
                             <input type="search" name="keyword" id="autocomplete-input" placeholder="Search" autocomplete="off">
                             
@@ -271,13 +249,13 @@
                 <div class="search-section">
                     <div class="location-bar">
                         <img src="{{asset('frontend/assets/images/location.png')}}">
-                        <input type="text" placeholder="Search Location..." id="stateInput" name="global_state_name" value="@yield('location', $city_name)">
+                        <input type="text" placeholder="Search Location..." id="stateInput" name="global_state_name" value="@yield('location')">
                         <div id="stateSuggestions"></div>
                     </div>
                     
                     <div class="search-bar">
                         <form action="{{route('user.global.make_slug')}}" method="GET" id="Search_form">
-                            <input type="hidden" name="location" id="hidden_location" value="@yield('location', $city_name)">
+                            <input type="hidden" name="location" id="hidden_location" value="@yield('location')">
                             <input type="search" name="keyword" id="autocomplete-input" placeholder="Search" value="@yield('keyword')">
                             <button type="submit" class="btn-search btn-animated" id="global_form_submit">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
@@ -359,18 +337,19 @@
                                 </div>
                                 <div class="footer-description">There are many variations of passages of Lorem Ipsum available, but the majority have suffered alteration in some form</div>
                                 <h4>Contact Info</h4>
+                                {{-- {{dd($settings)}} --}}
                                 <ul class="contact-info-list">
                                     <li>
                                         <img src="{{asset('frontend/assets/images/map-pin.png')}}" alt="">
-                                        9B school row bhawanipore, kolkata 700025
+                                         {{$settings['company_full_address'] ?? 'Address Not available'}}
                                     </li>
                                     <li>
                                         <img src="{{asset('frontend/assets/images/phone-call.png')}}" alt="">
-                                        <a href="#" >+91-9330921674</a>
+                                        <a href="tel:{{$settings['official_phone1'] ?? '#'}}" >{{$settings['official_phone1'] ?? 'Phone number not available'}}</a>
                                     </li>
                                     <li>
                                         <img src="{{asset('frontend/assets/images/mail.png')}}" alt="">
-                                        <a href="#" >customercare@milaapp.in</a>
+                                        <a href="mailto:{{$settings['official_email'] ?? '#'}}" >{{$settings['official_email'] ?? 'Email not available'}}</a>
                                     </li>
                                 </ul>
                             </div>
@@ -393,20 +372,29 @@
                             <div class="col-xl-7 col-12 third-col">
                                 <h4>Popular Category</h4>
                                 <div class="row">
+                                @php
+                                    $chunks = $categories->chunk(ceil($categories->count() / 2));
+                                @endphp
+                                @foreach ($chunks as $chunk)
                                     <div class="col-sm-6 col-12">
                                         <ul class="footer-menu">
-                                            <li><a href="#">Body Massage </a></li>
-                                            <li><a href="">Centres</a></li>
+                                            @foreach ($chunk as $category)
+                                              <li><a href="#">{{$category->title}} </a></li>
+                                            @endforeach
+                                                
+                                            {{--  <li><a href="">Centres</a></li>
                                             <li><a href="">Cinema Halls </a></li>
                                             <li><a href="">Schools</a></li>
                                             <li><a href="">Beauty </a></li>
                                             <li><a href="">Spas</a></li>
                                             <li><a href="">Dermatologists</a></li>
                                             <li><a href="">Hospitals</a></li>
-                                            <li><a href="">Malls</a></li>
+                                            <li><a href="">Malls</a></li> --}}
                                         </ul>
                                     </div>
-                                    <div class="col-sm-6 col-12">
+                                @endforeach
+                                  
+                                    {{-- <div class="col-sm-6 col-12">
                                         <ul class="footer-menu">
                                             <li><a href="">Gyms</a></li>
                                             <li><a href="">Beauty</a></li>
@@ -416,20 +404,21 @@
                                             <li><a href="">Banquet Halls</a></li>
                                             <li><a href="">ENT Doctors</a></li>
                                         </ul>
-                                    </div>
+                                    </div> --}}
                                 </div>
                             </div>
                             <div class="col-xl-5 col-12 fourth-col">
                                 <h4>Follow us on</h4>
                                 <ul class="footer-social-menu">
+                                    @foreach ($socialmedias as $socialmedia)
                                     <li>
-                                        <a href="">
-                                            <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" viewBox="0 0 30 30" fill="none">
-                                                <path d="M22.5 2.5H18.75C17.0924 2.5 15.5027 3.15848 14.3306 4.33058C13.1585 5.50269 12.5 7.0924 12.5 8.75V12.5H8.75V17.5H12.5V27.5H17.5V17.5H21.25L22.5 12.5H17.5V8.75C17.5 8.41848 17.6317 8.10054 17.8661 7.86612C18.1005 7.6317 18.4185 7.5 18.75 7.5H22.5V2.5Z" stroke="#FFB800" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                                            </svg>
+                                        <a href="{{$socialmedia->link}}" target="_blank">
+                                            <img src="{{asset($socialmedia->logo)}}" alt="{{$socialmedia->title}}" width="40px">
                                         </a>
                                     </li>
-                                    <li>
+                                    @endforeach
+                                    
+                                    {{-- <li>
                                         <a href="">
                                             <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" viewBox="0 0 30 30" fill="none">
                                                 <path d="M28.75 3.74987C27.553 4.59422 26.2276 5.24001 24.825 5.66237C24.0722 4.79676 23.0717 4.18324 21.9588 3.90478C20.8459 3.62632 19.6744 3.69637 18.6026 4.10544C17.5308 4.51451 16.6106 5.24288 15.9662 6.19202C15.3219 7.14116 14.9846 8.26529 15 9.41237V10.6624C12.8033 10.7193 10.6266 10.2321 8.66376 9.24418C6.70093 8.25622 5.0129 6.79817 3.75 4.99987C3.75 4.99987 -1.25 16.2499 10 21.2499C7.42566 22.9973 4.35895 23.8735 1.25 23.7499C12.5 29.9999 26.25 23.7499 26.25 9.37487C26.2488 9.02669 26.2154 8.67937 26.15 8.33737C27.4258 7.07924 28.326 5.49077 28.75 3.74987Z" stroke="#FFB800" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
@@ -452,7 +441,7 @@
                                                 <path d="M12.1875 18.7746L19.375 14.6871L12.1875 10.5996V18.7746Z" stroke="#FFB800" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                                             </svg>
                                         </a>
-                                    </li>
+                                    </li> --}}
                                 </ul>
                             </div>
                         </div>
