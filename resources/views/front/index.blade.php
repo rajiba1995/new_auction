@@ -328,7 +328,11 @@
                         <div class="col-12">
                             <div class="content">
                                 <h2>Register For Free &amp; Start Bidding Now!</h2>
-                                <a href="#" class="btn btn-cta btn-animated btn-yellow">Get Started</a>
+                                @if (Auth::guard('web')->check())
+                                  <a href="#" style="cursor:context-menu" class="btn btn-cta btn-animated btn-yellow">Get Started</a>
+                                 @else
+                                  <a href="{{url('/register')}}" class="btn btn-cta btn-animated btn-yellow">Get Started</a>
+                                @endif
                             </div>
                         </div>
                     </div>
