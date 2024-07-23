@@ -11,7 +11,6 @@
     <link rel="stylesheet" href="{{asset('frontend/assets/css/loader.css')}}">
     <link rel="stylesheet" href="{{asset('frontend/assets/css/responsive.css')}}">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css" rel="stylesheet" />
-    
     {{-- <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"> --}}
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
@@ -19,8 +18,6 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js"></script>
-    <script type="text/javascript" src="{{ asset('frontend/ckeditor/ckeditor.js') }}"></script>
-    <script type="text/javascript" src="{{ asset('frontend/ckeditor/adapters/jquery.js') }}"></script>
     <style>
         .bidder-box .badge-rating{
             margin-left: 0px !important;
@@ -34,6 +31,28 @@
             left: 30px !important;
         }
     </style>
+    @php
+    // Get the client's IP address
+        $ip = $_SERVER['REMOTE_ADDR'];
+    
+        // Use geoplugin.net to get location data based on the IP address
+        $ipdat = @json_decode(file_get_contents("http://www.geoplugin.net/json.gp?ip=" . $ip));
+    
+        // Check if the data was retrieved successfully
+        if ($ipdat && $ipdat->geoplugin_status == 200) {
+            $country = $ipdat->geoplugin_countryName;
+            $city_name = $ipdat->geoplugin_city;
+            $region = $ipdat->geoplugin_region;
+            $latitude = $ipdat->geoplugin_latitude;
+            $longitude = $ipdat->geoplugin_longitude;
+        } else {
+            $country = '';
+            $city_name = '';
+            $region = '';
+        }
+    
+    @endphp
+
 </head>
 <body>
 
@@ -50,14 +69,14 @@
                 <div class="search-section">
                     <div class="location-bar">
                         <img src="{{asset('frontend/assets/images/location.png')}}" alt="">
-                        <input type="text" placeholder="Select Location" id="stateInput" name="global_state_name" autocomplete="off" value="@yield('location')">
+                        <input type="text" placeholder="Select Location" id="stateInput" name="global_state_name" autocomplete="off" value="@yield('location', $city_name)">
                         <div id="stateSuggestions"></div>
                     </div>
                     
                     
                     <div class="search-bar">
                         <form action="{{route('user.global.make_slug')}}" method="GET" id="Search_form">
-                            <input type="hidden" name="location" id="hidden_location" value="@yield('location')">
+                            <input type="hidden" name="location" id="hidden_location" value="@yield('location', $city_name)">
                             <!-- <input type="search" name="keyword" id="autocomplete-input" placeholder="Search for Service, Category, etc" value="@yield('keyword')"> -->
                             <input type="search" name="keyword" id="autocomplete-input" placeholder="Search" autocomplete="off">
                             
@@ -249,13 +268,13 @@
                 <div class="search-section">
                     <div class="location-bar">
                         <img src="{{asset('frontend/assets/images/location.png')}}">
-                        <input type="text" placeholder="Search Location..." id="stateInput" name="global_state_name" value="@yield('location')">
+                        <input type="text" placeholder="Search Location..." id="stateInput" name="global_state_name" value="@yield('location', $city_name)">
                         <div id="stateSuggestions"></div>
                     </div>
                     
                     <div class="search-bar">
                         <form action="{{route('user.global.make_slug')}}" method="GET" id="Search_form">
-                            <input type="hidden" name="location" id="hidden_location" value="@yield('location')">
+                            <input type="hidden" name="location" id="hidden_location" value="@yield('location', $city_name)">
                             <input type="search" name="keyword" id="autocomplete-input" placeholder="Search" value="@yield('keyword')">
                             <button type="submit" class="btn-search btn-animated" id="global_form_submit">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
@@ -337,19 +356,18 @@
                                 </div>
                                 <div class="footer-description">There are many variations of passages of Lorem Ipsum available, but the majority have suffered alteration in some form</div>
                                 <h4>Contact Info</h4>
-                                {{-- {{dd($settings)}} --}}
                                 <ul class="contact-info-list">
                                     <li>
                                         <img src="{{asset('frontend/assets/images/map-pin.png')}}" alt="">
-                                         {{$settings['company_full_address'] ?? 'Address Not available'}}
+                                        9B school row bhawanipore, kolkata 700025
                                     </li>
                                     <li>
                                         <img src="{{asset('frontend/assets/images/phone-call.png')}}" alt="">
-                                        <a href="tel:{{$settings['official_phone1'] ?? '#'}}" >{{$settings['official_phone1'] ?? 'Phone number not available'}}</a>
+                                        <a href="#" >+91-9330921674</a>
                                     </li>
                                     <li>
                                         <img src="{{asset('frontend/assets/images/mail.png')}}" alt="">
-                                        <a href="mailto:{{$settings['official_email'] ?? '#'}}" >{{$settings['official_email'] ?? 'Email not available'}}</a>
+                                        <a href="#" >customercare@milaapp.in</a>
                                     </li>
                                 </ul>
                             </div>
@@ -400,18 +418,15 @@
                             </div>
                             <div class="col-xl-5 col-12 fourth-col">
                                 <h4>Follow us on</h4>
-                                
-
                                 <ul class="footer-social-menu">
-                                    @foreach ($socialmedias as $socialmedia)
                                     <li>
-                                        <a href="{{$socialmedia->link}}">
-                                            <img src="{{asset($socialmedia->logo)}}" alt="{{$socialmedia->title}}" target="_blank" width="40px">
+                                        <a href="">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" viewBox="0 0 30 30" fill="none">
+                                                <path d="M22.5 2.5H18.75C17.0924 2.5 15.5027 3.15848 14.3306 4.33058C13.1585 5.50269 12.5 7.0924 12.5 8.75V12.5H8.75V17.5H12.5V27.5H17.5V17.5H21.25L22.5 12.5H17.5V8.75C17.5 8.41848 17.6317 8.10054 17.8661 7.86612C18.1005 7.6317 18.4185 7.5 18.75 7.5H22.5V2.5Z" stroke="#FFB800" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                            </svg>
                                         </a>
-                                      </li>
-                                    @endforeach
-                                    
-                                    {{-- <li>
+                                    </li>
+                                    <li>
                                         <a href="">
                                             <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" viewBox="0 0 30 30" fill="none">
                                                 <path d="M28.75 3.74987C27.553 4.59422 26.2276 5.24001 24.825 5.66237C24.0722 4.79676 23.0717 4.18324 21.9588 3.90478C20.8459 3.62632 19.6744 3.69637 18.6026 4.10544C17.5308 4.51451 16.6106 5.24288 15.9662 6.19202C15.3219 7.14116 14.9846 8.26529 15 9.41237V10.6624C12.8033 10.7193 10.6266 10.2321 8.66376 9.24418C6.70093 8.25622 5.0129 6.79817 3.75 4.99987C3.75 4.99987 -1.25 16.2499 10 21.2499C7.42566 22.9973 4.35895 23.8735 1.25 23.7499C12.5 29.9999 26.25 23.7499 26.25 9.37487C26.2488 9.02669 26.2154 8.67937 26.15 8.33737C27.4258 7.07924 28.326 5.49077 28.75 3.74987Z" stroke="#FFB800" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
@@ -434,7 +449,7 @@
                                                 <path d="M12.1875 18.7746L19.375 14.6871L12.1875 10.5996V18.7746Z" stroke="#FFB800" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                                             </svg>
                                         </a>
-                                    </li> --}}
+                                    </li>
                                 </ul>
                             </div>
                         </div>

@@ -245,11 +245,13 @@
                                                     </div>
                                                 </div>
                                             </div>
-                                            @if($old_location && $old_keyword)
-                                            <div class="review-cta-row">
-                                                <a href="{{ route('user.profile.review_and_rating.write',[$old_location, $old_keyword])}}" class="btn btn-animated btn-yellow btn-cta">Write a review</a>
-                                            </div>
-                                            @elseif($$old_location=$old_keyword="")
+                                            @if (Auth::guard('web')->check())
+                                                @if($old_location && $old_keyword)
+                                                <div class="review-cta-row">
+                                                    <a href="{{ route('user.profile.review_and_rating.write',[$old_location, $old_keyword])}}" class="btn btn-animated btn-yellow btn-cta">Write a review</a>
+                                                </div>
+                                                @elseif($$old_location=$old_keyword="")
+                                                @endif
                                             @endif
 
                                         </div>
@@ -263,8 +265,10 @@
                                                     <div class="left-col">
                                                         <div class="row-1">
                                                             {{$item->userAllDetails->name}}
-                                                            @if(previously_worked($item->rated_on, Auth::guard('web')->user()->id))
-                                                            <span class="verified-rating">Verified rating</span>
+                                                            @if (Auth::guard('web')->check())
+                                                                @if(previously_worked($item->rated_on, Auth::guard('web')->user()->id))
+                                                                <span class="verified-rating">Verified rating</span>
+                                                                @endif
                                                             @endif
 
                                                         </div>
@@ -312,11 +316,13 @@
                                                         </div>
                                                     @endif
 
-                                                @if(Auth::guard('web')->user()->id == $item->rated_on && $item->replied_comment_author == NULL)
-                                                    <button  type="button"  class="reply-button" data-bs-toggle="modal" data-bs-target="#exampleModal{{$item->id}}">
-                                                        Reply
-                                                    </button >
-                                                @endif
+                                                    @if (Auth::guard('web')->check())
+                                                        @if(Auth::guard('web')->user()->id == $item->rated_on && $item->replied_comment_author == NULL)
+                                                            <button  type="button"  class="reply-button" data-bs-toggle="modal" data-bs-target="#exampleModal{{$item->id}}">
+                                                                Reply
+                                                            </button >
+                                                        @endif
+                                                    @endif
 
                                             </div>
 
