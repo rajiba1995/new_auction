@@ -341,25 +341,24 @@ if (!function_exists('previously_worked')) {
 if (!function_exists('sendMail')) {
 
     function sendMail($data,$email,$subject) {
+       
         $cc = $data['cc'];
-        if($cc){
-            $cc = array_filter($cc, function($value) {
-                return !is_null($value);
-            });
+        if (!empty(array_filter($cc, function($value) { return !is_null($value); }))) {
             // Reindex the array (optional)
             $cc = array_values($cc);
+        }else{
+            $cc = null;
         }
         $from_address = env('MAIL_FROM_ADDRESS');
         $sender = env('MAIL_FROM_NAME');
-        $response = Mail::send('mail.send_mail', $data, function ($message) use ($data, $from_address, $subject, $email, $sender) {
+        $response = Mail::send('mail.send_mail', $data, function ($message) use ($data, $from_address, $subject, $email, $sender, $cc) {
             $message->to($email)
-                    ->subject($subject)
-                    ->cc($data['cc'])
-                    ->from($from_address, $sender);
-                    // Attachments
-                    if (isset($data['attachment'])) {
-                        $message->attach($data['attachment']);
-                    }
+            ->subject($subject)
+            ->from($from_address, $sender);
+            // Add CC if provided
+            if (isset($cc)) {
+                $message->cc($cc);
+            }
         });
         if (isset($data['attachment'])) {
             if (file_exists($data['attachment'])) {
