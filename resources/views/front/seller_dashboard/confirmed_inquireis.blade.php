@@ -7,6 +7,9 @@
     .show2{
         display: block !important;
     }
+    .cursor-pointer {
+        cursor: pointer;
+    }
 </style>
 
     <div class="main">
@@ -328,7 +331,9 @@
                                                                         <tr>
                                                                             <td class="quotes-supplier-td">
                                                                                 <div class="quote">
-                                                                                    <input type="text" class="quote-amount" value="₹ {{$item->inquiry_amount}}" disabled>
+                                                                                    <a href="javacsript:void(0)" data-bs-toggle="modal" data-bs-target="#viewQuoteModal{{$item->id}}" title="quote history">
+                                                                                    <input type="text" class="quote-amount cursor-pointer" value="₹ {{$item->inquiry_amount}}" readonly>
+                                                                                    </a>
                                                                                     <a href="javacsript:void(0)" data-bs-toggle="modal" data-bs-target="#allQuotesModal{{$item->id}}">
                                                                                         <img src="{{asset('frontend/assets/images/arrow-up-right.png')}}" alt="">
                                                                                     </a>
@@ -352,6 +357,46 @@
                                                                                             </div>
                                                                                         </div>
                                                                                     </div>
+                                                                                        <div class="modal fade view-comment-modal" id="viewQuoteModal{{$item->id}}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                                                                                            <div class="modal-dialog">
+                                                                                                <div class="modal-content">
+                                                                                                    <div class="modal-header">
+                                                                                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                                                                    </div>
+                                                                                                    <div class="modal-body">
+                                                                                                        <table>
+                                                                                                            <thead>
+                                                                                                                <tr>
+                                                                                                                    <th width="20%">Date & Time</th>
+                                                                                                                    <th width="30%">Seller</th>
+                                                                                                                    <th width="10%">Quote</th>
+                                                                                                                    <th width="20%">Reason</th>
+                                                                                                                </tr>
+                                                                                                            </thead>
+                                                                                                            <tbody>
+                                                                                                                @foreach (GetAllQuotesData($item['id']) as $k=>$quote_item)
+                                                                                                                    <tr>
+                                                                                                                        <td>{{date('d M Y h:i a', strtotime($quote_item->created_at))}}</td>
+                                                                                                                        <td>{{$quote_item->SellerData?$quote_item->SellerData->business_name:"---"}}</td>
+                                                                                                                        <td>
+                                                                                                                            @if($k!=0)
+                                                                                                                                <img src="{{asset('frontend/assets/images/up-arrow.png')}}" alt="">
+                                                                                                                            @endif
+                                                                                                                            <p class="d-flex font-weight-bold"> 
+                                                                                                                            @if($k==0)
+                                                                                                                                <img src="{{asset('frontend/assets/images/green-circle-tick.png')}}" alt="">
+                                                                                                                            @endif
+                                                                                                                            {{$quote_item->quote}}</p>
+                                                                                                                            </td>
+                                                                                                                        <td>{{$quote_item->reason?$quote_item->reason:""}}</td>
+                                                                                                                    </tr>
+                                                                                                                @endforeach
+                                                                                                            </tbody>
+                                                                                                        </table>
+                                                                                                    </div>
+                                                                                                </div>
+                                                                                            </div>
+                                                                                        </div>
                                                                                     <div class="quote-diff">Quote Difference: {{$item->bid_difference_quote_amount}}</div>
                                                                                     {{-- <div class="level">L1</div> --}}
                                                                                 </div>
