@@ -384,7 +384,6 @@
                 </div>
             </div>
         </section>
-        
     </div>
 </div>
 
@@ -681,37 +680,37 @@
 <div class="modal fade allot-rate-modal cancel-inquiry" id="cancelInquiryModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
-        <form method="post" action="{{ route('buyer_cancelled_reason') }}">
-            @csrf
-            <div class="modal-header">
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                
-                <div class="container-fluid">
-                    <div class="row">
-                        <div class="col-12">
-                            <h4 class="content-heading">Are you sure you want to cancel this Inquiry?</h4>
-                        </div>
-                        <input type="hidden" name="id" id="inquiry_id" value="">
-                        <div class="row mt-3">
-                            <div class="col-12">
-                                <h4 class="content-heading">Select a Reason*</h4>
-                                <select name="cancelled_reason" class="form-control" required>
-                                    {{-- <option selected disabled>Select</option> --}}
-                                    <option value="Withdrawn by Supplier">Withdrawn by Supplier</option>
-                                    <option value="Supplier Unavailable">Supplier Unavailable</option>
-                                    <option value="Duplicate Inquiry">Duplicate Inquiry</option>
-                                    <option value="Not Interested Anymore">Not Interested Anymore</option>
-                                    <option value="My Reason is not listed here">My Reason is not listed here</option>
-                                </select>
-                            </div>
-                        </div>
+            <form method="post" action="{{ route('buyer_cancelled_reason') }}">
+                @csrf
+                <div class="modal-header">
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-                
-                <button type="submit" class="btn btn-animated btn-submit w-50">Submit</button>
-            </div>
-        </form>
+                <div class="modal-body">
+                    
+                    <div class="container-fluid">
+                        <div class="row">
+                            <div class="col-12">
+                                <h4 class="content-heading">Are you sure you want to cancel this Inquiry?</h4>
+                            </div>
+                            <input type="hidden" name="id" id="inquiry_id" value="">
+                            <div class="row mt-3">
+                                <div class="col-12">
+                                    <h4 class="content-heading">Select a Reason*</h4>
+                                    <select name="cancelled_reason" class="form-control" required>
+                                        {{-- <option selected disabled>Select</option> --}}
+                                        <option value="Withdrawn by Supplier">Withdrawn by Supplier</option>
+                                        <option value="Supplier Unavailable">Supplier Unavailable</option>
+                                        <option value="Duplicate Inquiry">Duplicate Inquiry</option>
+                                        <option value="Not Interested Anymore">Not Interested Anymore</option>
+                                        <option value="My Reason is not listed here">My Reason is not listed here</option>
+                                    </select>
+                                </div>
+                            </div>
+                    </div>
+                    
+                    <button type="submit" class="btn btn-animated btn-submit w-50">Submit</button>
+                </div>
+            </form>
         </div>
     </div>
 </div>
