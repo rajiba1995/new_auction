@@ -82,7 +82,7 @@ class AppServiceProvider extends ServiceProvider
          // Fetch the settings data
         $settings = Setting::pluck('content','title')->toArray();
         // Fetch the Categories data
-        $category = Collection::with('categoryDetails')->orderBy('title','ASC')->where('status',1)->limit(16)->get();
+        $category = Collection::orderBy('title','ASC')->where('status',1)->limit(16)->get();
         // Share the data with the 'front.layout.app' view
         View::composer('front.layout.app', function ($view) use ($socialmedias,$settings,$category) {
             $view->with('socialmedias', $socialmedias);

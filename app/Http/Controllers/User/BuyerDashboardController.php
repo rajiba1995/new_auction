@@ -854,7 +854,7 @@ class BuyerDashboardController extends Controller
                             1=>$allot_seller->SellerData->email2,
                             2=>$allot_seller->SellerData->email3,
                         ];
-                        if($request->type=="first"){
+                        if($request->type=="first" || $request->type=="new"){
                             $data=[
                                 'cc'=>$cc,
                                 'user'=>$allot_seller->SellerData,
@@ -863,7 +863,8 @@ class BuyerDashboardController extends Controller
                                 'type'=>'INQUIRY_ALLOTMENT',
                                 'user_type'=>'Seller',
                             ];
-                            $subject = 'Inquiry ALLOTMENT Notification for '.$Buyer_data->business_name;
+                            $type = "INQUIRY_ALLOTMENT";
+                            $subject = 'Inquiry ALLOTMENT Notification for '.ucwords($Buyer_data->business_name);
                             $myMessage = urlencode("New auction ".$inquiry_id." is assigned to you from ".$company.". Amt ".$amount." . Expected date ".$execution_date.". Details: ".$url." (owned by SMTPL) Regards, Sarv Megh Technology (OPC) Private Limited");
                         }else{
                             $reason = $request->reallot_reason?$request->reallot_reason:"";
@@ -876,7 +877,8 @@ class BuyerDashboardController extends Controller
                                 'type'=>'INQUIRY_REALLOTMENT',
                                 'user_type'=>'Seller',
                             ];
-                            $subject = 'Inquiry REALLOTMENT Notification for '.$Buyer_data->business_name;
+                            $type = "INQUIRY_REALLOTMENT";
+                            $subject = 'Inquiry REALLOTMENT Notification for '.ucwords($Buyer_data->business_name);
                             $myMessage = urlencode("Auction ".$inquiry_id." from ".$company.". is REASSIGNED to you. Amt ".$amount.". Expected: ".$execution_date." Details: ".$url.". (owned by SMTPL) Regards, Sarv Megh Technology (OPC) Private Limited");
                         }
                         $customer_mobile_no = $allot_seller->SellerData?$allot_seller->SellerData->mobile:null;
@@ -899,7 +901,7 @@ class BuyerDashboardController extends Controller
                                 'Buyer_data'=>$Buyer_data,
                                 'reason'=>$reason,
                                 'participants'=>$exist_participants,
-                                'type'=>'INQUIRY_REALLOTMENT',
+                                'type'=>$type,
                                 'user_type'=>'Buyer',
                             ];
                             sendMail($data,$Buyer_data->email,$subject);
@@ -967,6 +969,40 @@ class BuyerDashboardController extends Controller
                 if($checkPhoneNumberValid){
                     sendSMS($sender, $customer_mobile_no, $myMessage);
                 }
+                $exist_participants = InquiryParticipant::with('SellerData')->where('inquiry_id', $inquiry->id)->get();
+                $reason = $request->cancelled_reason?$request->cancelled_reason:"";
+                
+                $subject = 'Inquiry CANCELLATION Notification for '.ucwords($inquiry->BuyerData->business_name).' '.$inquiry->inquiry_id.'';
+                if($inquiry->allotment_type==0){//for only Online User
+                    $seller_email =$seller?$seller->email:null;
+                    $cc =[
+                        0=>$seller->email1,
+                        1=>$seller->email2,
+                        2=>$seller->email3,
+                    ];
+                    $data=[
+                        'cc'=>$cc,
+                        'user'=>$seller,
+                        'inquiry_data'=>$inquiry,
+                        'Buyer_data'=>$inquiry->BuyerData,
+                        'reason'=>$reason,
+                        'type'=>'INQUIRY_CANCELLATION',
+                        'user_type'=>'Seller',
+                    ];
+                    
+                    sendMail($data,$seller_email,$subject);
+                }
+                $data=[
+                    'cc'=>[],
+                    'user'=>$seller,
+                    'inquiry_data'=>$inquiry,
+                    'Buyer_data'=>$inquiry->BuyerData,
+                    'reason'=>$reason,
+                    'participants'=>$exist_participants,
+                    'type'=>"INQUIRY_CANCELLATION",
+                    'user_type'=>'Buyer',
+                ];
+                sendMail($data,$inquiry->BuyerData->email,$subject);
             }
             $inquiry->cancelled_reason = $request->cancelled_reason;
             $inquiry->status = 4;  // here we do push evey paticipats staus ==2 in inquiry_participats table as buyer cancel the inquiry for reason

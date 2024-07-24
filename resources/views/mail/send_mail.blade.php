@@ -34,13 +34,13 @@
         <section>
             <div style="max-width: 600px; margin: 20px auto; background: #fff; padding: 20px; border-radius: 8px; box-shadow: 0 0 10px rgba(0,0,0,0.1);">
                 @if($inquiry_data->inquiry_type ==="open auction")
-                    {{ $Buyer_data->business_name }} : INQUIRY POSTED
+                    {{ ucwords($Buyer_data->business_name) }} : INQUIRY POSTED
                 @else
                     NEW INQUIRY POSTED
                 @endif
                 <p style="margin: 10px 0; color: #666;">Hey,</p>
                 @if($inquiry_data->inquiry_type ==="open auction")
-                    <p style="margin: 10px 0; color: #666;">Inquiry posted by {{ $Buyer_data->business_name }}</p>
+                    <p style="margin: 10px 0; color: #666;">Inquiry posted by {{ ucwords($Buyer_data->business_name) }}</p>
                 @endif
              
                 
@@ -128,11 +128,11 @@
         <section>
             <div style="max-width: 600px; margin: 20px auto; background: #fff; padding: 20px; border-radius: 8px; box-shadow: 0 0 10px rgba(0,0,0,0.1);">
                 <h2 style="font-size: 24px; color: #333; margin-top: 0;">
-                    {{ $Buyer_data->business_name }} : INQUIRY ALLOTMENT
+                    {{ ucwords($Buyer_data->business_name) }} : INQUIRY ALLOTMENT
                 </h2>
                 <p style="margin: 10px 0; color: #666;">Hey,</p>
-                <p style="margin: 10px 0; color: #666;">Dear  {{$user->business_name}} ,</p>
-                <p style="margin: 10px 0; color: #666;">Please find inquiry allotment for {{ $Buyer_data->business_name }}</p>
+                <p style="margin: 10px 0; color: #666;">Dear  {{ucwords($user->business_name)}} ,</p>
+                <p style="margin: 10px 0; color: #666;">Please find inquiry allotment for {{ ucwords($Buyer_data->business_name) }}</p>
                 
                 <table style="width: 100%; border-collapse: collapse; margin-bottom: 20px; font-size: 13px;">
                     <thead>
@@ -159,12 +159,6 @@
                 
                 <p style="margin: 10px 0; color: #666;">Description of service:</p>
                 <p style="margin: 10px 0; color: #666;">{!! $inquiry_data->description !!}</p>
-                
-                <p style="margin: 10px 0; color: #666;">This is a system-generated mail so please do not reply to this mail.</p>
-                <p style="margin: 10px 0; color: #666;">{{$Buyer_data->business_name}}</p>
-                <p style="margin: 10px 0; color: #666;">{{$Buyer_data->name}}</p>
-                <p style="margin: 10px 0; color: #666;">{{$Buyer_data->mobile}}</p>
-                {{-- For Participants --}}
                 @if($user_type=="Buyer" && count($participants)>0)
                     <table style="width: 100%; border-collapse: collapse; margin-bottom: 20px; font-size: 13px;">
                         <thead>
@@ -192,8 +186,12 @@
                             @endforeach
                         </tbody>
                     </table>
-
                 @endif
+                <p style="margin: 10px 0; color: #666;">This is a system-generated mail so please do not reply to this mail.</p>
+                <p style="margin: 10px 0; color: #666;">{{ucwords($Buyer_data->business_name)}}</p>
+                <p style="margin: 10px 0; color: #666;">{{$Buyer_data->name}}</p>
+                <p style="margin: 10px 0; color: #666;">{{$Buyer_data->mobile}}</p>
+                
                 <p style="text-align: center; font-size: 16px; color: #000;"><strong>Powered by MILAAPP</strong></p>
                 
                 <div class="link_sec" style="text-align: center; margin: 20px 0px; background:#014397; padding:5px; color:#fff;">
@@ -211,11 +209,11 @@
         <section>
             <div style="max-width: 600px; margin: 20px auto; background: #fff; padding: 20px; border-radius: 8px; box-shadow: 0 0 10px rgba(0,0,0,0.1);">
                 <h2 style="font-size: 24px; color: #333; margin-top: 0;">
-                    {{ $Buyer_data->business_name }} : INQUIRY REALLOTMENT
+                    {{ ucwords($Buyer_data->business_name) }} : INQUIRY REALLOTMENT
                 </h2>
                 <p style="margin: 10px 0; color: #666;">Hey,</p>
                 <p style="margin: 10px 0; color: #666;">Dear  {{$user->business_name}} ,</p>
-                <p style="margin: 10px 0; color: #666;">Please find inquiry reallotment for {{ $Buyer_data->business_name }}</p>
+                <p style="margin: 10px 0; color: #666;">Please find inquiry reallotment for {{ ucwords($Buyer_data->business_name) }}</p>
                 
                 <table style="width: 100%; border-collapse: collapse; margin-bottom: 20px; font-size: 13px;">
                     <thead>
@@ -242,11 +240,6 @@
                 
                 <p style="margin: 10px 0; color: #666;">Description of service:</p>
                 <p style="margin: 10px 0; color: #666;">{!! $inquiry_data->description !!}</p>
-                
-                <p style="margin: 10px 0; color: #666;">This is a system-generated mail so please do not reply to this mail.</p>
-                <p style="margin: 10px 0; color: #666;">{{$Buyer_data->business_name}}</p>
-                <p style="margin: 10px 0; color: #666;">{{$Buyer_data->name}}</p>
-                <p style="margin: 10px 0; color: #666;">{{$Buyer_data->mobile}}</p>
                 @if($user_type=="Buyer" && count($participants)>0)
                     <table style="width: 100%; border-collapse: collapse; margin-bottom: 20px; font-size: 13px;">
                         <thead>
@@ -274,8 +267,96 @@
                             @endforeach
                         </tbody>
                     </table>
-
                 @endif
+                <p style="margin: 10px 0; color: #666;">This is a system-generated mail so please do not reply to this mail.</p>
+                <p style="margin: 10px 0; color: #666;">{{ucwords($Buyer_data->business_name)}}</p>
+                <p style="margin: 10px 0; color: #666;">{{$Buyer_data->name}}</p>
+                <p style="margin: 10px 0; color: #666;">{{$Buyer_data->mobile}}</p>
+                
+                <p style="text-align: center; font-size: 16px; color: #000;"><strong>Powered by MILAAPP</strong></p>
+                
+                <div class="link_sec" style="text-align: center; margin: 20px 0px; background:#014397; padding:5px; color:#fff;">
+                    <div class="all_link" style="margin-top: 20px;">
+                        <a href="mailto:{{ env('MAIL_CONTACT_ADDRESS') }}" style="padding: 0px 5px; color: #fff;">Email: {{ env('MAIL_CONTACT_ADDRESS') }}</a>
+                        <a href="tel:{{ env('MAIL_CONTACT_NUMBER') }}" style="padding: 0px 5px; color: #fff;">Phone number: {{ env('MAIL_CONTACT_NUMBER') }}</a>
+                    </div>
+                    <a href="#" style="text-decoration: none; color: #fff;"> Marketplace + Auction = More Savings + More Business</a>
+                    <p style="margin: 5px 0;">For registration please find the link: <a href="https://milaapp.in/register" style="color: #007bff; text-decoration: none;" target="_blank">registration link</a></p>
+                </div>
+            </div>
+        </section>
+    @endif
+    @if($type=="INQUIRY_CANCELLATION")
+        <section>
+            <div style="max-width: 600px; margin: 20px auto; background: #fff; padding: 20px; border-radius: 8px; box-shadow: 0 0 10px rgba(0,0,0,0.1);">
+                <h2 style="font-size: 24px; color: #333; margin-top: 0;">
+                    {{ ucwords($Buyer_data->business_name) }} INQUIRY CANCELLATION
+                </h2>
+                <p style="margin: 10px 0; color: #666;">Hey,</p>
+                <p style="margin: 10px 0; color: #666;">Dear  {{$user->business_name}} ,</p>
+                <p style="margin: 10px 0; color: #666;">Please find Please find inquiry canellation for {{ ucwords($Buyer_data->business_name) }}</p>
+                
+                <table style="width: 100%; border-collapse: collapse; margin-bottom: 20px; font-size: 13px;">
+                    <thead>
+                        <tr>
+                            <th style="border: 1px solid #ccc; padding: 8px; background-color: #f2f2f2;">Inquiry ID</th>
+                            <th style="border: 1px solid #ccc; padding: 8px; background-color: #f2f2f2;">Title</th>
+                            <th style="border: 1px solid #ccc; padding: 8px; background-color: #f2f2f2;">Category / Sub Category</th>
+                            <th style="border: 1px solid #ccc; padding: 8px; background-color: #f2f2f2;">Service Delivery</th>
+                            <th style="border: 1px solid #ccc; padding: 8px; background-color: #f2f2f2;">Alloted Amount</th>
+                            <th style="border: 1px solid #ccc; padding: 8px; background-color: #f2f2f2;">Comments from seller</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td style="border: 1px solid #ccc; padding: 8px;">{{ $inquiry_data->inquiry_id }}</td>
+                            <td style="border: 1px solid #ccc; padding: 8px;">{{ $inquiry_data->title }}</td>
+                            <td style="border: 1px solid #ccc; padding: 8px;">{{ $inquiry_data->category }}/{{ $inquiry_data->sub_category }}</td>
+                            <td style="border: 1px solid #ccc; padding: 8px;">{{date('d-m-Y', strtotime($inquiry_data->execution_date))}}</td>
+                            <td style="border: 1px solid #ccc; padding: 8px;">Rs.{{$inquiry_data->inquiry_amount}}</td>
+                            <td style="border: 1px solid #ccc; padding: 8px;"></td>
+                        </tr>
+                    </tbody>
+                </table>
+                
+                <p style="margin: 10px 0; color: #666;">Description of service:</p>
+                <p style="margin: 10px 0; color: #666;">{!! $inquiry_data->description !!}</p>
+                @if($user_type=="Buyer" && count($participants)>0)
+                    <table style="width: 100%; border-collapse: collapse; margin-bottom: 20px; font-size: 13px;">
+                        <thead>
+                            <tr>
+                                <th style="border: 1px solid #ccc; padding: 8px; background-color: #f2f2f2;">SL No</th>
+                                <th style="border: 1px solid #ccc; padding: 8px; background-color: #f2f2f2;">Person Name</th>
+                                <th style="border: 1px solid #ccc; padding: 8px; background-color: #f2f2f2;">Company Name</th>
+                                <th style="border: 1px solid #ccc; padding: 8px; background-color: #f2f2f2;">Phone Number</th>
+                                <th style="border: 1px solid #ccc; padding: 8px; background-color: #f2f2f2;">Rank</th>
+                                <th style="border: 1px solid #ccc; padding: 8px; background-color: #f2f2f2;">Last Quoted Amount</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Populate with actual inquiry details -->
+                            @foreach ($participants as $k=> $item)
+                                <tr>
+                                    <td style="border: 1px solid #ccc; padding: 8px;">{{ $k+1 }}</td>
+                                    <td style="border: 1px solid #ccc; padding: 8px;">{{ $item->SellerData?$item->SellerData->name:"" }}</td>
+                                    <td style="border: 1px solid #ccc; padding: 8px;">{{ $item->SellerData?$item->SellerData->business_name:"" }}</td>
+                                    <td style="border: 1px solid #ccc; padding: 8px;">{{ $item->SellerData?$item->SellerData->mobile:"" }}</td>
+                                    <td style="border: 1px solid #ccc; padding: 8px;"></td>
+                                    <td style="border: 1px solid #ccc; padding: 8px;"></td>
+                                </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                @endif
+                <div class="link_sec" style="text-align: center; margin: 20px 0px; background:#c44d4d; padding:5px; color:#fff;">
+                    <h4>REASON FOR CANCELLATION</h4>
+                    <p>{{$reason}}</p>
+                </div>
+                <p style="margin: 10px 0; color: #666;">This is a system-generated mail so please do not reply to this mail.</p>
+                <p style="margin: 10px 0; color: #666;">{{ucwords($Buyer_data->business_name)}}</p>
+                <p style="margin: 10px 0; color: #666;">{{$Buyer_data->name}}</p>
+                <p style="margin: 10px 0; color: #666;">{{$Buyer_data->mobile}}</p>
+                
                 <p style="text-align: center; font-size: 16px; color: #000;"><strong>Powered by MILAAPP</strong></p>
                 
                 <div class="link_sec" style="text-align: center; margin: 20px 0px; background:#014397; padding:5px; color:#fff;">

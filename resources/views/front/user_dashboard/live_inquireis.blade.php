@@ -714,6 +714,33 @@
         </div>
     </div>
 </div>
+<div class="modal fade allot-rate-modal offline-allot" id="NotePadModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form action="{{route('update_your_buyer_notes')}}" method="POST">
+                    @csrf
+                 <div class="container-fluid">
+                    <div class="row">
+                        <div class="form-group">
+                            <label class="form-label">Notepad</label>
+                            <textarea class="form-control border-red ckeditor" rows="9" placeholder="Write Some Note Here" name="description" id="description"> </textarea>
+                            @error('description')<span class="text-danger" role="alert"><strong>{{ $message }}</strong></span>
+                            @enderror
+                        </div>
+                    </div>
+                    <input type="hidden" name="note_inquiry_id" value="">
+                    <input type="hidden" name="user_id" value="{{Auth::guard('web')->user()->id}}">
+                    <button type="submit" class="btn btn-animated btn-submit w-50">Submit</button>
+                </div>
+            </form>
+            </div>
+        </div>
+    </div>
+</div>
 @endsection
 @section('script')
 <script>
@@ -738,6 +765,12 @@
         $('#id').val(id);
         $('#inquiry_id').val(id);
     }
+    $(document).ready(function() {
+        $('#allotAmount').on('keyup', function() {
+            var input = $(this).val();
+            $('#allot_amount').val(input);
+        });
+    });
     function allotRateModal(id){
         var value_quotes = $('#value_quotes'+id).val();
         var bidder_id = $('#bidder_id'+id).val();

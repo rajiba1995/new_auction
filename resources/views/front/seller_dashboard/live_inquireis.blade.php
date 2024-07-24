@@ -215,7 +215,7 @@
 
     @endsection
     @section('script')
-    <script src="https://cdn.jsdelivr.net/jquery.validation/1.16.0/jquery.validate.min.js"></script>
+    
     <script>
         function formatDate(dateString) {
             var date = new Date(dateString);
@@ -476,6 +476,9 @@
                 event.preventDefault();
             }
         });
+        </script>
+        <script src="https://cdn.jsdelivr.net/jquery.validation/1.16.0/jquery.validate.min.js"></script>
+        <script>
         $(document).ready(function() {
             $('#new_quote_form').validate({
                 rules: {
@@ -573,35 +576,37 @@
         function Send_file_modal(id){
             $('#inquiry_file_id').val(id);
         }
-        $('#new_comment_form').validate({
-            rules: {
-                new_comment: "required",
-                inquiry_id: "required"
-            },
-            messages: {
-                new_comment: "Please enter your comment",
-                inquiry_id: "Please provide inquiry ID"
-            },
-            submitHandler: function(form) {
-                // Form is valid, perform AJAX submit
-                $.ajax({
-                    url: "{{route('seller_new_comment')}}", // Replace 'your_endpoint_url' with your actual endpoint
-                    type: 'POST',
-                    data: $(form).serialize(), // Serialize form data
-                    success: function(response) {
-                        if(response.status==200){
-                            $("#Add_comments_modal").modal('hide');
-                            $('#new_comment_form')[0].reset(); // Reset the form
-                        }else{
-                            $("#Add_comments_modal").modal('hide');
+        $(document).ready(function() {
+            $('#new_comment_form').validate({
+                rules: {
+                    new_comment: "required",
+                    inquiry_id: "required"
+                },
+                messages: {
+                    new_comment: "Please enter your comment",
+                    inquiry_id: "Please provide inquiry ID"
+                },
+                submitHandler: function(form) {
+                    // Form is valid, perform AJAX submit
+                    $.ajax({
+                        url: "{{route('seller_new_comment')}}", // Replace 'your_endpoint_url' with your actual endpoint
+                        type: 'POST',
+                        data: $(form).serialize(), // Serialize form data
+                        success: function(response) {
+                            if(response.status==200){
+                                $("#Add_comments_modal").modal('hide');
+                                $('#new_comment_form')[0].reset(); // Reset the form
+                            }else{
+                                $("#Add_comments_modal").modal('hide');
+                            }
+                        },
+                        error: function(xhr, status, error) {
+                            console.error(xhr.responseText);
                         }
-                    },
-                    error: function(xhr, status, error) {
-                        console.error(xhr.responseText);
-                    }
-                });
-                return false;
-            }
+                    });
+                    return false;
+                }
+            });
         });
         $(document).ready(function() {
             $('#submit_button').click(function() {
@@ -696,6 +701,7 @@
                         <h3 class="content-heading">Add your comment</h3>
                         <input type="hidden" name="inquiry_id" id="inquiry_comment_id" value="">
                         <textarea class="form-control" name="new_comment" placeholder="Write here" rows="3"></textarea>
+                        <br>
                         <button type="submit" class="btn btn-animated btn-add-comment">Submit</button>
                     </form>
                 </div>
