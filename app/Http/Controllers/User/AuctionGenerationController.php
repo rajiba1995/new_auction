@@ -116,8 +116,10 @@ class AuctionGenerationController extends Controller
             'end_date' => 'required|date|after_or_equal:start_date',
             'start_time' => 'required|date_format:H:i',
             'end_time' => 'required|date_format:H:i',
-            'category' => 'required',
-            'sub_category' => 'required',
+            'category' => 'required_without:other_category_inquiry',
+            'sub_category' => 'required_without:other_sub_category_inquiry',
+            'other_category_inquiry' => 'required_without:category',
+            'other_sub_category_inquiry' => 'required_without:sub_category',
             'auction_type' => 'required',
             'execution_date' => 'required|date|after:end_date',
             'quotes_per_participants' => 'required|numeric',
@@ -126,6 +128,30 @@ class AuctionGenerationController extends Controller
             'bid_difference_quote_amount' => 'required|numeric|gt:0',
         ], [
             'supplier_location.required_if' => 'Please select any one location',
+            'title.required' => 'The title field is required.',
+            'start_date.required' => 'The start date field is required.',
+            'end_date.required' => 'The end date field is required.',
+            'end_date.after_or_equal' => 'The end date must be a date after or equal to start date.',
+            'start_time.required' => 'The start time field is required.',
+            'start_time.date_format' => 'The start time must be in the format HH:mm.',
+            'end_time.required' => 'The end time field is required.',
+            'end_time.date_format' => 'The end time must be in the format HH:mm.',
+            'category.required_without' => 'The category field is required.',
+            'sub_category.required_without' => 'The sub-category field is required.',
+            'other_category_inquiry.required_without' => 'The category field is required.',
+            'other_sub_category_inquiry.required_without' => 'The sub-category field is required.',
+            'auction_type.required' => 'The auction type field is required.',
+            'execution_date.required' => 'The execution date field is required.',
+            'execution_date.after' => 'The execution date must be a date after end date.',
+            'quotes_per_participants.required' => 'The quotes per participants field is required.',
+            'quotes_per_participants.numeric' => 'The quotes per participants must be a number.',
+            'minimum_quote_amount.numeric' => 'The minimum quote amount must be a number.',
+            'maximum_quote_amount.numeric' => 'The maximum quote amount must be a number.',
+            'maximum_quote_amount.gt' => 'The maximum quote amount must be greater than minimum quote amount.',
+            'bid_difference_quote_amount.required' => 'The bid difference quote amount field is required.',
+            'bid_difference_quote_amount.numeric' => 'The bid difference quote amount must be a number.',
+            'bid_difference_quote_amount.gt' => 'The bid difference quote amount must be greater than 0.',
+            'supplier_location.required_if' => 'Please select any one location.'
         ]);
     
         // Add conditional validation for 'supplier_location'
@@ -159,10 +185,30 @@ class AuctionGenerationController extends Controller
             $inquiry->start_date = $request->start_date;
             $inquiry->start_time = $request->start_time;
             $inquiry->end_date = $request->end_date;
-           
             $inquiry->end_time = $request->end_time;
-            $inquiry->category = $request->category;
-            $inquiry->sub_category = $request->sub_category;
+           
+            if($request->category && $request->sub_category){
+                $inquiry->category = $request->category;
+                $inquiry->sub_category = $request->sub_category;
+            }   
+            else{
+                if($request->other_category_inquiry && $request->other_sub_category_inquiry){
+                    $category = new Collection;
+                    $category->title = $request->other_category_inquiry;
+                    $category->image = asset('frontend/assets/images/building.png');
+                    $category->created_by = 2;
+                    $category->status = 3;
+                    $category->save();
+                    $sub_category = new Category;
+                    $sub_category->title = $request->other_sub_category_inquiry;
+                    $sub_category->image = asset('frontend/assets/images/building.png');
+                    $sub_category->collection_id = $category->id;
+                    $sub_category->created_by = 2;
+                    $sub_category->save();
+                }
+                $inquiry->category = $request->other_category_inquiry?$request->other_category_inquiry:"";
+                $inquiry->sub_category = $request->other_sub_category_inquiry?$request->other_sub_category_inquiry:"";
+            }
             $inquiry->description = $request->description;
             $inquiry->execution_date = $request->execution_date;
             $inquiry->quotes_per_participants = $request->quotes_per_participants;

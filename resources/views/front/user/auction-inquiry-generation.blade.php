@@ -105,31 +105,63 @@
                                         </div>
                                     </div>
                                 </div>
-                                <div class="row input-row">
-                                    <div class="col-lg-6 col-12">
-                                        <div class="form-group">
-                                            <label class="form-label">Category*</label>
-                                            <select class="form-control border-red" name="category" id="category">
-                                                <option value="" selected hidden>Ex, transport service, Parlour, etc </option>
-                                                @foreach($all_category as $key=>$item)
-                                                    <option value="{{ $item->title }}" {{ $existing_inquiry && $existing_inquiry->category == $item->title ? 'selected' : '' }}>{{$item->title}}</option>
-                                                @endforeach
-                                            </select>
-                                            @error('category')<span class="text-danger" role="alert"><strong>{{ $message }}</strong></span>
-                                            @enderror
+                                <div class="row">
+                                    <label for="" class="modal-custom-radio">
+                                        <input type="checkbox" class="others_doc_inquiry" name="others_doc_inquiry" id="others_doc_inquiry" value="1" onchange="toggleDivSelectInquiry(this)" @if (old('others_doc_inquiry') == 1 || $errors->has('other_sub_category') || $errors->has('other_category'))? checked : '' @endif>
+                                        <div class="radio-text">
+                                            <label for="others_doc_inquiry">Others Category & Sub-Category</label>
+                                        </div>
+                                    </label>
+                                </div>
+                                <div id="main_category_div_inquiry" style="@if (old('others_doc_inquiry')==1 || $errors->has('other_sub_category') || $errors->has('other_category'))  display:none; @endif">
+                                    <div class="row input-row">
+                                        <div class="col-lg-6 col-12">
+                                            <div class="form-group">
+                                                <label class="form-label">Category*</label>
+                                                <select class="form-control border-red" name="category" id="category">
+                                                    <option value="" selected hidden>Ex, transport service, Parlour, etc </option>
+                                                    @foreach($all_category as $key=>$item)
+                                                        <option value="{{ $item->title }}" {{ $existing_inquiry && $existing_inquiry->category == $item->title ? 'selected' : '' }}>{{$item->title}}</option>
+                                                    @endforeach
+                                                </select>
+                                                @error('category')<span class="text-danger" role="alert"><strong>{{ $message }}</strong></span>
+                                                @enderror
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-6 col-12">
+                                            <div class="form-group">
+                                                <label class="form-label">Sub-Category*</label>
+                                                <select class="form-control border-red" name="sub_category" id="sub_category">
+                                                    <option value="" selected hidden>Ex, transport service, Parlour, etc </option>
+                                                    @if($existing_inquiry)
+                                                     <option value="{{$existing_inquiry->sub_category}}" selected>{{$existing_inquiry->sub_category}}</option>
+                                                    @endif
+                                                </select>
+                                                @error('sub_category')<span class="text-danger" role="alert"><strong>{{ $message }}</strong></span>
+                                                @enderror
+                                            </div>
                                         </div>
                                     </div>
-                                    <div class="col-lg-6 col-12">
-                                        <div class="form-group">
-                                            <label class="form-label">Sub-Category*</label>
-                                            <select class="form-control border-red" name="sub_category" id="sub_category">
-                                                <option value="" selected hidden>Ex, transport service, Parlour, etc </option>
-                                                @if($existing_inquiry)
-                                                <option value="{{$existing_inquiry->sub_category}}" selected>{{$existing_inquiry->sub_category}}</option>
-                                                @endif
-                                            </select>
-                                            @error('sub_category')<span class="text-danger" role="alert"><strong>{{ $message }}</strong></span>
-                                            @enderror
+                                </div>
+                                <div id="others_doc_div_inquiry" style="display:none; @if (old('others_doc_inquiry')==1 || $errors->has('other_sub_category') || $errors->has('other_category'))display:block @endif">
+                                    <div class="row input-row">
+                                        <div class="col-lg-6 col-12">
+                                            <div class="form-group">
+                                                <label class="form-label"> Category*</label>
+                                                <input type="text" class="form-control border-red" name="other_category_inquiry" value="{{old('other_category_inquiry')}}">
+                                                @error('other_category_inquiry')
+                                                 <span class="text-danger" role="alert"><strong>{{ $message }}</strong></span>
+                                                @enderror
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-6 col-12">
+                                            <div class="form-group">
+                                                <label class="form-label"> Sub-Category*</label>
+                                                <input type="text" class="form-control border-red" name="other_sub_category_inquiry" value="{{old('other_sub_category_inquiry')}}">
+                                                @error('other_sub_category_inquiry')
+                                                <span class="text-danger" role="alert"><strong>{{ $message }}</strong></span>
+                                                @enderror
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
@@ -1209,5 +1241,21 @@
     $(document).ready(function () {
         // $('.participant-location').select2();
     });
+
+    function toggleDivSelectInquiry(checkbox) {
+    if (checkbox.checked) {
+        document.getElementById("main_category_div_inquiry").style.display = "none";
+        document.getElementById("others_doc_div_inquiry").style.display = "block";
+    } else {
+        document.getElementById("main_category_div_inquiry").style.display = "block";
+        document.getElementById("others_doc_div_inquiry").style.display = "none";
+    }
+}
+
+// Trigger the function on page load to handle the initial state
+// document.addEventListener('DOMContentLoaded', function() {
+//     var checkbox = document.getElementById('others_doc_inquiry');
+//     toggleDivSelectInquiry(checkbox);
+// });
 </script>
 @endsection
