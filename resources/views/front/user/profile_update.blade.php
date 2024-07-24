@@ -45,14 +45,14 @@
                                                         <div class="col-lg-6 col-12">
                                                             <div class="form-group">
                                                                 <label class="form-label">First Name*</label>
-                                                                <input type="text" class="form-control border-red" name="first_name" value="{{$data->first_name}}">
+                                                                <input type="text" class="form-control border-red" name="first_name" value="{{old('first_name',$data->first_name)}}">
                                                                 @error('first_name')<span class="text-danger" role="alert"><strong>{{ $message }}</strong></span>@enderror
                                                             </div>
                                                         </div>
                                                         <div class="col-lg-6 col-12">
                                                             <div class="form-group">
                                                                 <label class="form-label">Last Name*</label>
-                                                                <input type="text" class="form-control border-red" name="last_name" value="{{$data->last_name}}">
+                                                                <input type="text" class="form-control border-red" name="last_name" value="{{old('last_name',$data->last_name)}}">
                                                                 @error('first_name')<span class="text-danger" role="alert"><strong>{{ $message }}</strong></span>@enderror
                                                             </div>
                                                         </div>
@@ -87,7 +87,7 @@
                                                         <div class="col-12">
                                                             <div class="form-group">
                                                                 <label class="form-label">Business Name*</label>
-                                                                <input type="text" class="form-control border-red" name="business_name" value="{{$data->business_name}}">
+                                                                <input type="text" class="form-control border-red" name="business_name" value="{{old('business_name',$data->business_name)}}">
                                                                 @error('business_name')<span class="text-danger" role="alert"><strong>{{ $message }}</strong></span>@enderror
                                                             </div>
                                                         </div>
