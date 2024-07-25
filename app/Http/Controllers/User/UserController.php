@@ -703,6 +703,7 @@ class UserController extends Controller{
             $pdf = PDF::setOptions($PDFOptions)->loadView('mail.pdf', $data_pdf);
             // Save the PDF to a file on the local server
             $pdfPath = storage_path('app/public/' . date('His') . '_invoice.pdf');
+           
 
             $pdf->save($pdfPath);
 

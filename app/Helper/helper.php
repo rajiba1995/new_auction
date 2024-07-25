@@ -359,6 +359,9 @@ if (!function_exists('sendMail')) {
             if (isset($cc)) {
                 $message->cc($cc);
             }
+            if (isset($data['attachment'])) {
+                $message->attach($data['attachment']);
+            }
         });
         if (isset($data['attachment'])) {
             if (file_exists($data['attachment'])) {
