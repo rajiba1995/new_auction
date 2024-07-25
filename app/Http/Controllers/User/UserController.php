@@ -561,8 +561,10 @@ class UserController extends Controller{
         $buyer_walletBalance = MyBuyerWallet::where(["user_id"=>$data->id])->latest()->first();
         $buyer_credit_left = MyBuyerWallet::where(["user_id"=>$data->id])->sum('credit_unit');
         $buyer_credit_used = MyBuyerWallet::where(["user_id"=>$data->id])->sum('debit_unit');
+        $buyer_credit_left = $buyer_credit_left-$buyer_credit_used;
         $seller_credit_left = MySellerWallet::where(["user_id"=>$data->id])->sum('credit_unit');
         $seller_credit_used = MySellerWallet::where(["user_id"=>$data->id])->sum('debit_unit');
+        $seller_credit_left = $seller_credit_left-$seller_credit_used;
         return view('front.user.wallet_management',compact('data','my_current_seller_package','seller_walletBalance','my_current_buyer_package','buyer_walletBalance', 'buyer_credit_left', 'buyer_credit_used', 'seller_credit_left', 'seller_credit_used'));
     }
     public function package_payment_management(Request $request){

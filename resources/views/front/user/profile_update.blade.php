@@ -45,14 +45,14 @@
                                                         <div class="col-lg-6 col-12">
                                                             <div class="form-group">
                                                                 <label class="form-label">First Name*</label>
-                                                                <input type="text" class="form-control border-red" name="first_name" value="{{$data->first_name}}">
+                                                                <input type="text" class="form-control border-red" name="first_name" value="{{ old('first_name', $data->first_name) }}">
                                                                 @error('first_name')<span class="text-danger" role="alert"><strong>{{ $message }}</strong></span>@enderror
                                                             </div>
                                                         </div>
                                                         <div class="col-lg-6 col-12">
                                                             <div class="form-group">
                                                                 <label class="form-label">Last Name*</label>
-                                                                <input type="text" class="form-control border-red" name="last_name" value="{{ $data->last_name}}">
+                                                                <input type="text" class="form-control border-red" name="last_name" value="{{ old('last_name', $data->last_name) }}">
                                                                 @error('first_name')<span class="text-danger" role="alert"><strong>{{ $message }}</strong></span>@enderror
                                                             </div>
                                                         </div>
@@ -78,7 +78,7 @@
                                                         <div class="col-lg-7 col-12">
                                                             <div class="form-group">
                                                                 <label class="form-label">Short Bio*</label>
-                                                                <textarea class="form-control border-red short-bio" name="short_bio">{{ $data->short_bio  }}</textarea>
+                                                                <textarea class="form-control border-red short-bio" name="short_bio">{{ old('short_bio', $data->short_bio) }}</textarea>
                                                                 @error('short_bio')<span class="text-danger" role="alert"><strong>{{ $message }}</strong></span>@enderror
                                                             </div>
                                                         </div>
@@ -87,7 +87,7 @@
                                                         <div class="col-12">
                                                             <div class="form-group">
                                                                 <label class="form-label">Business Name*</label>
-                                                                <input type="text" class="form-control border-red" name="business_name" value="{{$data->business_name}}">
+                                                                <input type="text" class="form-control border-red" name="business_name" value="{{ old('business_name', $data->business_name) }}">
                                                                 @error('business_name')<span class="text-danger" role="alert"><strong>{{ $message }}</strong></span>@enderror
                                                             </div>
                                                         </div>
@@ -96,7 +96,7 @@
                                                         <div class="col-12">
                                                             <div class="form-group">
                                                                 <label class="form-label">Address*</label>
-                                                                <textarea class="form-control border-red address" name="address">{{  $data->address }}</textarea>
+                                                                <textarea class="form-control border-red address" name="address">{{ old('address', $data->address) }}</textarea>
                                                                 @error('address')<span class="text-danger" role="alert"><strong>{{ $message }}</strong></span>@enderror
                                                             </div>
                                                         </div>
@@ -108,7 +108,7 @@
                                                                 <select class="form-control border-red" id="inputState" name="state">
                                                                     <option value="" selected hidden>--Select State--</option>
                                                                    @foreach ( $states as $key => $item )
-                                                                       <option value="{{$item->id}}" {{$data->state == $item->id?"selected":""}}>{{ $item->name }}</option>
+                                                                       <option value="{{$item->id}}" {{ old('state', $data->state) == $item->id ? 'selected' : '' }}>{{ $item->name }}</option>
                                                                    @endforeach
                                                                   </select>
                                                                   @error('state')<span class="text-danger" role="alert"><strong>{{ $message }}</strong></span>@enderror
@@ -120,7 +120,7 @@
                                                                 <select class="form-control all-cities" id="inputDistrict" name="city">
                                                                     <option value="">-- select city -- </option>
                                                                     @foreach ( $cities as $key => $item )
-                                                                        <option value="{{$item->id}}" {{$data->city == $item->id?"selected":""}}>{{ $item->name }}</option>
+                                                                        <option value="{{$item->id}}" {{ old('city', $data->city) == $item->id ? 'selected' : '' }}>{{ $item->name }}</option>
                                                                     @endforeach
                                                                 </select>
                                                                 @error('city')<span class="text-danger" role="alert"><strong>{{ $message }}</strong></span>@enderror
@@ -129,7 +129,7 @@
                                                         <div class="col-lg-4 col-12">
                                                             <div class="form-group">
                                                                 <label class="form-label">Pincode*</label>
-                                                                <input type="number" class="form-control border-red no-spinner" name="pincode" value="{{ $data->pincode }}" inputmode="numeric">
+                                                                <input type="number" class="form-control border-red no-spinner" name="pincode" value="{{ old('pincode', $data->pincode) }}" inputmode="numeric">
                                                                 @error('pincode')<span class="text-danger" role="alert"><strong>{{ $message }}</strong></span>@enderror
                                                             </div>
                                                         </div>
@@ -138,14 +138,14 @@
                                                         <div class="col-lg-6 col-12">
                                                             <div class="form-group">
                                                                 <label class="form-label">Email*</label>
-                                                                <input type="email" class="form-control border-red" name="email" value="{{ $data->email }}">
+                                                                <input type="email" class="form-control border-red" name="email" value="{{ old('email', $data->email) }}">
                                                                 @error('email')<span class="text-danger" role="alert"><strong>{{ $message }}</strong></span>@enderror
                                                             </div>
                                                         </div>
                                                         <div class="col-lg-6 col-12">
                                                             <div class="form-group">
                                                                 <label class="form-label">Phone Number*</label>
-                                                                <input type="phone" class="form-control border-red" name="phone_number" value="{{ $data->mobile }}">
+                                                                <input type="phone" class="form-control border-red" name="phone_number" value="{{ old('phone_number', $data->mobile) }}">
                                                                 @error('phone_number')<span class="text-danger" role="alert"><strong>{{ $message }}</strong></span>@enderror
                                                             </div>
                                                         </div>
@@ -157,7 +157,7 @@
                                                                 <select class="form-control border-red" name="business_type">
                                                                     <option value="" selected hidden>Select Business</option>
                                                                         @foreach ( $business_data as $item )
-                                                                        <option value="{{ $item->name }}" {{ $data->business_type == $item->name?"selected":""}}>{{ $item->name }}</option>
+                                                                        <option value="{{ $item->name }}" {{ old('business_type',$data->business_type) == $item->name?"selected":""}}>{{ $item->name }}</option>
                                                                     @endforeach
                                                                 </select>
                                                                 @error('business_type')<span class="text-danger" role="alert"><strong>{{ $message }}</strong></span>@enderror
@@ -166,7 +166,7 @@
                                                         <div class="col-lg-6 col-12">
                                                             <div class="form-group">
                                                                 <label class="form-label">Total No. of Employee(s)</label>
-                                                                <input type="text" class="form-control border-red" name="employee" value="{{ $data->employee }}">
+                                                                <input type="text" class="form-control border-red" name="employee" value="{{ old('employee', $data->employee) }}">
                                                                 @error('employee')<span class="text-danger" role="alert"><strong>{{ $message }}</strong></span>@enderror
                                                             </div>
                                                         </div>
@@ -175,7 +175,7 @@
                                                         <div class="col-lg-6 col-12">
                                                             <div class="form-group">
                                                                 <label class="form-label">Year of Establishment</label>
-                                                                <input type="text" class="form-control border-red" name="Establishment_year" value="{{ $data->Establishment_year }}">
+                                                                <input type="text" class="form-control border-red" name="Establishment_year" value="{{old('Establishment_year',$data->Establishment_year) }}">
                                                                 @error('Establishment_year')<span class="text-danger" role="alert"><strong>{{ $message }}</strong></span>@enderror
                                                             </div>
                                                         </div>
@@ -185,7 +185,7 @@
                                                                 <select class="form-control border-red" name="legal_status">
                                                                     <option value="" selected hidden>Select Legal Status</option>
                                                                     @foreach ( $legal_status_data as $item )
-                                                                    <option value="{{ $item->name }}" {{ $data->legal_status == $item->name ? 'selected' : '' }}>{{ $item->name }}</option>
+                                                                    <option value="{{ $item->name }}" {{ old('legal_status', $data->legal_status) == $item->name ? 'selected' : '' }}>{{ $item->name }}</option>
                                                                 @endforeach
                                                                 </select>
                                                                 @error('legal_status')<span class="text-danger" role="alert"><strong>{{ $message }}</strong></span>@enderror
@@ -197,19 +197,19 @@
 
                                                         <div class="col-lg-4 col-12">
                                                             <div class="form-group">
-                                                                <input type="email" class="form-control border-red" name="email1" value="{{ $data->email1 }}" placeholder="Email 1">
+                                                                <input type="email" class="form-control border-red" name="email1" value="{{ old('email1', $data->email1) }}" placeholder="Email 1">
                                                                 @error('email1')<span class="text-danger" role="alert"><strong>{{ $message }}</strong></span>@enderror
                                                             </div>
                                                         </div>
                                                         <div class="col-lg-4 col-12">
                                                             <div class="form-group">
-                                                                <input type="email" class="form-control border-red" name="email2" value="{{ $data->email2 }}" placeholder="Email 2">
+                                                                <input type="email" class="form-control border-red" name="email2" value="{{ old('email2', $data->email2) }}" placeholder="Email 2">
                                                                 @error('email2')<span class="text-danger" role="alert"><strong>{{ $message }}</strong></span>@enderror
                                                             </div>
                                                         </div>
                                                         <div class="col-lg-4 col-12">
                                                             <div class="form-group">
-                                                                <input type="email" class="form-control border-red" name="email3" value="{{ $data->email3 }}" placeholder="Email 3">
+                                                                <input type="email" class="form-control border-red" name="email3" value="{{ old('email3', $data->email3) }}" placeholder="Email 3">
                                                                 @error('email3')<span class="text-danger" role="alert"><strong>{{ $message }}</strong></span>@enderror
                                                             </div>
                                                         </div>

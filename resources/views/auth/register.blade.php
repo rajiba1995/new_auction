@@ -26,6 +26,7 @@
                             <label class="form-label">Full Name*</label>
                             <input type="text" class="form-control border-red" placeholder="Ex, John Doe" name="full_name">
                         </div>
+                       
                         <div class="form-group input-row">
                             <label class="form-label">Email Address*</label>
                             <input type="email" class="form-control border-red" placeholder="Ex, info@auction.com" name="email">
@@ -51,7 +52,10 @@
                             <input type="text" class="form-control border-red" placeholder="(XXX-XXX-XXXX)" name="phone">
                         </div>
                         <div id="alertContainer">
-
+                        <div class="form-group input-row">
+                            <label class="form-label">Business name*</label>
+                            <input type="text" class="form-control border-red" placeholder="" name="business_name">
+                        </div>
                         </div>
                         <!-- <input type="submit" class="btn btn-animated" value="Register Now"> -->
                         <button type="submit" class="btn btn-animated" id="registerFormSubmit">Register Now</button>
@@ -105,6 +109,10 @@
     <script>
 
         $(document).ready(function() {
+            $.validator.addMethod("validPhone", function(value, element) {
+                    return this.optional(element) || /^[6-9]\d{9}$/.test(value);
+            }, "Please enter a valid phone number starting with 6, 7, 8, or 9.");
+
             $('#registerForm').submit(function(e) {
                 e.preventDefault(); // Prevent default form submission
                 // Perform client-side validation using jQuery Validation plugin
@@ -164,7 +172,11 @@
                         required: true,
                         minlength: 10, // Minimum length of 10 characters
                         maxlength: 12, // Maximum length of 12 characters
-                        digits: true
+                        digits: true,
+                        validPhone: true
+                    },
+                    'business_name':{
+                        required: true,
                     }
                 },
                 messages: {
@@ -187,8 +199,12 @@
                     'phone': {
                         required: "Please enter your phone number",
                         minlength: "Enter a valid Phone Number",
-                        maxlength: "Phone number must not exceed 12 characters"
-                    }
+                        maxlength: "Phone number must not exceed 12 characters",
+                        validPhone: "Please enter a valid phone number"
+                    },
+                    'business_name': {
+                        required: "Please enter your business name"
+                    },
                 }
             });
         });

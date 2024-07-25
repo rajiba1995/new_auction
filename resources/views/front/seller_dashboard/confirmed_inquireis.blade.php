@@ -475,6 +475,7 @@
                                                                                                     <h3 class="content-heading">Add new file</h3>
                                                                                                     <input type="hidden" name="inquiry_id" value="{{$item['id']}}">
                                                                                                     <input type="file" class="form-control" name="new_file" id="new_file{{$item['id']}}">
+                                                                                                    <p class="text-muted text-sm mt-1">Please select an image file up to 2MB, or PDF files to upload.</p>
                                                                                                     <p class="text-danger text-sm error_file"></p>
                                                                                                     <div>
                                                                                                         <button type="button" id="submit_button" onclick="file_submit_button({{$item['id']}})" class="btn btn-animated btn-add-comment">Submit</button>

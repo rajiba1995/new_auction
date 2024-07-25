@@ -183,7 +183,7 @@
                 ],
                 datasets: [{
                     label: '',
-                    data: ["{{$buyer_credit_used}}", "{{$buyer_credit_left}}"],
+                    data: ["{{$buyer_credit_left}}", "{{$buyer_credit_used}}"],
                     backgroundColor: [
                         '#30BA00',
                         '#D82C42'

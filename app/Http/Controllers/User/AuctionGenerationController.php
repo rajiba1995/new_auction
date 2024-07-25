@@ -392,6 +392,9 @@ class AuctionGenerationController extends Controller
                                     'response' => json_encode($data),
                                 ]);
                             }
+                            $title = $Buyer_data->name . ' added you to a new inquiry '.$inquiry->inquiry_id;
+                            $link = route('seller_all_inquiries');
+                            notification_push(NULL,$inquiry->created_by,$item->SellerData->id,$title,NULL,$link);
                         }
                         $data=[
                             'user'=>$Buyer_data,

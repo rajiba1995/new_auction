@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
+use App\Models\Inquiry;
 use App\Models\InquiryParticipant;
 use App\Models\InquiryOutsideParticipant;
 use App\Providers\RouteServiceProvider;
@@ -89,13 +90,21 @@ class RegisteredUserController extends Controller
                 DB::rollBack();
                 return response()->json(['status' => 500]); // User already exists
             } else {
+                $fullName = $request->full_name;        
+                $nameParts = explode(' ', $fullName);
+                $firstName = $nameParts[0];   
+                $lastName = count($nameParts) > 1 ? implode(' ', array_slice($nameParts, 1)) : null;  
                 $User = new User;
-                $User->name = $request->full_name;
+                $User->name = $fullName;
+                $User->first_name =  $firstName;
+                $User->last_name =  $lastName;
                 $User->email = $request->email;
                 $User->mobile = $request->phone;
                 $User->email_status = 1;
                 $User->otp = rand(1111,9999);
                 $User->password = Hash::make($request->password);
+                $User->business_name = $request->business_name;
+                $User->slug_business_name = slugGenerateForBusinessName($request->business_name,'users');
                 $User->save();
                 // You may perform additional operations within the transaction here
     
@@ -197,6 +206,14 @@ class RegisteredUserController extends Controller
             if($userUpdate){
                 $Exist_outside_participant = InquiryOutsideParticipant::where('mobile', $userUpdate->mobile)->get();
                 if(isset($Exist_outside_participant)){
+                    if(count($Exist_outside_participant)>0){
+                        $Inquiry_data = Inquiry::where('id', $Exist_outside_participant[0]->inquiry_id)->first();
+                        $Buyer_data = User::where('id', $Inquiry_data->created_by)->first();
+                    
+                        $title = $Buyer_data->name . ' added you to a new inquiry '.$Inquiry_data->inquiry_id;
+                        $link = route('seller_all_inquiries');
+                        notification_push(NULL,$Inquiry_data->created_by,$userUpdate->id,$title,NULL,$link);
+                    }
                     foreach($Exist_outside_participant as $k =>$item){
                         $outside_participant_data = InquiryOutsideParticipant::where('mobile', $item->mobile)->where('inquiry_id', $item->inquiry_id)->first();
                         $inqOutParti =  new InquiryParticipant;
@@ -210,6 +227,7 @@ class RegisteredUserController extends Controller
                             $outside_participant_data->delete();
                         }
                     }
+                    
                 }
             }
             Session::forget('otp');

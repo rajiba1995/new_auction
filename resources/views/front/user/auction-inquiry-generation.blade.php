@@ -303,7 +303,7 @@
                                                 @if(count($watch_list_data)>0)
                                                     @foreach ($watch_list_data as $item)
                                                     {{-- {{dd($SellerData)}} --}}
-                                                    @if(!in_array($item->SellerData->id,$SellerData))
+                                                    @if($item->SellerData && !in_array($item->SellerData->id,$SellerData))
                                                         <label class="participant" id="participant{{$item->id}}">
                                                             @if($item->SellerData)
                                                                 <input type="hidden" name="participant[]" value="{{$item->SellerData->id}}">

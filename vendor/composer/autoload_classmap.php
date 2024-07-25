@@ -79,6 +79,7 @@ return array(
     'App\\Http\\Requests\\Auth\\LoginRequest' => $baseDir . '/app/Http/Requests/Auth/LoginRequest.php',
     'App\\Mail\\welcomeMail' => $baseDir . '/app/Mail/welcomeMail.php',
     'App\\Models\\Admin' => $baseDir . '/app/Models/Admin.php',
+    'App\\Models\\AllotOffline' => $baseDir . '/app/Models/AllotOffline.php',
     'App\\Models\\Badge' => $baseDir . '/app/Models/Badge.php',
     'App\\Models\\Banner' => $baseDir . '/app/Models/Banner.php',
     'App\\Models\\Blog' => $baseDir . '/app/Models/Blog.php',

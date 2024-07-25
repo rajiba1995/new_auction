@@ -329,7 +329,7 @@
                             <div class="content">
                                 <h2>Register For Free &amp; Start Bidding Now!</h2>
                                 @if (Auth::guard('web')->check())
-                                  <a href="#" style="cursor:context-menu" class="btn btn-cta btn-animated btn-yellow">Get Started</a>
+                                  <a href="javascript:void(0)" style="cursor:context-menu" class="btn btn-cta btn-animated btn-yellow">Get Started</a>
                                  @else
                                   <a href="{{url('/register')}}" class="btn btn-cta btn-animated btn-yellow">Get Started</a>
                                 @endif
