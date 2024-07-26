@@ -7,6 +7,24 @@
     .show2{
         display: block !important;
     }
+    .countdown-number {
+    position: relative;
+    display: inline-block;
+    font-weight: bold;
+}
+
+.countdown-number::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    bottom: -2px; /* Adjust based on font size */
+    width: 100%;
+    height: 2px; /* Adjust thickness of underline */
+    background-color: black; /* Underline color */
+    transform: scaleX(0); /* Start with no visible underline */
+    transform-origin: left; /* Make underline grow from left to right */
+    transition: transform 0.5s ease; /* Smooth transition for the underline effect */
+}
 </style>
 
     <div class="main">
@@ -158,7 +176,8 @@
                             </div>
                             <div class="row filter-cta-fow">
                                 <div class="col-12 text-end">
-                                    <a href="{{route('seller_pending_inquiries')}}" class="btn btn-cta btn-animated">
+                                    <span class="text-danger">This page will reload after  <span id="counter" class="countdown-number">20</span> seconds</span>
+                                    <a href="{{route('seller_pending_inquiries')}}" class="btn btn-cta btn-animated" id="resetURL">
                                         <svg xmlns="http://www.w3.org/2000/svg" version="1.1" xmlns:xlink="http://www.w3.org/1999/xlink" width="16" height="16" x="0" y="0" viewBox="0 0 512.449 512.449" style="enable-background:new 0 0 512 512" xml:space="preserve" class="">
                                             <g>
                                                 <path d="M152.083 286.805c7.109-8.155 1.318-20.888-9.501-20.888H110.19a147.458 147.458 0 0 1-.329-9.692c0-80.706 65.658-146.364 146.363-146.364 38.784 0 74.087 15.168 100.304 39.877l45.676-53.435c-39.984-36.577-91.44-56.612-145.98-56.612-57.838 0-112.214 22.524-153.112 63.421-40.897 40.898-63.421 95.274-63.421 153.112 0 3.243.081 6.473.222 9.692H12.629c-10.819 0-16.611 12.733-9.501 20.888l61.549 70.6 12.928 14.829 46.416-53.242zM509.321 245.614l-45.907-52.658-28.57-32.771-40.791 46.789-33.686 38.64c-7.109 8.155-1.318 20.888 9.501 20.888h32.354c-5.293 75.928-68.748 136.086-145.997 136.086-33.721 0-64.811-11.469-89.586-30.703l-45.679 53.439c38.267 30.731 85.479 47.434 135.266 47.434 57.838 0 112.214-22.523 153.112-63.421 38.466-38.466 60.672-88.856 63.177-142.834h27.306c10.818-.001 16.609-12.734 9.5-20.889z" fill="#ffffff" opacity="1" data-original="#000000" class=""></path>
@@ -429,6 +448,26 @@
     @section('script')
     <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js"></script>
     <script>
+         $(document).ready(function() {
+            let counter = 20;
+            let interval = setInterval(function() {
+                counter--;
+                $('#counter').text(counter);
+                $('#counter').css({
+                    'position': 'relative',
+                    'display': 'inline-block'
+                });
+                $('#counter').find('::after').css({
+                    'transform': 'scaleX(1)' 
+                });
+                if (counter === 0) {
+                    $('.page-loader').show();
+                    location.reload();
+                    clearInterval(interval);
+                }
+            }, 1000);
+        });
+        
         $(document).ready(function () {
             $(".buyer").select2();
         });

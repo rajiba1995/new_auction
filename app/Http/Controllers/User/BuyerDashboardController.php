@@ -154,12 +154,12 @@ class BuyerDashboardController extends Controller
                 if($value->ParticipantsData){
                     foreach($value->ParticipantsData as $k =>$item){
                         if($item->SellerData){
-                            $all_inquiries['participants'][]= $item->SellerData->business_name;
-                            $Suppliers_data['id']= $item->SellerData->id;
-                            $Suppliers_data['name']= $item->SellerData->business_name;
+                            $all_inquiries['participants'][]=$item->SellerData?$item->SellerData->business_name:"";
+                            $Suppliers_data['id']= $item->SellerData?$item->SellerData->id:"";
+                            $Suppliers_data['name']= $item->SellerData?$item->SellerData->business_name:"";
                            
                             // if($item->status==1){
-                                $all_inquiries['invted_participants'][]= $item->SellerData->business_name;
+                                $all_inquiries['invted_participants'][]= $item->SellerData?$item->SellerData->business_name:"";
                             // }
                             $sub_suppliers[] = $Suppliers_data;
                         }
@@ -284,12 +284,12 @@ class BuyerDashboardController extends Controller
                 $sub_suppliers = [];
                 if($value->ParticipantsData){
                     foreach($value->ParticipantsData as $k =>$item){
-                        $all_inquiries['participants'][]= $item->SellerData->business_name;
-                        $Suppliers_data['id']= $item->SellerData->id;
-                        $Suppliers_data['name']= $item->SellerData->business_name;
+                        $all_inquiries['participants'][]= $item->SellerData?$item->SellerData->business_name:"";
+                        $Suppliers_data['id']= $item->SellerData?$item->SellerData->id:"";
+                        $Suppliers_data['name']= $item->SellerData?$item->SellerData->business_name:"";
                        
                         // if($item->status==1){
-                            $all_inquiries['invted_participants'][]= $item->SellerData->business_name;
+                            $all_inquiries['invted_participants'][]= $item->SellerData?$item->SellerData->business_name:"";
                         // }
                         $sub_suppliers[] = $Suppliers_data;
                     }
@@ -504,11 +504,11 @@ class BuyerDashboardController extends Controller
                 $sub_suppliers = [];
                 if($value->ParticipantsData){
                     foreach($value->ParticipantsData as $k =>$item){
-                        $all_inquiries['participants'][]= $item->SellerData->business_name;
-                        $Suppliers_data['id']= $item->SellerData->id;
-                        $Suppliers_data['name']= $item->SellerData->business_name;
+                        $all_inquiries['participants'][]= $item->SellerData?$item->SellerData->business_name:"";
+                        $Suppliers_data['id']= $item->SellerData?$item->SellerData->id:"";
+                        $Suppliers_data['name']= $item->SellerData?$item->SellerData->business_name:"";
                         // if($item->status==1){
-                            $all_inquiries['invted_participants'][]= $item->SellerData->business_name;
+                            $all_inquiries['invted_participants'][]= $item->SellerData?$item->SellerData->business_name:"";
                         // }
                         $sub_suppliers[] = $Suppliers_data;
                     }

@@ -129,7 +129,7 @@
                                                 <rect width="25" height="25" fill="white"/>
                                                 </clipPath>
                                                 </defs>
-                                            </svg>                                                                                             
+                                            </svg>                                                                                                                              
                                     </a>
                                 </li>
                             </ul>
@@ -234,7 +234,7 @@
                                                                 <td class="input-participants-td">
                                                                     <ul class="input-data-list participant-data-list hidden">
                                                                             @forelse($item->ParticipantsData as $key =>$pitem)
-                                                                                <li>{{$key+1}}.{{$pitem->SellerData->business_name}}</li>
+                                                                                <li>{{$key+1}}.{{$pitem->SellerData?$pitem->SellerData->business_name:""}}</li>
                                                                             @empty
                                                                             <li>
                                                                                 <div class="alert alert-warning" role="alert">

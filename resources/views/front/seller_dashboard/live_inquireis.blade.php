@@ -619,8 +619,10 @@
                 }
                 
                 // Check file type
-                if (!file.type.match('application/pdf') && !file.type.match('image/')) {
-                    $('.error_file').html("Please select a PDF or image file");
+                var fileType = file.type;
+                var validTypes = ['application/pdf', 'image/jpeg', 'image/png', 'image/gif', 'image/jpg'];
+                if (!validTypes.includes(fileType)) {
+                    $('.error_file').html("Please select a PDF or image file (JPEG, PNG, GIF, JPG)");
                     return;
                 }
                 
@@ -721,6 +723,7 @@
                         <h3 class="content-heading">Add new file</h3>
                         <input type="hidden" name="inquiry_id" id="inquiry_file_id" value="">
                         <input type="file" class="form-control" name="new_file" id="new_file">
+                        <p class="text-muted text-sm mt-1">Please select an image file up to 2MB, or PDF files to upload.</p>
                         <p class="text-danger text-sm error_file"></p>
                         <div>
                             <button type="button" id="submit_button" class="btn btn-animated btn-add-comment">Submit</button>

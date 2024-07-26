@@ -4,6 +4,24 @@
     #group_list .search-bar{
         max-width: unset !important;
     }
+    .countdown-number {
+    position: relative;
+    display: inline-block;
+    font-weight: bold;
+}
+
+.countdown-number::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    bottom: -2px; /* Adjust based on font size */
+    width: 100%;
+    height: 2px; /* Adjust thickness of underline */
+    background-color: black; /* Underline color */
+    transform: scaleX(0); /* Start with no visible underline */
+    transform-origin: left; /* Make underline grow from left to right */
+    transition: transform 0.5s ease; /* Smooth transition for the underline effect */
+}
 </style>
 <div class="main">
     <div class="inner-page">
@@ -164,6 +182,7 @@
                     </div>
                     <div class="row filter-cta-fow">
                         <div class="col-12 text-end">
+                            <span class="text-danger">This page will reload after  <span id="counter" class="countdown-number">20</span> seconds</span>
                             <button type="reset" class="btn btn-cta btn-animated" id="resetUrl">
                                 <svg xmlns="http://www.w3.org/2000/svg" version="1.1" xmlns:xlink="http://www.w3.org/1999/xlink" width="16" height="16" x="0" y="0" viewBox="0 0 512.449 512.449" style="enable-background:new 0 0 512 512" xml:space="preserve" class="">
                                     <g>
@@ -592,6 +611,26 @@
 @endsection
 @section('script')
 <script>
+    $(document).ready(function() {
+            let counter = 20;
+            let interval = setInterval(function() {
+                counter--;
+                $('#counter').text(counter);
+                $('#counter').css({
+                    'position': 'relative',
+                    'display': 'inline-block'
+                });
+                $('#counter').find('::after').css({
+                    'transform': 'scaleX(1)' 
+                });
+
+                if (counter === 0) {
+                    $('.page-loader').show();
+                    location.reload();
+                    clearInterval(interval);
+                }
+            }, 1000);
+        }); 
     function validateAmount(input, id) {
         var amount = $(input).val();
         var errorMessageElement = $('#' + id + 'error-message'); // Select the error message element using the provided id

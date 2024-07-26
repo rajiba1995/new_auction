@@ -687,7 +687,7 @@ class SellerDashboardController extends Controller
     public function seller_send_new_file(Request $request){
         $request->validate([
             'inquiry_id' => 'required',
-            'new_file' => 'required|file|mimes:pdf,image/*|max:2048', // Max file size: 2MB
+            'new_file' => 'required|file|mimes:pdf,jpeg,png,jpg,gif|max:2048', // Max file size: 2MB
         ]);
     
         if ($request->hasFile('new_file') && $request->file('new_file')->isValid()) {
@@ -715,7 +715,7 @@ class SellerDashboardController extends Controller
     public function seller_send_new_bill(Request $request){
         $request->validate([
             'inquiry_id' => 'required',
-            'new_bill' => 'required|file|mimes:pdf,image/*|max:2048', // Max file size: 2MB
+            'new_bill' => 'required|file|mimes:pdf,jpeg,png,gif,jpg|max:2048', // Max file size: 2MB
         ]);
     
         if ($request->hasFile('new_bill') && $request->file('new_bill')->isValid()) {

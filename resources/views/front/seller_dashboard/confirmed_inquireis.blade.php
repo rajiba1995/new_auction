@@ -10,6 +10,24 @@
     .cursor-pointer {
         cursor: pointer;
     }
+    .countdown-number {
+    position: relative;
+    display: inline-block;
+    font-weight: bold;
+}
+
+.countdown-number::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    bottom: -2px; /* Adjust based on font size */
+    width: 100%;
+    height: 2px; /* Adjust thickness of underline */
+    background-color: black; /* Underline color */
+    transform: scaleX(0); /* Start with no visible underline */
+    transform-origin: left; /* Make underline grow from left to right */
+    transition: transform 0.5s ease; /* Smooth transition for the underline effect */
+}
 </style>
 
     <div class="main">
@@ -161,6 +179,7 @@
                             </div>
                             <div class="row filter-cta-fow">
                                 <div class="col-12 text-end">
+                                    <span class="text-danger">This page will reload after  <span id="counter" class="countdown-number">20</span> seconds</span>
                                         <a href="{{route('seller_confirmed_inquiries')}}" class="btn btn-cta btn-animated" id="resetURL">
                                         <svg xmlns="http://www.w3.org/2000/svg" version="1.1" xmlns:xlink="http://www.w3.org/1999/xlink" width="16" height="16" x="0" y="0" viewBox="0 0 512.449 512.449" style="enable-background:new 0 0 512 512" xml:space="preserve" class="">
                                             <g>
@@ -475,7 +494,7 @@
                                                                                                     <h3 class="content-heading">Add new file</h3>
                                                                                                     <input type="hidden" name="inquiry_id" value="{{$item['id']}}">
                                                                                                     <input type="file" class="form-control" name="new_file" id="new_file{{$item['id']}}">
-                                                                                                    <p class="text-muted text-sm mt-1">Please select an image file up to 2MB, or PDF files to upload.</p>
+                                                                                                    <p class="text-muted text-sm mt-1">Please select an image(jpg,jpeg,png,gif) file up to 2MB, or PDF files to upload.</p>
                                                                                                     <p class="text-danger text-sm error_file"></p>
                                                                                                     <div>
                                                                                                         <button type="button" id="submit_button" onclick="file_submit_button({{$item['id']}})" class="btn btn-animated btn-add-comment">Submit</button>
@@ -508,7 +527,9 @@
                                                                                     Upload Bill
                                                                                 </a>
                                                                                 
-                                                                                <div class="billing-date-time">24 Jan 2024 12.30 pm</div>
+                                                                                <div class="billing-date-time">      
+                                                                                        {{ $item['bill_at'] ? date('d M Y h.i A', strtotime($item['bill_at'])) : '' }}
+                                                                                </div>
                                                                                 <div class="modal fade add-comment-modal" id="Send_bill_modal{{$item['id']}}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
                                                                                     <div class="modal-dialog">
                                                                                         <div class="modal-content">
@@ -530,9 +551,9 @@
                                                                                         </div>
                                                                                     </div>
                                                                                 </div>
-                                                                                <a href="javascript:void(0)" class="btn btn-green rate-your-buyer">
+                                                                                {{-- <a href="javascript:void(0)" class="btn btn-green rate-your-buyer">
                                                                                     Rate your Buyer
-                                                                                </a>
+                                                                                </a> --}}
                                                                             </td>
                                                                         </tr>
                                                                     </tbody>
@@ -597,53 +618,74 @@
     @section('script')
     <script src="https://cdn.jsdelivr.net/jquery.validation/1.16.0/jquery.validate.min.js"></script>
     <script>
-    function file_submit_button(id){
-        var fileInput = $('#new_file'+id);
-        var file = fileInput[0].files[0];
-        // Check if file is selected
-        if (!file) {
-            $('.error_file').html("Please select a file");
-            return;
-        }
-        
-        // Check file type
-        if (!file.type.match('application/pdf') && !file.type.match('image/')) {
-            $('.error_file').html("Please select a PDF or image file");
-            return;
-        }
-        
-        // Check file size
-        var maxSize = 1024 * 1024 * 2; // 2 MB
-        if (file.size > maxSize) {
-            $('.error_file').html("File size must be less than 2 MB");
-            return;
-        }
-        
-        // Perform AJAX form submission
-        var formData = new FormData($('#new_send_file_form'+id)[0]);
-        $.ajax({
-            url: "{{ route('seller_send_new_file') }}",
-            type: 'POST',
-            data: formData,
-            processData: false,
-            contentType: false,
-            success: function(response) {
-                $('.error_file').html("");
-                if (response.status == 200) {
-                    location.reload()
-                } else {
-                    if (response.message) {
-                        $('.error_file').html(response.message);
-                    } else {
-                        location.reload()
-                    }
+        $(document).ready(function() {
+            let counter = 20;
+            let interval = setInterval(function() {
+                counter--;
+                $('#counter').text(counter);
+                $('#counter').css({
+                    'position': 'relative',
+                    'display': 'inline-block'
+                });
+                $('#counter').find('::after').css({
+                    'transform': 'scaleX(1)' 
+                });
+                if (counter === 0) {
+                    $('.page-loader').show();
+                    location.reload();
+                    clearInterval(interval);
                 }
-            },
-            error: function(xhr, status, error) {
-                console.error(xhr.responseText);
-            }
+            }, 1000);
         });
-    };
+        function file_submit_button(id){
+            var fileInput = $('#new_file'+id);
+            var file = fileInput[0].files[0];
+            // Check if file is selected
+            if (!file) {
+                $('.error_file').html("Please select a file");
+                return;
+            }
+            
+            // Check file type
+            var fileType = file.type;
+            var validTypes = ['application/pdf', 'image/jpeg', 'image/png', 'image/gif', 'image/jpg'];
+            if (!validTypes.includes(fileType)) {
+                $('.error_file').html("Please select a PDF or image file (JPEG, PNG, GIF, JPG)");
+                return;
+            }
+            
+            // Check file size
+            var maxSize = 1024 * 1024 * 2; // 2 MB
+            if (file.size > maxSize) {
+                $('.error_file').html("File size must be less than 2 MB");
+                return;
+            }
+            
+            // Perform AJAX form submission
+            var formData = new FormData($('#new_send_file_form'+id)[0]);
+            $.ajax({
+                url: "{{ route('seller_send_new_file') }}",
+                type: 'POST',
+                data: formData,
+                processData: false,
+                contentType: false,
+                success: function(response) {
+                    $('.error_file').html("");
+                    if (response.status == 200) {
+                        location.reload();
+                    } else {
+                        if (response.message) {
+                            $('.error_file').html(response.message);
+                        } else {
+                            location.reload();
+                        }
+                    }
+                },
+                error: function(xhr, status, error) {
+                    console.error(xhr.responseText);
+                }
+            });
+        };
     function bill_submit_button(id){
         var fileInput = $('#new_bill'+id);
         var file = fileInput[0].files[0];
@@ -654,8 +696,10 @@
         }
         
         // Check file type
-        if (!file.type.match('application/pdf') && !file.type.match('image/')) {
-            $('.error_bill').html("Please select a PDF or image file");
+        var fileType = file.type;
+        var validTypes = ['application/pdf', 'image/jpeg', 'image/png', 'image/gif', 'image/jpg'];
+        if (!validTypes.includes(fileType)) {
+            $('.error_file').html("Please select a PDF or image file (JPEG, PNG, GIF, JPG)");
             return;
         }
         
