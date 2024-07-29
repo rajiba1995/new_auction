@@ -329,7 +329,7 @@ class AuctionGenerationController extends Controller
                         $MyBuyerWallet->user_id = $request->created_by;
                         $MyBuyerWallet->type = 0;//Debit
                         $MyBuyerWallet->inquiry_id =$inquiry->inquiry_id;//Debit
-                        $MyBuyerWallet->purpose = "For generate an inquiry";//reason
+                        $MyBuyerWallet->purpose = "Enquiry Generation";//reason
                         $MyBuyerWallet->debit_unit = $credit;//for per inquiry
                         $MyBuyerWallet->current_unit = $buyer_active_credit-$credit;
                         $MyBuyerWallet->save();

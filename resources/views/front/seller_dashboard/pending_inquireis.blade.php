@@ -395,8 +395,9 @@
                                                                                                     @foreach($SellerCommentsData as $k =>$itemValue)
                                                                                                     <p><strong>{{$k+1}}</strong> {{$itemValue->comments}}</p>
                                                                                                     @endforeach
-                                                                                                @endif
-                                                                                                
+                                                                                                @else
+                                                                                                  <p>No Comments</p>
+                                                                                                @endif                       
                                                                                             </div>
                                                                                         </div>
                                                                                     </div>

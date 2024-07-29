@@ -110,7 +110,7 @@
                                         </a>
                                     </li>
                                     <li class="nav-item" role="presentation">
-                                        <a  href="{{ route('seller_confirmed_inquiries') }}" class="nav-link {{ (request()->is('seller/confirmed-inquiries*')) ? 'active' : '' }}" id="confirmed-tab">
+                                        <a  href="{{ route('seller_confirmed_inquiries') }}" class="nav-link {{ (request()->is('seller/confirmed*')) ? 'active' : '' }}" id="confirmed-tab">
                                             Confirmed ({{count($confirmed_inquiries_count)}})
                                             <svg width="25" height="25" viewBox="0 0 25 25" fill="none" xmlns="http://www.w3.org/2000/svg">
                                                 <g clip-path="url(#clip0_1151_284)">

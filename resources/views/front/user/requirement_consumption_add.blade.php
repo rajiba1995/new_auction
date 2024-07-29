@@ -22,7 +22,7 @@
                             <div class="tab-content">
                                 <div class="tab-content-wrapper">
                                     <div class="top-content-bar">
-                                        <p class="text-light">NEW ADD<strong>->YOUR REQUIREMENTS &amp; CONSUMPTIONS</strong> </p>
+                                        <p class="text-light"> <strong>ADD YOUR REQUIREMENTS &amp; CONSUMPTIONS</strong> </p>
                                         <a href="{{route('user.requirements_and_consumption')}}" class="btn btn-normal btn-cta"><i class="fa-solid fa-backward"></i>                                              
                                             Back
                                          </a>
@@ -81,7 +81,7 @@
                                                             checked
                                                         @endif>
                                                             <div class="radio-text">
-                                                                <label for="others_doc">Others Category & Sub Category</label>
+                                                                <label for="others_doc">Other Category & Sub-Category</label>
                                                             </div>
                                                         </label>
                                                     </div>
@@ -91,7 +91,7 @@
                                                         <div class="row input-row">
                                                             <div class="col-lg-6 col-12">
                                                                 <div class="form-group">
-                                                                    <label class="form-label">Select Category*</label>
+                                                                    <label class="form-label">Category*</label>
                                                                     <select class="form-control border-red" name="category" id="category">
                                                                         <option value="" selected hidden>Select</option>
                                                                         @foreach ($AllCollection as $item)
@@ -103,7 +103,7 @@
                                                             </div>
                                                             <div class="col-lg-6 col-12">
                                                                 <div class="form-group">
-                                                                    <label class="form-label">Select Sub Category*</label>
+                                                                    <label class="form-label">Sub-Category*</label>
                                                                     <select class="form-control border-red" name="sub_category" id="sub_cat">
                                                                         <option value="" selected disabled>Select</option>
                                                                     </select>
@@ -118,14 +118,14 @@
                                                         <div class="row input-row">
                                                             <div class="col-lg-6 col-12">
                                                                 <div class="form-group">
-                                                                    <label class="form-label">Select Category*</label>
+                                                                    <label class="form-label"> Category*</label>
                                                                     <input type="text" class="form-control border-red" name="other_category" value="{{old('other_category')}}">
                                                                     @error('other_category')<span class="text-danger" role="alert"><strong>{{ $message }}</strong></span>@enderror
                                                                 </div>
                                                             </div>
                                                             <div class="col-lg-6 col-12">
                                                                 <div class="form-group">
-                                                                    <label class="form-label">Select Sub Category*</label>
+                                                                    <label class="form-label"> Sub Category*</label>
                                                                     <input type="text" class="form-control border-red" name="other_sub_category" value="{{old('other_sub_category')}}">
                                                                     @error('other_sub_category')<span class="text-danger" role="alert"><strong>{{ $message }}</strong></span>@enderror
                                                                 </div>

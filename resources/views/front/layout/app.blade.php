@@ -152,7 +152,7 @@
                     </svg>                    
                     Start Inquiry
                 </a>
-                <div class="notification_menu dropdown-toggle"  >
+                <div class="notification_menu dropdown-toggle"  id="notificationDropdown">
                         <a href="#" class="notification" role="button" id="Link" data-bs-toggle="dropdown"
                     aria-expanded="false">
                             <svg width="30" height="30" viewBox="0 0 30 30" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -163,11 +163,13 @@
                                     d="M17.1629 26.25C16.9431 26.6288 16.6277 26.9433 16.2482 27.1619C15.8687 27.3805 15.4384 27.4956 15.0004 27.4956C14.5624 27.4956 14.1321 27.3805 13.7526 27.1619C13.3731 26.9433 13.0577 26.6288 12.8379 26.25"
                                     stroke="#ee2737" stroke-linecap="round" stroke-linejoin="round" />
                             </svg>
-                        @if(Auth::guard('web')->check())
-                            <span class="indicator">{{$notificationCount}}</span>
+                            @if(Auth::guard('web')->check())
+                            <span class="indicator">
+                                {{ Auth::user()->notifications->where('view_count', 0)->count() }}
+                            </span>
                             @else
-                            <span class="indicator">0</span>
-                        @endif    
+                                <span class="indicator">0</span>
+                            @endif
                         </a>
                         <ul class="dropdown-menu notification_menu_ul" aria-labelledby="Link">
                             @if(count($notificationData)>0)
@@ -501,6 +503,28 @@
     @yield('script')
     <script src="{{asset('frontend/assets/js/custom.js')}}"></script>
     <script>
+        $(document).ready(function() {
+            $('#notificationDropdown').on('click', function() {
+                $.ajax({
+                    url: "{{ route('notifications.markAsRead') }}",
+                    type: 'POST',
+                    data: {
+                        _token: '{{ csrf_token() }}'
+                    },
+                    success: function(response) {
+                        if(response.success) {
+                            $('.indicator').text('0');
+                        }
+                    },
+                    error: function(xhr, status, error) {
+                        console.error('Error:', error);
+                        console.error('Response:', xhr.responseText);
+                    }
+                });
+            });
+        });
+    </script>
+    <script>
          $(document).ready(function() {
             @if (session('success'))
                 toastr.success('{{ session('success') }}');
@@ -714,5 +738,6 @@
             }
         }
     </script>
+    
 </body>
 </html>

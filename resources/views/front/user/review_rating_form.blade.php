@@ -206,7 +206,7 @@
         
                                                 <div class="row input-row">
                                                     <div class="col-12">
-                                                        <label class="rating-label">On-time Delivery</label>
+                                                        <label class="rating-label">On-Time Delivery</label>
                                                         <input type="hidden" id="on_time_delivery" name="on_time_delivery" value="">
                                                         <ul class="rating-stars on_time_delivery">
                                                             <li class="star" data-rating="1">

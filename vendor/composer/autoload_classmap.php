@@ -58,6 +58,7 @@ return array(
     'App\\Http\\Controllers\\Controller' => $baseDir . '/app/Http/Controllers/Controller.php',
     'App\\Http\\Controllers\\CornController' => $baseDir . '/app/Http/Controllers/CornController.php',
     'App\\Http\\Controllers\\HomeController' => $baseDir . '/app/Http/Controllers/HomeController.php',
+    'App\\Http\\Controllers\\NotificationController' => $baseDir . '/app/Http/Controllers/NotificationController.php',
     'App\\Http\\Controllers\\User\\AuctionGenerationController' => $baseDir . '/app/Http/Controllers/User/AuctionGenerationController.php',
     'App\\Http\\Controllers\\User\\BuyerDashboardController' => $baseDir . '/app/Http/Controllers/User/BuyerDashboardController.php',
     'App\\Http\\Controllers\\User\\SellerDashboardController' => $baseDir . '/app/Http/Controllers/User/SellerDashboardController.php',
