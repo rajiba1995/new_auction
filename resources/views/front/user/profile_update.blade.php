@@ -32,7 +32,7 @@
                                 <div class="tab-pane {{ (request()->is('my/profile*')) ? 'active' : '' }}" id="productsServices" role="tabpanel" aria-labelledby="productsServices-tab" tabindex="0">
                                     <div class="tab-content-wrapper">
                                         <div class="top-content-bar">
-                                            <p class="text-light"><strong>FILL YOUR BASIC INFORMATIONS</strong> </p>
+                                            <p class="text-light"><strong>Update Your Basic Information</strong> </p>
                                             <a href="{{route('user.profile')}}" class="btn btn-normal btn-cta"><i class="fa-solid fa-backward"></i>                                              
                                                Back
                                             </a>
