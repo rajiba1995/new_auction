@@ -1090,10 +1090,22 @@ class UserController extends Controller{
         //     $transactions = $this->userRepository->getAllTransactionByUserId($data->id);
         // }
         // return view('front.user.transaction',compact('data','transactions'));
+        $oldData = Notification::where('buyer_id', $data->id)->where('seller_id', $data->id)->get();
+        foreach($oldData as $k =>$item){
+            $update = Notification::findOrFail($item->id);
+            $update->read_at =1;
+            $update->save();
+        }
         $notification = Notification::where('seller_id',$data->id)->latest('id')->get();
         return view('front.user.notifiction',compact('data','notification'));
-
     }
+    public function notifications_marks_read(Request $request){
+        $notification = Notification::findOrFail($request->id);
+        $notification->read_at =1;
+        $notification->save();
+        return response()->json(['status'=>200]);
+    }
+   
     public function seller_wallet_transaction(){
         $data = $this->AuthCheck();
         $seller_wallet_transactions = $this->userRepository->getSellerAllWalletTransactionByUserId($data->id);
