@@ -11,4 +11,8 @@ class MySellerPackage extends Model{
     function  getPackageDetails(){
         return $this->belongsTo('App\Models\SellerPackage', 'package_id','id');
     }
+
+    public function seller() {
+        return $this->belongsTo('App\Models\User', 'user_id', 'id');
+    }
 }

@@ -7,6 +7,9 @@ use Illuminate\Http\Request;
 use App\Contracts\VendorContract;
 use App\Contracts\UserContract;
 use App\Contracts\JobContract;
+use App\Models\MyBuyerPackage;
+use App\Models\MySellerPackage;
+use App\Models\Transaction;
 use Auth;
 
 class AdminController extends Controller{
@@ -30,7 +33,26 @@ class AdminController extends Controller{
             $loggedInAdmin = Auth::guard('admin')->user();
             // dd($loggedInEmployee);
         }
-        return view('admin.dashboard', compact('AllVendor', 'AllInspector', 'AllJobs', 'loggedInAdmin'));
+
+        // Fetch the latest 10 buyer packages with package and buyer data
+        $latestBuyerPackages = MyBuyerPackage::with('package_data', 'buyer')
+        ->orderBy('created_at', 'desc')
+        ->take(10)
+        ->get();
+
+        // Fetch the latest 10 seller packages with package and seller data
+         $latestSellerPackages = MySellerPackage::with('getPackageDetails','seller')
+         ->orderBy('created_at', 'desc')
+         ->take(10)
+         ->get();
+
+        // Fetch the latest 10 transaction with user details
+         $latestTransactions  = Transaction::with('getUserAllDetails')
+         ->orderBy('created_at', 'desc')
+         ->take(10)
+         ->get();
+
+        return view('admin.dashboard', compact('AllVendor', 'AllInspector', 'AllJobs', 'loggedInAdmin','latestBuyerPackages','latestSellerPackages','latestTransactions'));
         
     }
 

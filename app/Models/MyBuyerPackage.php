@@ -11,4 +11,8 @@ class MyBuyerPackage extends Model{
     function package_data(){
         return $this->belongsTo('App\Models\Package', 'package_id','id');
     }
+
+    public function buyer() {
+        return $this->belongsTo('App\Models\User', 'user_id', 'id');
+    }
 }

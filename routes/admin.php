@@ -153,8 +153,8 @@ Route::group(['middleware' => 'admin', 'prefix' => 'admin'], function () {
             Route::post('/update', [MasterModuleController::class, 'SocialMediaUpdate'])->name('admin.social_media.update');
             Route::get('/delete/{id}', [MasterModuleController::class, 'SocialMediaDelete'])->name('admin.social_media.delete');
             Route::get('/status/{id}', [MasterModuleController::class, 'SocialMediaStatus'])->name('admin.social_media.status');
-            
         });
+            
         Route::group(['prefix'  =>   'website-settings'], function() {
             Route::get('', [WebsiteSettingController::class, 'WebsiteSittengIndex'])->name('admin.website-settings.index');
             Route::post('/update', [WebsiteSettingController::class, 'WebsiteSittengUpdate'])->name('admin.website-settings.update');

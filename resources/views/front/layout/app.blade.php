@@ -503,28 +503,6 @@
     @yield('script')
     <script src="{{asset('frontend/assets/js/custom.js')}}"></script>
     <script>
-        $(document).ready(function() {
-            $('#notificationDropdown').on('click', function() {
-                $.ajax({
-                    url: "{{ route('notifications.markAsRead') }}",
-                    type: 'POST',
-                    data: {
-                        _token: '{{ csrf_token() }}'
-                    },
-                    success: function(response) {
-                        if(response.success) {
-                            $('.indicator').text('0');
-                        }
-                    },
-                    error: function(xhr, status, error) {
-                        console.error('Error:', error);
-                        console.error('Response:', xhr.responseText);
-                    }
-                });
-            });
-        });
-    </script>
-    <script>
          $(document).ready(function() {
             @if (session('success'))
                 toastr.success('{{ session('success') }}');
