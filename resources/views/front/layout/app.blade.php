@@ -196,7 +196,7 @@
                             </li>
                             @else
                             <li class="dropdown-item-all">
-                                <a class="dropdown-item" href="#">No Notification</a>
+                                <a class="dropdown-item" href="{{route('user.notifications')}}">View Notification</a>
                             </li>
                             @endif
                         </ul>
