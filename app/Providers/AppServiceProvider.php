@@ -98,7 +98,7 @@ class AppServiceProvider extends ServiceProvider
                if ($wishlistExists) {
                    if (Auth::guard('web')->check()) {
                        $user_id = Auth::guard('web')->user()->id;
-                       $notificationCount = Notification::where('seller_id', $user_id)->count();
+                       $notificationCount = Notification::where('seller_id', $user_id)->where('read_at', 0)->count();
                    } else {
                        $notificationCount = 0;
                    }
@@ -108,7 +108,7 @@ class AppServiceProvider extends ServiceProvider
                if ($wishlistExists) {
                    if (Auth::guard('web')->check()) {
                        $user_id = Auth::guard('web')->user()->id;
-                       $notificationData = Notification::where('seller_id', $user_id)->latest('id')->take(5)->get();
+                       $notificationData = Notification::where('seller_id', $user_id)->latest('id')->where('read_at', 0)->take(5)->get();
                    } else {
                        $notificationData = collect();
                    }

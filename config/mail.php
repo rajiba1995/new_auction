@@ -14,7 +14,7 @@ return [
     */
 
     'default' => env('MAIL_MAILER', 'smtp'),
-
+    'timeout' => 60,
     /*
     |--------------------------------------------------------------------------
     | Mailer Configurations

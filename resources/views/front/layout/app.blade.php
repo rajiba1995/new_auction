@@ -33,6 +33,9 @@
             top: 0;
             left: 30px !important;
         }
+        .notification_content_box h5 {
+            white-space: break-spaces;
+        }
     </style>
     @php
     // Get the client's IP address
@@ -173,7 +176,7 @@
                             @if(count($notificationData)>0)
                             @foreach($notificationData as $data)
                             <li class="notification_all">
-                                <a href="{{$data->link}}">
+                                <a href="#" onclick="ViewNotification('{{$data->link?$data->link:route('user.notifications')}}', {{$data->id}})">
                                     <div class="notification_img_info">
                                         <div class="notification_content_box">
                                             <h5>{{$data->title}}</h5>
@@ -713,6 +716,26 @@
                 button.text(text);
             }
         }
+        // Fetch notifications and update count
+        function ViewNotification(link, id) {
+              $.ajax({
+                 url: "{{route('user.notifications_marks_read')}}", // Replace this with your actual route
+                 type: 'GET',
+                 data: {
+                    id: id,
+                 },
+                 success: function(response) {
+                     if(response.status==200){
+                         window.location.href = link;
+                     }else{
+                        window.location.href = link;
+                     }
+                 },
+                 error: function(xhr, status, error) {
+                    window.location.href = link;
+                 }
+             });
+        }   
     </script>
 </body>
 </html>
