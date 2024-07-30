@@ -105,7 +105,7 @@ class UserController extends Controller{
         $customMessages = [
             'first_name.required' => 'The first name field is required.',
             'last_name.required' => 'The last name field is required.',
-            'profile_image.mimes' => 'Only image files are acceptable. Word and Excel files are not allowed.',
+            'profile_image.mimes' => 'Profile Image must be an image file',
             'short_bio.required' => 'The short bio field is required.',
             'business_name.required' => 'The business name field is required.',
             'business_type.required' => 'Please select a business type.',
@@ -723,7 +723,7 @@ class UserController extends Controller{
             ];
             
             $sender = env('SMS_SENDER');
-            $amount = $transaction->amount?$transaction->amount:"";
+            $amount = "Rs.".$transaction->amount?number_format($transaction->amount,2):"";
             $expiry_date = date('d-m-Y',strtotime($my_current_package->expiry_date));
             $url = 'https://milaapp.in';
             $myMessage = urlencode("Payment of ".$amount." for the subscription of ".$package_name." is confirmed. Valid till ".$expiry_date." For details: www.milaapp.in Sarv Megh Technology OPC Private Limited");
@@ -1001,7 +1001,7 @@ class UserController extends Controller{
                         ];
                         // FOR MESSAGE
                         $sender = env('SMS_SENDER');
-                        $amount = $transaction->amount?$transaction->amount:"";
+                        $amount = "Rs.".$transaction->amount?number_format($transaction->amount,2):"";
                         $expiry_date = date('d-m-Y', strtotime($my_current_package->expiry_date));
                         $url = 'https://milaapp.in';
                         $package_name = $package_name.' package';
@@ -1707,7 +1707,7 @@ class UserController extends Controller{
                         ];
                         $sender = env('SMS_SENDER');
                         
-                        $amount = $transaction->amount?$transaction->amount:"";
+                        $amount = "Rs.".$transaction->amount?number_format($transaction->amount,2):"";
                         $expiry_date = date('d-m-Y',strtotime($myBadge->expiry_date));
                         $url = 'https://milaapp.in';
                         $myMessage = urlencode("Payment of ".$amount." for the subscription of ".$package." is confirmed. Valid till ".$expiry_date." For details: www.milaapp.in Sarv Megh Technology OPC Private Limited");

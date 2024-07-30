@@ -93,7 +93,7 @@
                                                                     $on_time_delivery_rating_percentage = 0;
                                                                 @endphp
                                                             @endif
-                                                                <span class="ratingNumber">On-time Delivery</span>
+                                                                <span class="ratingNumber">On-Time Delivery</span>
                                                                 <div class="progress" role="progressbar" aria-label="Basic example" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
                                                                     <div class="progress-bar" style="width: {{$on_time_delivery_rating_percentage}}%"></div>
                                                                 </div>
@@ -123,7 +123,7 @@
                                                                     $post_delivery_service_rating_percentage = 0;
                                                                 @endphp
                                                             @endif
-                                                                <span class="ratingNumber">Post delivery Services</span>
+                                                                <span class="ratingNumber">Post Delivery Services</span>
                                                                 <div class="progress" role="progressbar" aria-label="Basic example" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
                                                                     <div class="progress-bar" style="width: {{$post_delivery_service_rating_percentage}}%"></div>
                                                                 </div>
@@ -206,7 +206,7 @@
                                                                     $on_time_payment_rating_percentage = 0;
                                                                 @endphp
                                                             @endif
-                                                                <span class="ratingNumber">On-time payment</span>
+                                                                <span class="ratingNumber">On-Time payment</span>
                                                                 <div class="progress" role="progressbar" aria-label="Basic example" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
                                                                     <div class="progress-bar" style="width: {{$on_time_payment_rating_percentage}}%"></div>
                                                                 </div>
@@ -221,7 +221,7 @@
                                                                     $delivery_cooperation_rating_percentage = 0;
                                                                 @endphp
                                                             @endif
-                                                                <span class="ratingNumber">Post/during Delivery Cooperation</span>
+                                                                <span class="ratingNumber">Post/During Delivery Cooperation</span>
                                                                 <div class="progress" role="progressbar" aria-label="Basic example" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
                                                                     <div class="progress-bar" style="width: {{$delivery_cooperation_rating_percentage}}%"></div>
                                                                 </div>

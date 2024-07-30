@@ -1,5 +1,11 @@
 @extends('front.layout.app')
 @section('section')
+<style>
+    .upload{
+        font-size: 26px!important;
+        margin-top: 6px!important;
+    }
+</style>
 <div class="main">
     <div class="inner-page">
 @php
@@ -21,7 +27,7 @@
                                 <div class="tab-pane {{ (request()->is('my/product-and-service*')) ? 'active' : '' }}" id="productsServices" role="tabpanel" aria-labelledby="productsServices-tab" tabindex="0">
                                     <div class="tab-content-wrapper">
                                         <div class="top-content-bar">
-                                            <h2 class="text-light">UPLOAD YOUR PRODUCTS &amp; SERVICES INFORMATION</h2>
+                                            <h2 class="text-light upload">UPLOAD YOUR PRODUCTS &amp; SERVICES INFORMATION</h2>
                                             <a href="{{route('user.product_and_service')}}" class="btn btn-normal btn-cta"><i class="fa-solid fa-backward"></i>                                              
                                                Back
                                             </a>

@@ -714,6 +714,7 @@ class ComposerStaticInite07ea8072bb35ffb7c2eefdf0e8c6a92
         'App\\Http\\Controllers\\Controller' => __DIR__ . '/../..' . '/app/Http/Controllers/Controller.php',
         'App\\Http\\Controllers\\CornController' => __DIR__ . '/../..' . '/app/Http/Controllers/CornController.php',
         'App\\Http\\Controllers\\HomeController' => __DIR__ . '/../..' . '/app/Http/Controllers/HomeController.php',
+        'App\\Http\\Controllers\\NotificationController' => __DIR__ . '/../..' . '/app/Http/Controllers/NotificationController.php',
         'App\\Http\\Controllers\\User\\AuctionGenerationController' => __DIR__ . '/../..' . '/app/Http/Controllers/User/AuctionGenerationController.php',
         'App\\Http\\Controllers\\User\\BuyerDashboardController' => __DIR__ . '/../..' . '/app/Http/Controllers/User/BuyerDashboardController.php',
         'App\\Http\\Controllers\\User\\SellerDashboardController' => __DIR__ . '/../..' . '/app/Http/Controllers/User/SellerDashboardController.php',
