@@ -99,7 +99,7 @@ class AdminInquiryController extends Controller
                     $row->sub_category ? $row->sub_category : '',      
                     $row->start_date && $row->start_time ? date('d M, Y', strtotime($row->start_date))."//".date('g:i A', strtotime($row->start_time)) : '',      
                     $row->end_date && $row->end_time ? date('d M, Y', strtotime($row->end_date))."//".date('g:i A', strtotime($row->end_time)) : '',                              
-                    $row->description ? $row->description : '',      
+                    $row->description ? strip_tags($row->description) : '',      
                     date("Y-m-d h:i a",strtotime($row->execution_date)) ? date("d-m-Y h:i a",strtotime($row->execution_date)) : '',
                     $row->quotes_per_participants ? $row->quotes_per_participants : '',      
                     $row->minimum_quote_amount ? number_format($row->minimum_quote_amount,2, '.', ',') : '',      
