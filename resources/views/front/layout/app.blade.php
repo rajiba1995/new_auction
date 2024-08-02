@@ -168,7 +168,7 @@
                             </svg>
                             @if(Auth::guard('web')->check())
                             <span class="indicator">
-                                {{count($notificationData)}}
+                                {{$notificationCount}}
                             </span>
                             @else
                                 <span class="indicator">0</span>
@@ -196,7 +196,7 @@
                             </li>
                             @else
                             <li class="dropdown-item-all">
-                                <a class="dropdown-item" href="#">No Notification</a>
+                                <a class="dropdown-item" href="{{route('user.notifications')}}">View Notification</a>
                             </li>
                             @endif
                         </ul>
@@ -506,28 +506,6 @@
     @yield('script')
     <script src="{{asset('frontend/assets/js/custom.js')}}"></script>
     <script>
-        $(document).ready(function() {
-            $('#notificationDropdown').on('click', function() {
-                $.ajax({
-                    url: "{{ route('notifications.markAsRead') }}",
-                    type: 'POST',
-                    data: {
-                        _token: '{{ csrf_token() }}'
-                    },
-                    success: function(response) {
-                        if(response.success) {
-                            $('.indicator').text('0');
-                        }
-                    },
-                    error: function(xhr, status, error) {
-                        console.error('Error:', error);
-                        console.error('Response:', xhr.responseText);
-                    }
-                });
-            });
-        });
-    </script>
-    <script>
          $(document).ready(function() {
             @if (session('success'))
                 toastr.success('{{ session('success') }}');
@@ -752,14 +730,28 @@
                      if(response.status==200){
                          window.location.href = link;
                      }else{
-                        window.location.href = link;
+                        // window.location.href = link;
                      }
                  },
                  error: function(xhr, status, error) {
-                    window.location.href = link;
+                    // window.location.href = link;
                  }
              });
         }   
+        // $(document).ready(function() {
+        //     // Select button with type="submit"
+        //     $('button[type="submit"]').on('click', function(event) {
+        //         // Prevent form submission to demonstrate the change (if needed)
+        //         event.preventDefault();
+
+        //         // Change button text and disable it
+        //         // $(this).text('Please wait...').prop('disabled', true);
+
+        //         // You can also perform additional actions here, like submitting the form
+        //         // For example, uncomment the line below to actually submit the form
+        //         // $(this).closest('form').submit();
+        //     });
+        // });
     </script>
     
 </body>

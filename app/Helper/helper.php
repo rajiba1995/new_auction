@@ -62,16 +62,22 @@ if (!function_exists('GroupslugGenerateUpdate')) {
         return $slug;
     }
 }
-function genAutoIncreNoYearWiseInquiry($length=6,$table='inquiries',$year,$month){
-    # PO , GRN, SALES ORDER , RETURN ORDER
+function genAutoIncreNoYearWiseInquiry($length = 6, $table = 'inquiries', $year, $month){
     $val = 1;    
     $data = DB::table($table)->whereRaw("DATE_FORMAT(created_at, '%Y') = '".$year."' ")->count();
     if(!empty($data)){
         $val = ($data + 1);
     }
-    $number = str_pad($val,$length,"0",STR_PAD_LEFT);
-    return 'MLAP'.$year.''.$number;
+    
+    do {
+        $number = str_pad($val, $length, "0", STR_PAD_LEFT);
+        $inquiry_id = 'MLAP'.$year.$number;
+        $exists = DB::table($table)->where('inquiry_id', $inquiry_id)->exists();
+        $val++;
+    } while ($exists);
+    return $inquiry_id;
 }
+
 function GenerateYearWiseTransaction($length=6, $table="transactions", $year){
      # PO , GRN, SALES ORDER , RETURN ORDER
      $val = 1;    
@@ -242,9 +248,7 @@ function valid_live_time($start_time, $end_time){
     $startDateTime = Carbon::parse($start_time)->timezone(env('APP_TIMEZONE'));
     $endDateTime = Carbon::parse($end_time)->timezone(env('APP_TIMEZONE'));
     $now = Carbon::now();
-    if ($startDateTime > $now) {
-        return false;
-    }elseif($startDateTime<$now){
+    if($endDateTime<$now){
         return false;
     }else{
         return true;
@@ -343,12 +347,22 @@ if (!function_exists('sendMail')) {
     function sendMail($data,$email,$subject) {
         // $email = 'rajib.a@techmantra.co';
         $cc = $data['cc'];
-        if (!empty(array_filter($cc, function($value) { return !is_null($value); }))) {
+
+        // Filter out null values
+        $filteredCc = array_filter($cc, function($value) {
+            return !is_null($value);
+        });
+        
+        // Check if the filtered array is not empty
+        if (!empty($filteredCc)) {
             // Reindex the array (optional)
-            $cc = array_values($cc);
-        }else{
+            $cc = array_values($filteredCc);
+        } else {
+            // Set to null if the array is empty
             $cc = null;
         }
+        
+       
         $from_address = env('MAIL_FROM_ADDRESS');
         $sender = env('MAIL_FROM_NAME');
         $response = Mail::send('mail.send_mail', $data, function ($message) use ($data, $from_address, $subject, $email, $sender, $cc) {

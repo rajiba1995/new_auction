@@ -182,7 +182,7 @@
                     </div>
                     <div class="row filter-cta-fow">
                         <div class="col-lg-5 col-12 text-end">        
-                            <span class="text-danger">This page will reload after  <span id="counter" class="countdown-number">20</span> seconds</span>
+                            <span class="text-danger">This page will reload after  <span id="counter" class="countdown-number">30</span> seconds</span>
                             <button type="reset" class="btn btn-cta btn-animated" id="resetURL">
                                 <svg xmlns="http://www.w3.org/2000/svg" version="1.1" xmlns:xlink="http://www.w3.org/1999/xlink" width="16" height="16" x="0" y="0" viewBox="0 0 512.449 512.449" style="enable-background:new 0 0 512 512" xml:space="preserve" class="">
                                     <g>
@@ -635,7 +635,7 @@
                                                                             <span class="" id="form-success{{$item['id']}}"></span>
                                                                         </div>
                                                                         <input type="hidden" name="id" id="id{{$item['id']}}" value="{{$item['id']}}">
-                                                                        <button type="button" class="btn btn-animated btn-submit w-50" onclick="formSubmit({{$item['id']}})">Submit</button>
+                                                                        <button type="button" class="btn btn-animated btn-submit w-50" onclick="formSubmit({{$item['id']}})" id="allotOfflineBtn{{$item['id']}}">Submit</button>
                                                                     </div>
                                                                 </form>
                                                             </div>
@@ -700,7 +700,7 @@
 @section('script')
 <script>
     $(document).ready(function() {
-            let counter = 20;
+            let counter = 30;
             let interval = setInterval(function() {
                 counter--;
                 $('#counter').text(counter);
@@ -762,7 +762,10 @@
     });
     function formSubmit(formId) {
         var form = $('#allotOfflineform' + formId);
-
+        var submitButton = $('#allotOfflineBtn'+formId);
+        
+        // Change button text and disable it
+        submitButton.text('Please wait...').prop('disabled', true);
         $.ajax({
             url: "{{route('buyer_allot_offline_seller')}}", // Replace with your Laravel route
             type: 'POST',
@@ -772,6 +775,7 @@
                 if (response.success) {
                     $('#form-success' + formId).text('Form submitted successfully!').css({'color': 'green'}).show();
                     form[0].reset();
+                    submitButton.text('Submit').prop('disabled', false);
                     setTimeout(function() {
                     $('#form-success' + formId).text('');
                         window.location.href = "{{route('buyer_confirmed_inquiries')}}";
@@ -808,6 +812,8 @@
                     var errors = response.responseJSON.errors;
                     alert(errors);
                 }
+                // Change button text and disable it
+                submitButton.text('Submit').prop('disabled', false);
             }
         });
     }

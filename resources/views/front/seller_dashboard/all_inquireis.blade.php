@@ -59,7 +59,7 @@
                                     </li>
                                     <li class="nav-item" role="presentation">
                                         <a  href="{{ route('seller_live_inquiries') }}" class="nav-link {{ (request()->is('seller/live-inquiries*')) ? 'active' : '' }}" id="liveinquiries-tab">
-                                            Live Inquiries (0)
+                                            Live Inquiries ({{ session('live_inquiries_count', 0) }})
                                             <svg width="25" height="25" viewBox="0 0 25 25" fill="none" xmlns="http://www.w3.org/2000/svg">
                                                 <g clip-path="url(#clip0_1151_262)">
                                                 <path d="M19.7983 9.16754L13.2115 2.58068M13.2115 2.58068L9.05138 6.74078M13.2115 2.58068C13.6901 2.10201 13.6901 1.32594 13.2115 0.847278C12.7328 0.368616 11.9568 0.368616 11.4781 0.847278L7.31798 5.00739C6.83932 5.48605 6.83932 6.26212 7.31798 6.74078C7.79664 7.21945 8.57272 7.21945 9.05138 6.74078M9.05138 6.74078L15.6382 13.3276M17.3716 15.061L21.5317 10.9009C22.0104 10.4222 22.0104 9.64615 21.5317 9.16749C21.053 8.68883 20.277 8.68883 19.7983 9.16749L15.6382 13.3276C15.1595 13.8063 15.1595 14.5823 15.6382 15.061C16.1169 15.5397 16.8929 15.5397 17.3716 15.061ZM14.2515 11.9409L10.4381 8.1275C9.67223 8.89337 9.67223 10.1351 10.4381 10.9009L11.4781 11.9409C12.244 12.7068 13.4857 12.7068 14.2515 11.9409Z" stroke="#0076D7" stroke-miterlimit="10" stroke-linecap="round" stroke-linejoin="round"/>
@@ -303,11 +303,43 @@
                                                                 {{-- <td class="max-quote-td">{{$item->maximum_quote_amount?number_format($item->maximum_quote_amount,2, '.',','):"----"}}</td> --}}
                                                                 <td class="max-quote-td">{{number_format($item->bid_difference_quote_amount,2, '.',',')}}</td>
                                                                 <td class="other-actions-td">
-                                                                    {{-- @if(valid_live_time($item->start_date.' '.$item->start_time, $item->end_date.' '.$item->end_time)) --}}
-                                                                    <a href="javascript:void(0)" onclick="CheckExistPackage('{{$item->my_id}}', '{{$item->id}}', '{{$item->selected_from}}')" class="btn btn-yellow btn-allot-offline" >
-                                                                        <img src="{{ asset('frontend/assets/images/green-circle-tick.png')}}" alt="Allot Offline">
-                                                                        Start Quoting
-                                                                    </a>
+                                                                    @if(valid_live_time($item->start_date.' '.$item->start_time, $item->end_date.' '.$item->end_time))
+                                                                        <script>
+                                                                            // Target date and time
+                                                                            var targetDate{{ $item->id }} = new Date("{{ $item->start_date }}T{{ $item->start_time }}").getTime();
+                                                                            // Update the countdown every second
+                                                                            var countdown{{ $item->id }}  = setInterval(function() {
+                                                                            // Get current date and time
+                                                                            var now{{ $item->id }} = new Date().getTime();
+                                                                            // Calculate the time difference
+                                                                            var distance = targetDate{{ $item->id }} - now{{ $item->id }};
+                                                                            
+                                                                                // Time calculations for days, hours, minutes, and seconds
+                                                                                var days = Math.floor(distance / (1000 * 60 * 60 * 24));
+                                                                                var hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                                                                                var minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+                                                                                var seconds = Math.floor((distance % (1000 * 60)) / 1000);
+                                                                            
+                                                                                // Display the result in the element with id="countdown"
+                                                                                document.getElementById("countdown"+"{{$item->id}}").innerHTML = days + "d " + hours + "h " + minutes + "m " + seconds + "s ";
+                                                                                // If the countdown is over, display some text
+                                                                                if (distance < 0) {
+                                                                                    clearInterval(countdown{{ $item->id }});
+                                                                                    document.getElementById("countdown_master{{ $item->id }}").innerHTML = "";
+                                                                                    document.getElementById("Start_Quoting_btn{{ $item->id }}").style.display = "block";
+                                                                                }
+                                                                            }, 1000);
+                                                                            </script>
+                                                                        <p id="countdown_master{{$item->id}}"> Start at: <span id="countdown{{$item->id}}"></span></p>
+                                                                        <a href="javascript:void(0)" onclick="CheckExistPackage('{{$item->my_id}}', '{{$item->id}}', '{{$item->selected_from}}')" class="btn btn-yellow btn-allot-offline" id="Start_Quoting_btn{{$item->id}}" style="display: none;">
+                                                                            <img src="{{ asset('frontend/assets/images/green-circle-tick.png')}}" alt="Allot Offline">
+                                                                            Start Quoting
+                                                                        </a>
+                                                                    @else
+                                                                        <a href="javascript:void(0)" class="btn btn-secondary btn-allot-offline" >
+                                                                            Close Auction
+                                                                        </a>
+                                                                    @endif
                                                                     {{-- data-bs-toggle="modal" data-bs-target="#all_startQuotingModal{{$item->id}}" --}}
                                                                     {{-- @endif --}}
 

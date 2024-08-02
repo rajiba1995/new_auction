@@ -9,7 +9,6 @@ use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\Admin\{AdminController, VendorController, InspectorController, ClientController,MasterModuleController,BlogController,PackageController,UserDetailsController,WebsiteSettingController,EmployeeDetailsController};
 use App\Http\Controllers\CornController;
 use App\Http\Controllers\HomeController;
-use App\Http\Controllers\NotificationController;
 require __DIR__.'/auth.php';
 /*
 |--------------------------------------------------------------------------
@@ -41,7 +40,6 @@ Route::get('/clear-cache', function() {
     Route::get('/verify/check',[RegisteredUserController::class,'UserVerifyDataCheck'])->name('front.otp_validation.check');
     Route::get('/terms-conditions',[HomeController::class,'TermsConditions'])->name('terms_conditions');
     Route::get('/privacy-policy',[HomeController::class,'PrivacyPolicy'])->name('front.privacy_policy');
-    Route::post('/mark-notifications-read', [NotificationController::class, 'markAsRead'])->name('notifications.markAsRead');
 
     // corn Controller
     Route::prefix('cron')->group(function () {

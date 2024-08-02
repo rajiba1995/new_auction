@@ -157,7 +157,7 @@
                                 </div>
                                 <div class="col-12">
                                     <label>Description:</label>
-                                    <p>{{ $data->description }}</p>
+                                    <p>{!! $data->description !!}</p>
                                 </div>
                          
                             </div>

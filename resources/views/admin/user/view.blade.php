@@ -132,23 +132,23 @@
                                 </div>
                                 <div class="col-xl-3 col-lg-4 col-sm-6 col-12">
                                     <label>City:</label>
-                                    <p>{{$data->city}}</p>
+                                    <p>{{$data->CityData? $data->CityData->name : ""}}</p>
                                 </div>
                                 <div class="col-xl-3 col-lg-4 col-sm-6 col-12">
                                     <label>State:</label>
-                                    <p>{{$data->state}}</p>
+                                    <p>{{$data->StateData? $data->StateData->name : ""}}</p>
                                 </div>
                                 <div class="col-xl-3 col-lg-4 col-sm-6 col-12">
                                     <label>Pincode:</label>
-                                    <p>{{$data->pin}}</p>
+                                    <p>{{$data->pincode}}</p>
                                 </div>
                                 <div class="col-xl-3 col-lg-4 col-sm-6 col-12">
                                     <label>Number of Employee:</label>
-                                    <p>{{$data->employee_number}}</p>
+                                    <p>{{$data->employee}}</p>
                                 </div>
                                 <div class="col-xl-3 col-lg-4 col-sm-6 col-12">
                                     <label>Year of Established:</label>
-                                    <p>{{$data->establish_year}}</p>
+                                    <p>{{$data->Establishment_year}}</p>
                                 </div>
                                 <div class="col-xl-3 col-lg-4 col-sm-6 col-12">
                                     <label>Legal Status:</label>
@@ -248,14 +248,14 @@
                                 @if($products)
                                     @forelse ($products as $key =>$product)
                                     <tr>
-                                        <td> {{ $key+1 }}</td>
-                                        <td><img src="{{ $product->logo ? asset($product->image) : asset('frontend/assets/images/user.png') }}" alt="No-Image" height="100px" width="100px" class="img-thumbnail" srcset=""/></td>
+                                        <td> {{ $key+1 .'.'}}</td>
+                                        <td><img src="{{ $product->image ? asset($product->image) : asset('frontend/assets/images/user.png') }}" alt="No-Image" height="100px" width="100px"  class="img-thumbnail" srcset=""/></td>
                                         <td> {{ $product->title}}</td>      
                                         <td> {{ $product->type == "Product"?"Product":"Service"}}</td>      
                                         <td> {{ Str::limit($product->description,200) }}</td>      
                                         <td> {{ Str::limit($product->specifications,200) }}</td>      
     
-                                        <td> {{ $product->price }}</td>      
+                                        <td> {{ $product->price? "Rs.".number_format($product->price,2): ""  }}</td>      
                                         <td> {{ $product->created_at->format('d-M-Y') }}</td>      
                                     </tr>
 

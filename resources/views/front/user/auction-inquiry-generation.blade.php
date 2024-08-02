@@ -560,15 +560,15 @@
                             <!--    <input type="text" placeholder="Select Location"  autocomplete="off" value="west bengal">-->
                             <!--</div>-->
                             <!--<div id="stateSuggestions"></div>-->
-                            <div class="participant-location-dropdown">
-                                <select class="form-select participant-location" id="location_input" name="global_state_name">
-                                    <option value="west bengal" selected>west bengal</option>
-                                    <option value="Kolkata">Kolkata</option>
-                                    <option value="Mumbai">Mumbai</option>
+                            <div class="participant-location-dropdown" style="width:30% !important">
+                                <select class="form-select participant-location" id="location_input" name="global_state_name" style="border-radius: 25px;">
+                                    @foreach ($global_filter_location as $item)
+                                        <option value="{{$item}}">{{$item}}</option>
+                                    @endforeach
                                 </select>
                             </div>
-                            <div class="search-bar search_bar">
-                                <input type="search" name="keyword" id="partisipants_location" placeholder="Search" autocomplete="off">
+                            <div class="search-bar search_bar" style="width:70% !important">
+                                <input type="search" name="keyword" id="partisipants_location" placeholder="Search" autocomplete="off" >
                             </div>
                              <!-- <div id="filterSuggestions"></div> -->
                         </div>
@@ -616,7 +616,7 @@
             // Set the value of the hidden input field based on the clicked button
             var closedauction = $('input[name="auction_type"]:checked').val();
             var buyer_active_credit = "{{$buyer_active_credit}}";
-            if(buyer_active_credit==0){
+            if(buyer_active_credit==0 && submitType=="generate"){
                 Swal.fire({
                     title: "Warning!",
                     text: "You don't have active package or wallet balance.!",
@@ -1239,7 +1239,8 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js"></script>
 <script>
     $(document).ready(function () {
-        // $('.participant-location').select2();
+        $('#category').select2();
+        $('#sub_category').select2();
     });
 
     function toggleDivSelectInquiry(checkbox) {

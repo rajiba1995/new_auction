@@ -826,13 +826,14 @@
     $(document).ready(function() {
         // $('.rajib').on('click', function() {
         setInterval(function() {
-            console.log('Done')
+          
             $.ajax({
                 url: "{{route('buyer_live_inquiries_by_ajax')}}",
                 method: "GET",
                 success: function(response) {
                 if(response.status==200){
                     $('#inquiries_data_append').html('');
+                    console.log(response.data)
                     $.each(response.data, function(index, item) {
                         var participantHtml = '';
                         if(item.inquiry_type=="close auction"){

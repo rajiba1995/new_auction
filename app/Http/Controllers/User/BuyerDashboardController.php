@@ -803,7 +803,6 @@ class BuyerDashboardController extends Controller
     }
 
     public function live_inquiry_seller_allot(Request $request){
-        // dd($request->all());
         if (!is_numeric($request->allot_amount)) {
             return redirect()->back()->with('warning', 'Please enter a numeric value.');
         }
@@ -818,6 +817,32 @@ class BuyerDashboardController extends Controller
             $InquiryAllotmentData->save();
 
             $inquiry= Inquiry::findOrFail($request->inquiry_id);
+            if ($inquiry->allot_seller && $inquiry->allotment_type == 0 && $request->bidder_id != $inquiry->allot_seller) {
+                $reason = "Buyer selected another seller";
+                $seller = User::where('id',$inquiry->allot_seller)->first();
+                $subject = 'Inquiry CANCELLATION Notification for '.ucwords($inquiry->BuyerData->business_name).' '.$inquiry->inquiry_id.'';
+                    $seller_email =$seller?$seller->email:null;
+                    $cc =[
+                        0=>$seller->email1,
+                        1=>$seller->email2,
+                        2=>$seller->email3,
+                    ];
+                    $data=[
+                        'cc'=>$cc,
+                        'user'=>$seller,
+                        'inquiry_data'=>$inquiry,
+                        'Buyer_data'=>$inquiry->BuyerData,
+                        'reason'=>$reason,
+                        'type'=>'INQUIRY_CANCELLATION',
+                        'user_type'=>'Seller',
+                    ];
+                
+                sendMail($data,$seller_email,$subject);
+                $link = route('seller_history_inquiries');
+                $title = 'Buyer selected another seller for this inquiry '.$inquiry->inquiry_id;
+                notification_push(NULL,$inquiry->created_by,$inquiry->SellerData->id,$title,NULL,$link);
+            }
+            
             $inquiry->allot_seller = $request->bidder_id;
             $inquiry->inquiry_amount = $request->allot_amount;
             $inquiry->status = 3; //Confirmed
@@ -1083,6 +1108,31 @@ class BuyerDashboardController extends Controller
             $formData->amount = $request->input('rate');
             $formData->save();
             $inquiry= Inquiry::findOrFail($request->id);
+            if ($inquiry->allot_seller && $inquiry->allotment_type == 0 && $request->bidder_id != $inquiry->allot_seller) {
+                $reason = "Buyer selected another seller";
+                $seller = User::where('id',$inquiry->allot_seller)->first();
+                $subject = 'Inquiry CANCELLATION Notification for '.ucwords($inquiry->BuyerData->business_name).' '.$inquiry->inquiry_id.'';
+                    $seller_email =$seller?$seller->email:null;
+                    $cc =[
+                        0=>$seller->email1,
+                        1=>$seller->email2,
+                        2=>$seller->email3,
+                    ];
+                    $data=[
+                        'cc'=>$cc,
+                        'user'=>$seller,
+                        'inquiry_data'=>$inquiry,
+                        'Buyer_data'=>$inquiry->BuyerData,
+                        'reason'=>$reason,
+                        'type'=>'INQUIRY_CANCELLATION',
+                        'user_type'=>'Seller',
+                    ];
+                
+                sendMail($data,$seller_email,$subject);
+                $link = route('seller_history_inquiries');
+                $title = 'Buyer selected another seller for this inquiry '.$inquiry->inquiry_id;
+                notification_push(NULL,$inquiry->created_by,$inquiry->SellerData->id,$title,NULL,$link);
+            }
             $inquiry->allot_seller = $formData->id;
             $inquiry->inquiry_amount = $request->rate;
             $inquiry->allotment_type = 1; //for Offline Seller

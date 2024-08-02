@@ -72,6 +72,20 @@ class SellerDashboardRepository implements SellerDashboardContract{
         // Get the results
         return $query->get();
     }
+    public function rejected_buyer($id){
+        $buyerBusinessNames = Inquiry::join('inquiry_participants', 'inquiry_participants.inquiry_id', '=', 'inquiries.id')
+            ->join('users', 'users.id', '=', 'inquiries.created_by')
+            ->where('inquiry_participants.user_id', $id)
+            ->where(function ($query) {
+                $query->whereIn('inquiry_participants.status', [2, 3]) // 2: Seller own cancelled, 3: Buyer selected another seller
+                    ->orWhere('inquiries.status', 4); // Buyer Cancelled inquiry
+            })
+            ->distinct()
+            ->select('users.business_name', 'inquiries.created_by', 'inquiry_participants.user_id')
+            ->get()
+            ->unique('business_name');
+        return $buyerBusinessNames;
+    }
     
 
     public function rejected_inquiries_by_seller($id, $keyword = null, $start_date = null, $end_date = null, $buyer=null) {

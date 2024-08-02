@@ -142,14 +142,14 @@
                                                             @endforeach
                                                         </div>
                                                     </div>
-                                                    <div class="content-box bg-gray-1">
+                                                    {{-- <div class="content-box bg-gray-1">
                                                         <div class="inner">
                                                             <h3 class="mb-4">Credit Usages As a Buyer</h3>
                                                             <div class="credit-charts">
                                                                 <canvas id="buyer-creditChart" style="width:632px;height:632px;"></canvas>
                                                             </div>
                                                         </div>
-                                                    </div>
+                                                    </div> --}}
                                                 </div>
 
                                                 <div class="tab-pane fade {{$package_type=='seller'?"show active":""}}" id="sellers" role="tabpanel" aria-labelledby="sellers-tab" tabindex="0">
@@ -250,14 +250,14 @@
                                                             @endforeach
                                                         </div>
                                                     </div>
-                                                    <div class="content-box bg-gray-1">
+                                                    {{-- <div class="content-box bg-gray-1">
                                                         <div class="inner">
                                                             <h3>Credit Usages As a Seller</h3>
                                                             <div class="credit-charts">
                                                                 <canvas id="seller-creditChart"></canvas>
                                                             </div>
                                                         </div>
-                                                    </div>
+                                                    </div> --}}
                                                 </div>
                                             </div>
                                         </div>

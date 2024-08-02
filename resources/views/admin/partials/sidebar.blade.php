@@ -142,10 +142,10 @@
       <div class="accordion-collapse collapse {{ (request()->is('admin/cancell-reason-management*')) ? 'show' : '' }}" id="collapse8" data-bs-parent="#menusAccordion">
         <ul class="navbar-nav">
           <li class="nav-item">
-            <a class="nav-link {{ (request()->is('admin/cancell-reason-management/buyer*')) ? 'active' : '' }}" aria-current="page" href="{{route('admin.buyer_cancell_reason.index')}}">Buyer Cancell Reason</a>
+            <a class="nav-link {{ (request()->is('admin/cancell-reason-management/buyer*')) ? 'active' : '' }}" aria-current="page" href="{{route('admin.buyer_cancell_reason.index')}}">Buyer Cancel Reason</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link {{ (request()->is('admin/cancell-reason-management/seller*')) ? 'active' : '' }}" aria-current="page" href="{{route('admin.seller_cancell_reason.index')}}">Seller Cancell Reason</a>
+            <a class="nav-link {{ (request()->is('admin/cancell-reason-management/seller*')) ? 'active' : '' }}" aria-current="page" href="{{route('admin.seller_cancell_reason.index')}}">Seller Cancel Reason</a>
           </li>
         </ul>
       </div>

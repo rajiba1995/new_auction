@@ -108,7 +108,7 @@
                                                 $totalPrice = 0;
                                                 @endphp
                                                 @forelse ($transactions as $key =>$item)
-                                                <tr>
+                                                <tr style="font-size: 12px;">
                                                     <td> {{ $key+1 }}</td>
                                                     <td> {{ $item->unique_id }}</td>
                                                     <td> {{ $item->transaction_type == 1?'Online':'Offline'}}</td>
