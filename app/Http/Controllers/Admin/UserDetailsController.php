@@ -146,11 +146,17 @@ class UserDetailsController extends Controller
                  $f = fopen('php://memory', 'w');
                  
                  // Set Column Headers
-                 $header = array("First Name","Last Name","Email","Mobile","Gender","Address","Pincode","Short Bio","Business Name","Business Type","No of Employee","Establish Year","Legal Status","added_by","Date");
+                 $header = array("First Name","Last Name","Email","Mobile","Gender","Address","State","City","Pincode","Short Bio","Business Name","Business Type","No of Employee","Establish Year","Legal Status","added_by","Additional Info","Date");
             fputcsv($f,$header,$delimiter);
             
             $count =1;
             foreach($data as $key => $row){
+                $additionalInfo = '';
+                if ($row->email1 || $row->email2 || $row->email3) {
+                    $additionalInfo .= ($row->email1 ? 'Email 1: ' . $row->email1 . ' ' : '');
+                    $additionalInfo .= ($row->email2 ? 'Email 2: ' . $row->email2 . ' ' : '');
+                    $additionalInfo .= ($row->email3 ? 'Email 3: ' . $row->email3 . ' ' : '');
+                }
                 $exportData = array(
                     $row->first_name ? $row->first_name : '',
                     $row->last_name ? $row->last_name : '',
@@ -158,6 +164,8 @@ class UserDetailsController extends Controller
                     $row->mobile ? $row->mobile : '',      
                     $row->gender ? $row->gender : '',      
                     $row->address ? $row->address : '',      
+                    $row->StateData ? $row->StateData->name : '',      
+                    $row->CityData ? $row->CityData->name : '',      
                     $row->pincode ? $row->pincode : '',      
                     $row->short_bio ? $row->short_bio : '',      
                     $row->business_name ? $row->business_name : '',      
@@ -165,10 +173,11 @@ class UserDetailsController extends Controller
                     $row->employee ? $row->employee : '',      
                     $row->Establishment_year ? $row->Establishment_year : '',      
                     $row->legal_status ? $row->legal_status : '',      
-                    $row->added_by ? $row->getEmployeeName->name : '',      
+                    $row->added_by ? $row->getEmployeeName->name : '',   
+                    $additionalInfo,   
                     date("Y-m-d h:i a",strtotime($row->created_at)) ? date("d-m-Y h:i a",strtotime($row->created_at)) : ''
+                );
                     
-                    );
                     // dd($exportData);
                     fputcsv($f,$exportData,$delimiter);
                     $count++;
@@ -184,25 +193,25 @@ class UserDetailsController extends Controller
                     }
                     }
                     
-                    public function UserTransactionView(Request $request,int $id)
-                    { 
-                        $startDate = $request->start_date ?? '';
-                        $endDate = $request->end_date ?? '';
-        $keyword = $request->keyword ?? '';
-        $status = $request->status ?? '';
-        if (!empty($keyword) || !empty($startDate) || !empty($endDate) || !empty($status)) {  
+        public function UserTransactionView(Request $request,int $id)
+        { 
+            $startDate = $request->start_date ?? '';
+            $endDate = $request->end_date ?? '';
+            $keyword = $request->keyword ?? '';
+            $status = $request->status ?? '';
+            if (!empty($keyword) || !empty($startDate) || !empty($endDate) || !empty($status)) {  
             $data = $this->userDetailsRepository->getSearchUsersTransaction($keyword,$startDate,$endDate,$status,$id);
             }else{
                 $data = $this->userDetailsRepository->getUserAllTransactionById($id);
                 }
                 return view('admin.user.userTransaction', compact('data','id','status'));
-                }
-                public function UserWalletView(Request $request,int $user_id)
-                { 
-        $seller_wallet_transactions = $this->userRepository->getSellerAllWalletTransactionByUserId($user_id);
-        $buyer_wallet_transactions = $this->userRepository->getBuyerAllWalletTransactionByUserId($user_id);
-        return view('admin.user.userWallet', compact('seller_wallet_transactions','buyer_wallet_transactions','user_id'));
-        
+        }
+        public function UserWalletView(Request $request,int $user_id)
+        { 
+            $seller_wallet_transactions = $this->userRepository->getSellerAllWalletTransactionByUserId($user_id);
+            $buyer_wallet_transactions = $this->userRepository->getBuyerAllWalletTransactionByUserId($user_id);
+            return view('admin.user.userWallet', compact('seller_wallet_transactions','buyer_wallet_transactions','user_id'));
+            
         }
         public function GiftBuyerCredit(Request $request)
     { 

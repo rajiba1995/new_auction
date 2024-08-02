@@ -593,7 +593,7 @@
                                                                 <tr>
                                                                     <td class="other-actions-td">
                                                                         @if($item['bill'])
-                                                                            <a href="{{$item['bill']}}" class="btn btn-yellow bill-download" download>
+                                                                            <a href="{{asset($item['bill'])}}" class="btn btn-yellow bill-download" download>
                                                                                 <img src="{{asset('frontend/assets/images/download.png')}}" alt="Download">
                                                                                 Download Bill
                                                                             </a>
