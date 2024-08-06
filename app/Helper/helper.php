@@ -296,7 +296,12 @@ function get_open_sellers($my_city,$my_state,$created_by,$category_id,$sub_categ
     })->whereIN('products.user_id',$user_ids)
     ->distinct(); // Remove duplicate users
     // Get the user IDs as an array
-    return $query->pluck('seller_id')->toArray();
+    $seller_ids = $query->pluck('seller_id')->toArray();
+
+    // Shuffle the array of seller IDs
+    shuffle($seller_ids);
+
+    return $seller_ids;
 
 }
 function get_open_sellers_by_country($created_by,$category_id,$sub_category_id){
@@ -314,7 +319,12 @@ function get_open_sellers_by_country($created_by,$category_id,$sub_category_id){
     })->whereIN('products.user_id',$user_ids)
     ->distinct(); // Remove duplicate users
     // Get the user IDs as an array
-    return $query->pluck('seller_id')->toArray();
+    $seller_ids = $query->pluck('seller_id')->toArray();
+
+    // Shuffle the array of seller IDs
+    shuffle($seller_ids);
+
+    return $seller_ids;
 
 }
 

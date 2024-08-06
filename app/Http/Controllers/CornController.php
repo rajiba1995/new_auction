@@ -330,25 +330,28 @@ class CornController extends Controller
                 // Check if there are any participants data
                 if (isset($inquiry['participants_data']) && count($inquiry['participants_data']) > 0) {
                     foreach ($inquiry['participants_data'] as $item) {
-                        // Fetch user email based on user_id
-                        $user = User::find($item['user_id']);
-                        if ($user) {
-                            $data=[
-                                'user'=>$user,
-                            ];
-                            $customer_mobile_no = $user->mobile; 
-                            $checkPhoneNumberValid = checkPhoneNumberValid($customer_mobile_no);
-                            if($checkPhoneNumberValid){
-                                $sender = env('SMS_SENDER');
-                                $company = $inquiry['buyer_data']?$inquiry['buyer_data']['business_name']:"a company";
-                                $url = 'https://milaapp.in/seller/inquiries';
-                                // Mobile number to send the SMS to
-                                $myMessage = urlencode("Auction starting for ".$company." Details: ".$url.". (owned by SMTPL) -Sarv Megh Technology (OPC) Private Limited");
-                                // New URL format
-                                sendSMS($sender, $customer_mobile_no, $myMessage);
+                        $mySellerPackage  = MySellerPackage::where('user_id', $item['user_id'])->first();
+                        if($mySellerPackage){
+                            // Fetch user email based on user_id
+                            $user = User::find($item['user_id']);
+                            if ($user) {
+                                $data=[
+                                    'user'=>$user,
+                                ];
+                                $customer_mobile_no = $user->mobile; 
+                                $checkPhoneNumberValid = checkPhoneNumberValid($customer_mobile_no);
+                                if($checkPhoneNumberValid){
+                                    $sender = env('SMS_SENDER');
+                                    $company = $inquiry['buyer_data']?$inquiry['buyer_data']['business_name']:"a company";
+                                    $url = 'https://milaapp.in/seller/inquiries';
+                                    // Mobile number to send the SMS to
+                                    $myMessage = urlencode("Auction starting for ".$company." Details: ".$url.". (owned by SMTPL) -Sarv Megh Technology (OPC) Private Limited");
+                                    // New URL format
+                                    sendSMS($sender, $customer_mobile_no, $myMessage);
+                                }
+                                $email = $user->email;
+                                sendMail($data, $email, 'INQUIRY_START'); 
                             }
-                            $email = $user->email;
-                            sendMail($data, $email, 'INQUIRY_START'); 
                         }
                     }
                 }

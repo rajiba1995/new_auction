@@ -14,6 +14,7 @@ use App\Models\State;
 use App\Models\Inquiry;
 use App\Models\MyBuyerWallet;
 use App\Models\Collection;
+use App\Models\MySellerPackage;
 use App\Models\Category;
 use App\Models\InquiryParticipant;
 use App\Models\OutsideParticipant;
@@ -373,24 +374,37 @@ class AuctionGenerationController extends Controller
                                 // Mobile number to send the SMS to
                                 $myMessage = urlencode("Auction starts at ".$time." for inquiry number ".$inquiry_id." by ".$buyer_name.". Details: ".$url." (owned by SMTPL) - Sarv Megh Technology OPC Private Limited");
                                 // New URL format
-                                sendSMS($sender, $customer_mobile_no, $myMessage);
+                                $count_unpaid = 1;
+                                $mySellerPackage  = MySellerPackage::where('user_id', $item->SellerData->id)->first();
+                                if($mySellerPackage){
+                                    sendSMS($sender, $customer_mobile_no, $myMessage);
+                                }else{
+                                    if($count_unpaid<=10){
+                                        sendSMS($sender, $customer_mobile_no, $myMessage);
+                                    }
+                                    $count_unpaid++;
+                                }
+                               
                             }
                             if($item->SellerData){
-                                $data=[
-                                    'user'=>$item->SellerData,
-                                    'cc'=>[],
-                                    'inquiry_data'=>$inquiry,
-                                    'Buyer_data'=>$Buyer_data,
-                                    'type'=>'INQUIRY_GENERATION',
-                                    'user_type'=>'Seller',
-                                ];
-                                // dd($data);
-                                DB::table('mail_logs')->insert([
-                                    'email' => $item->SellerData->email,
-                                    'type' => 'Seller',
-                                    'subject' => 'Inquiry POST Notification',
-                                    'response' => json_encode($data),
-                                ]);
+                                $mySellerPackage  = MySellerPackage::where('user_id', $item->SellerData->id)->first();
+                                if($mySellerPackage){
+                                    $data=[
+                                        'user'=>$item->SellerData,
+                                        'cc'=>[],
+                                        'inquiry_data'=>$inquiry,
+                                        'Buyer_data'=>$Buyer_data,
+                                        'type'=>'INQUIRY_GENERATION',
+                                        'user_type'=>'Seller',
+                                    ];
+                                    // dd($data);
+                                    DB::table('mail_logs')->insert([
+                                        'email' => $item->SellerData->email,
+                                        'type' => 'Seller',
+                                        'subject' => 'Inquiry POST Notification',
+                                        'response' => json_encode($data),
+                                    ]);
+                                }
                             }
                             $title = $Buyer_data->name . ' added you to a new inquiry '.$inquiry->inquiry_id;
                             $link = route('seller_all_inquiries');

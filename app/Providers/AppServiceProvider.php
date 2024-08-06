@@ -59,8 +59,8 @@ class AppServiceProvider extends ServiceProvider
             // Category
             $UserTableExists = Schema::hasTable('users');
             if ($UserTableExists) {
-                $userCities = User::whereNotNull('city')->groupBy('city')->pluck('city')->toArray();
-                $User_state = User::whereNotNull('state')->groupBy('state')->pluck('state')->toArray();
+                $userCities = User::whereNotNull('city')->groupBy('city')->orderBy('name', 'DESC')->pluck('city')->toArray();
+                $User_state = User::whereNotNull('state')->groupBy('state')->orderBy('name', 'DESC')->pluck('state')->toArray();
                 $cityNames = [];
                 foreach ($userCities as $cityId) {
                     $city = City::find($cityId);
@@ -91,6 +91,7 @@ class AppServiceProvider extends ServiceProvider
         });
 
             $allLocation = array_merge($cityNames, $stateNames);
+            sort($allLocation);
             // $allTitles = array_merge($products, $collections, $categories);
 
                // Notification count
