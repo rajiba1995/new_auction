@@ -542,6 +542,7 @@
                                                                                                     <h3 class="content-heading">Add new bill</h3>
                                                                                                     <input type="hidden" name="inquiry_id" value="{{$item['id']}}">
                                                                                                     <input type="file" class="form-control" name="new_bill" id="new_bill{{$item['id']}}">
+                                                                                                    <p class="text-muted text-sm mt-1">Please select an image(jpg,jpeg,png,gif) file up to 2MB, or PDF files to upload.</p>
                                                                                                     <p class="text-danger text-sm error_bill"></p>
                                                                                                     <div>
                                                                                                         <button type="button" onclick="bill_submit_button({{$item['id']}})" class="btn btn-animated btn-add-comment">Submit</button>
@@ -699,7 +700,7 @@
         var fileType = file.type;
         var validTypes = ['application/pdf', 'image/jpeg', 'image/png', 'image/gif', 'image/jpg'];
         if (!validTypes.includes(fileType)) {
-            $('.error_file').html("Please select a PDF or image file (JPEG, PNG, GIF, JPG)");
+            $('.error_bill').html("Please select a PDF or image file (JPEG, PNG, GIF, JPG)");
             return;
         }
         

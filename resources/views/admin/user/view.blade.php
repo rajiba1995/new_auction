@@ -158,6 +158,16 @@
                                     <label>Date of Join:</label>
                                     <p>{{ $data->created_at->format('d-M-Y') }}</p>
                                 </div>
+                                @if($data->email1 || $data->email2 || $data->email3)
+                                <div class="col-md-6 col-12 info-box">
+                                    <label>Additional Information:</label>
+                                    <div class="d-flex justify-content-between align-items-start">
+                                    <p> {{$data->email1? "Email 1:". $data->email1 : ""}}</p>
+                                    <p> {{$data->email2 ? "Email 2:". $data->email2 : ""}}</p>
+                                    <p> {{$data->email3? "Email 3:". $data->email3 : ""}}</p>
+                                    </div>
+                                </div>
+                                @endif
                             </div>
                             <p><strong>Images</strong></p>
                             <div class="row">

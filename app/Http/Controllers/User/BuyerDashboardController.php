@@ -872,7 +872,7 @@ class BuyerDashboardController extends Controller
                         $inquiry_id = $inquiry_data->inquiry_id?$inquiry_data->inquiry_id:"...";
                         $company = $inquiry_data->BuyerData?$inquiry_data->BuyerData->business_name:"a company";
                         $execution_date = $inquiry_data->execution_date?$inquiry_data->execution_date:"...";
-                        $amount = $request->allot_amount;
+                        $amount = number_format($request->allot_amount,2);
                         $url = 'https://milaapp.in/seller/confirmed';
                         $cc =[
                             0=>$allot_seller->SellerData->email1,
